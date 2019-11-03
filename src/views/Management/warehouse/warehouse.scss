@@ -1,0 +1,63 @@
+.actionButton {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+  align-items: center;
+
+
+  .buttonBox {
+    span.p-button-text {
+      font-family: 'lbet-mt',sans-serif!important;
+      font-size: 12px!important;
+    }
+    .pi {
+      font-size: 1em;
+    }
+    &.tf {
+      font-family: 'lbet-mt',sans-serif !important;
+    }
+    &:nth-child(1){
+      display: flex;
+      justify-content: flex-start;
+    }
+    &:nth-child(2){
+      display: flex;
+      justify-content: center;
+    }
+    &:nth-child(3){
+      app-language {
+        span{
+          position: relative !important;
+        }
+      }
+      display: flex; justify-content: flex-end;
+    }
+    button {
+      height: 28.28px;
+      margin: 0 5px;
+    }
+    .cart {
+      display: flex;
+      line-height: 28px;
+      fa-icon {
+        margin-right: 5px;
+      }
+    }
+  }
+}
+
+.arrow-icon {
+  position: relative;
+  padding-left: 25px;
+  &:before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    height: 100%;
+    width: 30px;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAPCAQAAABDj1eZAAAA6ElEQVQoz32PvUoDYRBFz5qNWXXBBESjYG8pPoGdhaU2wUJQYiP406TQ2tJCUij4AoK2FiJpxMKnEHwASy12kz0WwUWQ/e5tZuAw9w5S6QMfbIsQgDb89MVFwaZzYtOW2LLtfOnEXXMHLkfessAW9wzZ5pE15FcFXyyRchfzyiwjnimAJ97JSmhInX1y3kKdavbNPQoX76knf7/ruvcPWnVzPI3XU7VffRPx2MybQCyRXa6JGJDRKP9q8MEhHdbZocdKTEKNEdPMUC+hSVImSEiBKVKMPLPwKhSHGHmuXlZDMSAXfJNTqR8OreRCMlA8mAAAAABJRU5ErkJggg==) no-repeat center center;
+  }
+}
+.arrow-icon span{
+  position: relative;
+}

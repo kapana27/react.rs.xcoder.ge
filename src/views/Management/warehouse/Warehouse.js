@@ -6,6 +6,13 @@ import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import 'ag-grid-enterprise';
+// prime ng react
+import 'primereact/resources/themes/nova-light/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import {Button} from 'primereact/button';
+
+import './warehouse.css';
 
 export default class Warehouse extends Component {
 
@@ -255,32 +262,53 @@ export default class Warehouse extends Component {
 
   render() {
     return (
-        <div
-          id="myGrid"
-          style={{
-            height: "100vh",
-            width: "100%"
-          }}
-          className="ag-theme-balham"
-        >
-          <AgGridReact
-            pivotPanelShow={true}
-            floatingFilter={true}
-            columnDefs={this.state.grid.columnDefs}
-            defaultColDef={this.state.grid.defaultColDef}
-            rowModelType={this.state.grid.rowModelType}
-            cacheBlockSize={this.state.grid.cacheBlockSize}
-            maxBlocksInCache={this.state.grid.maxBlocksInCache}
-            rowSelection={this.state.grid.rowSelection}
-            paginationPageSize={this.state.grid.paginationPageSize}
-            infiniteInitialRowCount={this.state.grid.infiniteInitialRowCount}
-            rowDeselection={true}
-            animateRows={true}
-            debug={false}
-            gridOptions={this.state.grid.gridOptions}
-            onGridReady={this.onGridReady}
-          />
-        </div>
+        <React.Fragment >
+
+
+            <div className="actionButton">
+              <div className="buttonBox" style={{width: '150px'}}>
+                <Button label="A" icon="pi pi-home" />
+                <Button label="B" icon="pi pi-home" />
+              </div>
+              <div className="buttonBox">
+                <Button label="ინვ.მიღება" icon="pi pi-plus" />
+                <Button label="ძედ.მიღება" icon="pi pi-plus" />
+                <Button label="რედაქტირება" icon="pi pi-pencil" />
+              </div>
+              <div className="buttonBox">
+                <Button label="ინვ.გაცემა" icon="pi pi-arrow-up" className="p-button-danger" />
+                <Button label="მოძრაობა A-B"  className="ui-button-raised arrow-icon"/>
+                <Button label="ძებნა" icon="pi pi-search" />
+              </div>
+            </div>
+
+
+
+          <div
+            id="myGrid"
+            className="ag-theme-balham"
+          >
+            <AgGridReact
+              pivotPanelShow={true}
+              floatingFilter={true}
+              columnDefs={this.state.grid.columnDefs}
+              defaultColDef={this.state.grid.defaultColDef}
+              rowModelType={this.state.grid.rowModelType}
+              cacheBlockSize={this.state.grid.cacheBlockSize}
+              maxBlocksInCache={this.state.grid.maxBlocksInCache}
+              rowSelection={this.state.grid.rowSelection}
+              paginationPageSize={this.state.grid.paginationPageSize}
+              infiniteInitialRowCount={this.state.grid.infiniteInitialRowCount}
+              rowDeselection={true}
+              animateRows={true}
+              debug={false}
+              gridOptions={this.state.grid.gridOptions}
+              onGridReady={this.onGridReady}
+            />
+          </div>
+        </React.Fragment>
+
+
     );
   }
 }
