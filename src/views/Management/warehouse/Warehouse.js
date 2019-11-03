@@ -282,8 +282,6 @@ export default class Warehouse extends Component {
               </div>
             </div>
 
-
-
           <div
             id="myGrid"
             className="ag-theme-balham"
