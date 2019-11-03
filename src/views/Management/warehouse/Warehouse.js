@@ -265,7 +265,7 @@ export default class Warehouse extends Component {
                 <Button label="B" icon="pi pi-home" />
               </div>
               <div className="buttonBox">
-                <Button label="ინვ.მიღება" icon="pi pi-plus" />
+                <Button label="ინვ.მიღება1" icon="pi pi-plus" />
                 <Button label="ძედ.მიღება" icon="pi pi-plus" />
                 <Button label="რედაქტირება" icon="pi pi-pencil" />
               </div>
