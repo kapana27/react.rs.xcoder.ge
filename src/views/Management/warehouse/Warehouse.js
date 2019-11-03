@@ -11,7 +11,6 @@ import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
-
 import './warehouse.css';
 
 export default class Warehouse extends Component {
@@ -202,8 +201,6 @@ export default class Warehouse extends Component {
        }
     }
   }
-
-
   onGridReady(params, filter= false) {
     this.eventData = params;
     this.gridApi = params.api;
@@ -259,12 +256,9 @@ export default class Warehouse extends Component {
     params.api.setServerSideDatasource(datasource);
   }
 
-
   render() {
     return (
         <React.Fragment >
-
-
             <div className="actionButton">
               <div className="buttonBox" style={{width: '150px'}}>
                 <Button label="A" icon="pi pi-home" />
