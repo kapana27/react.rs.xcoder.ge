@@ -1,10 +1,11 @@
 import axios from 'axios';
 
 axios.create({
-  baseURL: '/'
+  baseURL: '/',
+
 });
 
-const get=(uri)=>{
+const get = (uri) => {
   return new Promise((resolve, reject) => {
     axios.get(uri)
       .then(response => {
@@ -14,10 +15,10 @@ const get=(uri)=>{
         console.log(reason)
       });
   })
-}
-const post=(uri,params)=>{
+};
+const post = (uri, formData) => {
   return new Promise((resolve, reject) => {
-    axios.get(uri,params)
+    axios.post(uri, formData)
       .then(response => {
         resolve(response.data);
       })
@@ -25,7 +26,7 @@ const post=(uri,params)=>{
         reject(reason)
       });
   })
-}
+};
 export default {
   get,
   post

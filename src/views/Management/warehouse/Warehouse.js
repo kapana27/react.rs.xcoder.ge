@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import http from  '../../../api/http';
 import {Config} from "../../../config/Config";
-import {CardCellRenderer} from  '../../components'
+import {CardCellRenderer,Modal,Calendar} from  '../../components'
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import 'ag-grid-enterprise';
-// prime ng react
 import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import './warehouse.css';
+import 'primeflex/primeflex.css'
 
 export default class Warehouse extends Component {
 
@@ -198,9 +198,19 @@ export default class Warehouse extends Component {
           rowSelection: 'single',
           getSelectedRows: 'getSelectedRows',
         }
-       }
+       },
+      inventor:{
+        income:{
+          dialog: false,
+          date: new Date()
+        }
+      }
     }
+
   }
+  componentDidMount() {
+  }
+
   onGridReady(params, filter= false) {
     this.eventData = params;
     this.gridApi = params.api;
@@ -255,7 +265,6 @@ export default class Warehouse extends Component {
     };
     params.api.setServerSideDatasource(datasource);
   }
-
   render() {
     return (
         <React.Fragment >
@@ -265,7 +274,7 @@ export default class Warehouse extends Component {
                 <Button label="B" icon="pi pi-home" />
               </div>
               <div className="buttonBox">
-                <Button label="ინვ.მიღება1" icon="pi pi-plus" />
+                <Button label="ინვ.მიღება" icon="pi pi-plus" onClick={()=>this.onInventorIncome()}/>
                 <Button label="ძედ.მიღება" icon="pi pi-plus" />
                 <Button label="რედაქტირება" icon="pi pi-pencil" />
               </div>
@@ -275,7 +284,6 @@ export default class Warehouse extends Component {
                 <Button label="ძებნა" icon="pi pi-search" />
               </div>
             </div>
-
           <div
             id="myGrid"
             className="ag-theme-balham"
@@ -298,9 +306,25 @@ export default class Warehouse extends Component {
               onGridReady={this.onGridReady}
             />
           </div>
+          <Modal header="ინვენტარის მიღება" visible={this.state.inventor.income.dialog} onHide={()=>this.setState({inventor:{income: {...this.state.inventor.income, dialog:false}}})} width={'80vw'}>
+            <div className="p-grid">
+              <div className="p-col-4"><Calendar date={this.state.inventor.income.date} onDateChange={props=>this.setState({inventor:{income: {...this.state.inventor.income, date:props}}})} /></div>
+              <div className="p-col">1 </div>
+              <div className="p-col">1 </div>
+              <div className="p-col">1 </div>
+              <div className="p-col">1 </div>
+              <div className="p-col">1 </div>
+              <div className="p-col">1 </div>
+              <div className="p-col">1 </div>
+              <div className="p-col">1 </div>
+            </div>
+          </Modal>
         </React.Fragment>
-
-
     );
+  }
+
+  onInventorIncome() {
+    console.log(this.state)
+    this.setState({inventor: {income: {...this.state.inventor.income, dialog:true}}});
   }
 }
