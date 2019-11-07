@@ -8,6 +8,9 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import 'ag-grid-enterprise';
 import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
+import {Link} from 'react-router-dom';
+import {InputText} from 'primereact/inputtext';
+import {InputTextarea} from 'primereact/inputtextarea';
 import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import './warehouse.css';
@@ -306,25 +309,38 @@ export default class Warehouse extends Component {
               onGridReady={this.onGridReady}
             />
           </div>
-          <Modal header="ინვენტარის მიღება" visible={this.state.inventor.income.dialog} onHide={()=>this.setState({inventor:{income: {...this.state.inventor.income, dialog:false}}})} width={'80vw'}>
-            <div className="p-grid">
-              <div className="p-col-4"><Calendar date={this.state.inventor.income.date} onDateChange={props=>this.setState({inventor:{income: {...this.state.inventor.income, date:props}}})} /></div>
-              <div className="p-col">1 </div>
-              <div className="p-col">1 </div>
-              <div className="p-col">1 </div>
-              <div className="p-col">1 </div>
-              <div className="p-col">1 </div>
-              <div className="p-col">1 </div>
-              <div className="p-col">1 </div>
-              <div className="p-col">1 </div>
+          <Modal header="ინვენტარის მიღება" visible={this.state.inventor.income.dialog} onHide={()=>this.setState({inventor:{income: {...this.state.inventor.income, dialog:false}}})} width={'1200px'}>
+            <div className="incomeModal p-grid">
+              <div className="fullwidth p-col-3">
+                <label>მიღების თარიღი</label>
+                <Calendar date={this.state.inventor.income.date} onDateChange={props=>this.setState({inventor:{income: {...this.state.inventor.income, date:props}}})} />
+              </div>
+              <div className="fullwidth p-col-3">
+                <label>მიმწოდებელი</label>
+                <InputText type="text" />
+              </div>
+              <div className="fullwidth p-col-3">
+                <label>სასაქონლო ზედნადები</label>
+                <InputText type="text" />
+              </div>
+              <div className="fullwidth p-col-3">
+                <label>ინსპექტირების დასკვნის ნომერი</label>
+                <InputText type="text" />
+              </div>
+              <div className="fullwidth p-col-12">
+                <label>კომენტარი</label>
+                <InputTextarea rows={1}></InputTextarea>
+                <Button label="დამატება" icon="pi pi-plus" />
+              </div>
             </div>
+
           </Modal>
         </React.Fragment>
     );
   }
 
   onInventorIncome() {
-    console.log(this.state)
+    console.log(this.state);
     this.setState({inventor: {income: {...this.state.inventor.income, dialog:true}}});
   }
 }

@@ -1,3 +1,6 @@
+* {
+  outline: none !important; }
+
 .actionButton {
   display: flex;
   justify-content: space-between;
@@ -43,5 +46,28 @@
 
 .arrow-icon span {
   position: relative; }
+
+.p-dialog[role="dialog"] .p-dialog-title {
+  font-family: lbet-mt, sans-serif !important; }
+.p-dialog[role="dialog"] .incomeModal .react-datepicker-wrapper {
+  width: 100%; }
+.p-dialog[role="dialog"] .incomeModal .fullwidth label {
+  width: 100%;
+  font-family: lbet-st, sans-serif !important;
+  margin-bottom: 3px; }
+.p-dialog[role="dialog"] .incomeModal .fullwidth input {
+  width: 100%;
+  text-indent: 10px;
+  height: 31px;
+  border-radius: 3px;
+  border: 1px solid #aeaeae;
+  outline: none; }
+.p-dialog[role="dialog"] .incomeModal .fullwidth textarea {
+  width: calc(100% - 130px);
+  margin-right: 1em;
+  display: inline-block; }
+.p-dialog[role="dialog"] .incomeModal .fullwidth button {
+  float: right;
+  font-family: lbet-mt, sans-serif !important; }
 
 /*# sourceMappingURL=warehouse.css.map */
