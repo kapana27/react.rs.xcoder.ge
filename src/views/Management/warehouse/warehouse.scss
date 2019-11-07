@@ -98,7 +98,14 @@
         float: right;
         font-family: lbet-mt,sans-serif!important;
       }
-
+      .p-dropdown {
+        height: 31px;
+      }
+      &.barcode {
+        .p-dropdown {
+          min-width: 104px;
+        }
+      }
     }
   }
 }

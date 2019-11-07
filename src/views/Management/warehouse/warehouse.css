@@ -69,5 +69,9 @@
 .p-dialog[role="dialog"] .incomeModal .fullwidth button {
   float: right;
   font-family: lbet-mt, sans-serif !important; }
+.p-dialog[role="dialog"] .incomeModal .fullwidth .p-dropdown {
+  height: 31px; }
+.p-dialog[role="dialog"] .incomeModal .fullwidth.barcode .p-dropdown {
+  min-width: 104px; }
 
 /*# sourceMappingURL=warehouse.css.map */

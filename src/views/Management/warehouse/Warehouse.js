@@ -11,6 +11,7 @@ import 'primereact/resources/primereact.min.css';
 import {Link} from 'react-router-dom';
 import {InputText} from 'primereact/inputtext';
 import {InputTextarea} from 'primereact/inputtextarea';
+import {Dropdown} from 'primereact/dropdown';
 import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import './warehouse.css';
@@ -333,6 +334,68 @@ export default class Warehouse extends Component {
                 <Button label="დამატება" icon="pi pi-plus" />
               </div>
             </div>
+
+
+
+            <div className="incomeModal p-grid">
+              <div className="fullwidth p-col-2">
+                <label>დასახელება</label>
+                <InputText type="text" placeholder="დასახელება" />
+              </div>
+              <div className="fullwidth p-col-2">
+                <label>მარკა</label>
+                <InputText type="text" placeholder="დასახელება" />
+              </div>
+              <div className="fullwidth p-col-2">
+                <label>მოდელი</label>
+                <InputText type="text" placeholder="დასახელება" />
+              </div>
+              <div className="fullwidth p-col-2">
+                <label>რაოდენობა</label>
+                <InputText type="text" placeholder="დასახელება" />
+              </div>
+              <div className="fullwidth p-col-2">
+                <label>ერთეულის ფასი</label>
+                <InputText type="text" placeholder="დასახელება" />
+              </div>
+              <div className="fullwidth p-col-2">
+                <label>სულ ფასი:</label>
+                <InputText type="text" placeholder="დასახელება" />
+              </div>
+
+
+              <div className="fullwidth barcode p-col-2">
+                <label>შტრიხკოდი</label>
+                <Dropdown optionLabel="name" />
+                <InputText type="text" placeholder="შტრ. კოდი" style={{textIndent:'0px',width:'78px',fontSize:'12px'}} />
+              </div>
+              <div className="fullwidth p-col-2">
+                <label>ქარხნული ნომერი:</label>
+                <InputText type="text" />
+              </div>
+              <div className="fullwidth p-col-2">
+                <label>განზომილების ერთეული</label>
+                <Dropdown optionLabel="name" />
+              </div>
+              <div className="fullwidth p-col-2">
+                <label>საქონლის ჯგუფი</label>
+                <InputText type="text" />
+              </div>
+              <div className="fullwidth p-col-2">
+                <label>ინვენტარის ტიპი</label>
+                <Dropdown optionLabel="name" />
+              </div>
+              <div className="fullwidth p-col-2">
+                <label>ინვენტარის სტატუსი</label>
+                <Dropdown optionLabel="name" />
+              </div>
+
+            </div>
+
+
+
+
+
 
           </Modal>
         </React.Fragment>
