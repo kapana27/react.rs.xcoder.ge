@@ -12,7 +12,7 @@ export const Modal = (props) => {
   );
 
   return (
-    <Dialog header={props.header} visible={props.visible} style={{width: props.width}} footer={footer} onHide={props.onHide} >
+    <Dialog header={props.header} visible={props.visible} style={props.style} footer={footer} onHide={props.onHide}  maximizable={true} draggable={true}>
       {props.children}
     </Dialog>
   )
@@ -21,11 +21,13 @@ Modal.propTypes = {
   header: PropTypes.string,
   visible: PropTypes.bool,
   width: PropTypes.string,
-  children: PropTypes.element
+  children: PropTypes.any,
+  style: PropTypes.any
 };
 Modal.defaultProps = {
   header:'',
   width: '600px',
   visible: false,
-  children: ''
+  children:null,
+  style: null
 };

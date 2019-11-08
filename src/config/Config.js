@@ -3,7 +3,8 @@ export const Config = {
     warehouse: {
       post: {},
       get: {
-        items: '/api/secured/Item/Select'
+        items: '/api/secured/Item/Select',
+        insertStart:"/api/secured/Item/Insert/Start"
       }
     }
   },

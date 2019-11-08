@@ -7,6 +7,9 @@
   .app-body {
     height: calc(100vh - 105px);
   }
+  .sidebar,.app-header{
+    z-index: 222;
+  }
   .main {
     .container-fluid {
       padding: 0 10px;
@@ -19,5 +22,13 @@
   }
 }
 
+// ავტოცომპლეიტის ბაგის გასწორება
+
+/*
+.p-autocomplete-panel{
+  display: block !important;
+  opacity: 1 !important;
+}
+*/
 
 
