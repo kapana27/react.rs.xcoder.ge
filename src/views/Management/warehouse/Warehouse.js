@@ -12,6 +12,8 @@ import {InputText} from 'primereact/inputtext';
 import {InputTextarea} from 'primereact/inputtextarea';
 import {Dropdown} from 'primereact/dropdown';
 
+
+
 import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import './warehouse.css';
@@ -431,6 +433,116 @@ export default class Warehouse extends Component {
               <Button label="დამატება" icon="pi pi-plus" onClick={()=>this.setState(State('inventor.income.detail.dialog',true,this.state))} />
             </div>
           </div>
+
+          <div className="incomeAddedTable">
+            <table>
+              <thead>
+              <tr>
+                <th>დასახელება</th>
+                <th>მარკა</th>
+                <th>მოდელი</th>
+                <th>რაოდენობა</th>
+                <th>განზომილების ერთეული</th>
+                <th>საქონლის ჯგუფი</th>
+                <th>ქარხნული ნომერი</th>
+                <th>ინვენტარის ტიპი</th>
+                <th>ინვენტარის სტატუსი</th>
+                <th>ფასი</th>
+                <th>სულ ფასი</th>
+                <th width="30px"><span></span></th>
+              </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34</td>
+                </tr>
+                <tr>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34</td>
+                </tr>
+                <tr>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34</td>
+                </tr>
+                <tr>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34</td>
+                </tr>
+                <tr>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34</td>
+                </tr>
+                <tr>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34 4</td>
+                  <td>34</td>
+                </tr>
+
+
+              </tbody>
+            </table>
+          </div>
+
         </Modal>
 
       </React.Fragment>

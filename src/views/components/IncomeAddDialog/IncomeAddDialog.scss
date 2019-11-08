@@ -1,0 +1,40 @@
+
+
+
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+  .fullwidth {
+    label {
+      width: 100%;
+      font-family: lbet-st,sans-serif!important;
+      margin-bottom: 3px;
+    }
+    input {
+      width: 100%;
+      text-indent: 10px;
+      height: 31px;
+      border-radius: 3px;
+      border: 1px solid #aeaeae;
+      outline: none;
+    }
+    textarea {
+      width: calc(100% - 130px);
+      margin-right: 1em;
+      display: inline-block;
+    }
+    button {
+      float: right;
+      font-family: lbet-mt,sans-serif!important;
+    }
+    .p-dropdown {
+      height: 31px;
+    }
+    &.barcode {
+      .p-dropdown {
+        min-width: 104px;
+      }
+    }
+  }
+
+
