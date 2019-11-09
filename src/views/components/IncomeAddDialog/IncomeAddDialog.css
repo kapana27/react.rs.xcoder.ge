@@ -1,27 +1,34 @@
 .react-datepicker-wrapper {
-  width: 100%; }
+  width: 100%;
+}
 
 .fullwidth label {
   width: 100%;
   font-family: lbet-st, sans-serif !important;
-  margin-bottom: 3px; }
+  margin-bottom: 3px;
+}
 .fullwidth input {
   width: 100%;
   text-indent: 10px;
   height: 31px;
   border-radius: 3px;
   border: 1px solid #aeaeae;
-  outline: none; }
+  outline: none;
+}
 .fullwidth textarea {
   width: calc(100% - 130px);
   margin-right: 1em;
-  display: inline-block; }
+  display: inline-block;
+}
 .fullwidth button {
   float: right;
-  font-family: lbet-mt, sans-serif !important; }
+  font-family: lbet-mt, sans-serif !important;
+}
 .fullwidth .p-dropdown {
-  height: 31px; }
+  height: 31px;
+}
 .fullwidth.barcode .p-dropdown {
-  min-width: 104px; }
+  min-width: 104px;
+}
 
 /*# sourceMappingURL=IncomeAddDialog.css.map */

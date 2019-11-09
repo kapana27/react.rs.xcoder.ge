@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import http from  '../../../api/http';
 import {Config} from "../../../config/Config";
-import {CardCellRenderer, Modal, Calendar, AutoComplete} from '../../components'
+import {CardCellRenderer, Modal, Calendar, AutoComplete,FileUploader} from '../../components'
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
@@ -399,6 +399,9 @@ export default class Warehouse extends Component {
             <div className="fullwidth p-col-2">
               <label>ინვენტარის სტატუსი</label>
               <Dropdown optionLabel="name" />
+            </div>
+            <div className="fullwidth p-col-12">
+                <FileUploader onUpload={files=>console.log(files)}/>
             </div>
           </div>
         </Modal>

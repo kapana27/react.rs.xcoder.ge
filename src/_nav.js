@@ -21,7 +21,7 @@ export default {
     },
     {
       name: 'შეტყობინებები',
-      url: '/Management/property',
+      url: '/Management/messages',
       icon: 'icon-drop',
     },
     {

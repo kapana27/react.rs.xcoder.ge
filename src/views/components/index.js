@@ -2,10 +2,12 @@ import {CardCellRenderer} from  './CardCellRenderer'
 import {Modal} from  './Modal'
 import {Calendar} from './DatePicker';
 import {AutoComplete} from  './AutoComplete/AutoComplete';
+import {FileUploader} from  './FileUploader/FileUploader';
 export {
   CardCellRenderer,
   Modal,
   Calendar,
-  AutoComplete
+  AutoComplete,
+  FileUploader
 }
 

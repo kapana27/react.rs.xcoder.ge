@@ -6,6 +6,12 @@ export const Config = {
         items: '/api/secured/Item/Select',
         insertStart:"/api/secured/Item/Insert/Start"
       }
+    },
+    property:{
+      post:{},
+      get:{
+        items:'/api/secured/Item/Section/Out/Select'
+      }
     }
   },
   cart: {
