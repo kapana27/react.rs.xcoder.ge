@@ -11,6 +11,7 @@ import 'primereact/resources/primereact.min.css';
 import {InputText} from 'primereact/inputtext';
 import {InputTextarea} from 'primereact/inputtextarea';
 import {Dropdown} from 'primereact/dropdown';
+import {TabView,TabPanel} from 'primereact/tabview';
 
 
 
@@ -564,59 +565,101 @@ export default class Warehouse extends Component {
           </div>
 
         </Modal>
-        <Modal header="ინვენტარის გაცემა" visible={this.state.inventor.outcome.dialog} onHide={()=>this.setState(State('inventor.outcome.dialog',false,this.state))} style={{width:'1200px'}}>
-          <div className="incomeModal p-grid">
-            <div className="fullwidth p-col-2">
-              <label>დასახელება</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>მარკა</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>მოდელი</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>რაოდენობა</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>ერთეულის ფასი</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>სულ ფასი:</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-          </div>
+
+
+        <Modal header="ინვენტარის გაცემა" visible={this.state.inventor.outcome.dialog} onHide={()=>this.setState(State('inventor.outcome.dialog',false,this.state))} style={{width:'900px'}}>
+          <TabView renderActiveOnly={false}>
+            <TabPanel header="შენობა">
+              <div className="incomeModal p-grid">
+                <div className="fullwidth p-col-8">
+                  <div className="p-grid">
+                    <div className="fullwidth p-col-6">
+                      <label>თარიღი</label>
+                      <InputText type="text" placeholder="თარიღი" />
+                    </div>
+                    <div className="fullwidth p-col-6">
+                      <label>ქონების მართვა</label>
+                      <InputText type="text" placeholder="ქონების მართვა" />
+                    </div>
+                    <div className="fullwidth p-col-6">
+                      <label>მომთხოვნი პიროვნება</label>
+                      <InputText type="text" placeholder="მომთხოვნი პიროვნება" />
+                    </div>
+                    <div className="fullwidth p-col-6">
+                      <label>ტრანსპორტირების პასხ. პირი</label>
+                      <InputText type="text" placeholder="ტრანსპორტირების პასხ. პირი" />
+                    </div>
+                  </div>
+                </div>
+                <div className="fullwidth p-col-4">
+                  <label>კომენტარი</label>
+                  <InputTextarea rows={4} placeholder="შენიშვნა" style={{width:'100%'}} />
+                </div>
+              </div>
+            </TabPanel>
+            <TabPanel header="პიროვნება">
+              <div className="incomeModal p-grid">
+                <div className="fullwidth p-col-4">
+                  <label>თარიღი</label>
+                  <InputText type="text" placeholder="თარიღი" />
+                </div>
+                <div className="fullwidth p-col-4">
+                  <label>პიროვნება</label>
+                  <InputText type="text" placeholder="პიროვნება" />
+                </div>
+                <div className="fullwidth p-col-4">
+                  <label>ქონების მართვა</label>
+                  <InputText type="text" placeholder="ქონების მართვა" />
+                </div>
+                <div className="fullwidth p-col-4">
+                  <label>სექცია</label>
+                  <Dropdown optionLabel="name" placeholder="სექცია" style={{width:'100%'}} />
+                </div>
+                <div className="fullwidth p-col-4">
+                  <label>ტრანსპორტირების პასხ. პირი</label>
+                  <InputText type="text" placeholder="ტრანსპორტირების პასხ. პირი" />
+                </div>
+                <div className="fullwidth p-col-4">
+                  <label>მომთხოვნი პიროვნება</label>
+                  <InputText type="text" placeholder="მომთხოვნი პიროვნება" />
+                </div>
+                <div className="fullwidth p-col-12">
+                  <label>კომენტარი</label>
+                  <InputTextarea rows={1} placeholder="შენიშვნა" style={{width:'100%'}} />
+                </div>
+
+
+              </div>
+            </TabPanel>
+          </TabView>
         </Modal>
-        <Modal header="ინვენტარის მოძრაობა A-B" visible={this.state.inventor.transfer.dialog} onHide={()=>this.setState(State('inventor.transfer.dialog',false,this.state))} style={{width:'1200px'}}>
+
+
+        <Modal header="ინვენტარის მოძრაობა A-B" visible={this.state.inventor.transfer.dialog} onHide={()=>this.setState(State('inventor.transfer.dialog',false,this.state))} style={{width:'900px'}}>
           <div className="incomeModal p-grid">
-            <div className="fullwidth p-col-2">
-              <label>თარიღი</label>
-              <Calendar date={this.state.inventor.transfer.date} onDateChange={props=>this.setState(State('inventor.transfer.date',props,this.state)) } />
+            <div className="fullwidth p-col-8">
+              <div className="p-grid">
+                <div className="fullwidth p-col-6">
+                  <label>თარიღი</label>
+                  <InputText type="text" placeholder="თარიღი" />
+                </div>
+                <div className="fullwidth p-col-6">
+                  <label>სექცია</label>
+                  <Dropdown optionLabel="name" placeholder="სექცია" style={{width:'100%'}} />
+                </div>
+                <div className="fullwidth p-col-6">
+                  <label>ქონების მართვა</label>
+                  <Dropdown optionLabel="name" placeholder="სექცია" style={{width:'100%'}} />
+                </div>
+                <div className="fullwidth p-col-6">
+                  <label>ტრანსპორტირების პასხ. პირი</label>
+                  <InputText type="text" placeholder="ტრანსპორტირების პასხ. პირი" />
+                </div>
+              </div>
             </div>
-            <div className="fullwidth p-col-2">
-              <label>მარკა</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>მოდელი</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>რაოდენობა</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>ერთეულის ფასი</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>სულ ფასი:</label>
-              <InputText type="text" placeholder="დასახელება" />
+            <div className="fullwidth p-col-4">
+              <label>კომენტარი</label>
+              <InputTextarea rows={4} placeholder="შენიშვნა" style={{width:'100%'}} />
             </div>
           </div>
         </Modal>
