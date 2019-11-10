@@ -213,13 +213,25 @@ export default class Warehouse extends Component {
             dialog: false
           }
         },
+        outcome:{
+          dialog: false
+        },
+        transfer:{
+          date: new Date(),
+          dialog: false
+        },
+        search:{
+          dialog: false
+        },
         supplierSuggestions:[],
         barCodes:[],
         measureUnitList:[],
         itemTypes:[],
-        itemStatus:[]
+        itemStatus:[],
+        stock:[]
       }
     }
+    this.loadConstructor();
 
   }
   componentDidMount() {
@@ -306,7 +318,12 @@ export default class Warehouse extends Component {
       }
     });
   };
+
+
+
   render() {
+
+
     return (
       <React.Fragment >
         <div className="actionButton">
@@ -320,9 +337,9 @@ export default class Warehouse extends Component {
             <Button label="რედაქტირება" icon="pi pi-pencil" />
           </div>
           <div className="buttonBox">
-            <Button label="ინვ.გაცემა" icon="pi pi-arrow-up" className="p-button-danger" />
-            <Button label="მოძრაობა A-B"  className="ui-button-raised arrow-icon"/>
-            <Button label="ძებნა" icon="pi pi-search" />
+            <Button label="ინვ.გაცემა" icon="pi pi-arrow-up" className="p-button-danger" onClick={()=>this.setState(State('inventor.outcome.dialog',true,this.state))}/>
+            <Button label="მოძრაობა A-B"  className="ui-button-raised arrow-icon" onClick={()=>this.setState(State('inventor.transfer.dialog',true,this.state))}/>
+            <Button label="ძებნა" icon="pi pi-search"  onClick={()=>this.setState(State('inventor.search.dialog',true,this.state))}/>
           </div>
         </div>
         <div
@@ -547,7 +564,62 @@ export default class Warehouse extends Component {
           </div>
 
         </Modal>
-
+        <Modal header="ინვენტარის გაცემა" visible={this.state.inventor.outcome.dialog} onHide={()=>this.setState(State('inventor.outcome.dialog',false,this.state))} style={{width:'1200px'}}>
+          <div className="incomeModal p-grid">
+            <div className="fullwidth p-col-2">
+              <label>დასახელება</label>
+              <InputText type="text" placeholder="დასახელება" />
+            </div>
+            <div className="fullwidth p-col-2">
+              <label>მარკა</label>
+              <InputText type="text" placeholder="დასახელება" />
+            </div>
+            <div className="fullwidth p-col-2">
+              <label>მოდელი</label>
+              <InputText type="text" placeholder="დასახელება" />
+            </div>
+            <div className="fullwidth p-col-2">
+              <label>რაოდენობა</label>
+              <InputText type="text" placeholder="დასახელება" />
+            </div>
+            <div className="fullwidth p-col-2">
+              <label>ერთეულის ფასი</label>
+              <InputText type="text" placeholder="დასახელება" />
+            </div>
+            <div className="fullwidth p-col-2">
+              <label>სულ ფასი:</label>
+              <InputText type="text" placeholder="დასახელება" />
+            </div>
+          </div>
+        </Modal>
+        <Modal header="ინვენტარის მოძრაობა A-B" visible={this.state.inventor.transfer.dialog} onHide={()=>this.setState(State('inventor.transfer.dialog',false,this.state))} style={{width:'1200px'}}>
+          <div className="incomeModal p-grid">
+            <div className="fullwidth p-col-2">
+              <label>თარიღი</label>
+              <Calendar date={this.state.inventor.transfer.date} onDateChange={props=>this.setState(State('inventor.transfer.date',props,this.state)) } />
+            </div>
+            <div className="fullwidth p-col-2">
+              <label>მარკა</label>
+              <InputText type="text" placeholder="დასახელება" />
+            </div>
+            <div className="fullwidth p-col-2">
+              <label>მოდელი</label>
+              <InputText type="text" placeholder="დასახელება" />
+            </div>
+            <div className="fullwidth p-col-2">
+              <label>რაოდენობა</label>
+              <InputText type="text" placeholder="დასახელება" />
+            </div>
+            <div className="fullwidth p-col-2">
+              <label>ერთეულის ფასი</label>
+              <InputText type="text" placeholder="დასახელება" />
+            </div>
+            <div className="fullwidth p-col-2">
+              <label>სულ ფასი:</label>
+              <InputText type="text" placeholder="დასახელება" />
+            </div>
+          </div>
+        </Modal>
       </React.Fragment>
     );
   }
@@ -568,5 +640,18 @@ export default class Warehouse extends Component {
         <div style={{ fontSize: '16px', float: 'right', margin: '10px 10px 0 0' }}>{generatedName}</div>
       </div>
     );
+  }
+  getStockData=()=>{
+    http.get("/api/secured/stock/Select")
+      .then(result => {
+        if(result.status === 200){
+          this.setState(State('inventor.stock', result.data, this.state));
+        }
+      })
+      .catch()
+  }
+
+  loadConstructor() {
+    this.getStockData();
   }
 }
