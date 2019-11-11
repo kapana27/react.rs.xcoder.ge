@@ -30,6 +30,7 @@
     "font-awesome": "^4.7.0",
     "git": "^0.1.5",
     "http-proxy-middleware": "^0.20.0",
+    "lodash": "^4.17.15",
     "node-sass": "^4.13.0",
     "primeflex": "^1.0.0",
     "primeicons": "^2.0.0",

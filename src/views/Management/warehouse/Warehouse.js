@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import http from  '../../../api/http';
 import {Config} from "../../../config/Config";
-import {CardCellRenderer, Modal, Calendar, AutoComplete,FileUploader} from '../../components'
+import {CardCellRenderer, Modal, Calendar, AutoComplete, FileUploader, Cart, TreeTableGroup} from '../../components'
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
@@ -11,21 +11,22 @@ import 'primereact/resources/primereact.min.css';
 import {InputText} from 'primereact/inputtext';
 import {InputTextarea} from 'primereact/inputtextarea';
 import {Dropdown} from 'primereact/dropdown';
-
+import _ from 'lodash';
 
 
 import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import './warehouse.css';
 import 'primeflex/primeflex.css';
-import {State} from '../../../utils';
+import {putInCart, State, getCartItems, clearCartItem, removeCartItem} from '../../../utils';
+import {Col} from "reactstrap";
 export default class Warehouse extends Component {
   constructor(props){
     super(props);
-    this.state={
-      grid:{
+    this.state = {
+      grid: {
         components: {
-          loadingCellRenderer: function(params) {
+          loadingCellRenderer: function (params) {
             if (params.value !== undefined) {
               return params.value;
             } else {
@@ -51,6 +52,7 @@ export default class Warehouse extends Component {
             sortable: false,
             suppressMenu: false,
 
+
           },
           {
             headerName: 'თარიღი',
@@ -73,7 +75,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'მოდელი',
@@ -81,7 +83,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'ფასი',
@@ -109,7 +111,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'შტრიხკოდი',
@@ -117,7 +119,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'ქარხ.#',
@@ -125,7 +127,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'ჯგუფი',
@@ -133,7 +135,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'ტიპი',
@@ -141,7 +143,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'სტატუსი',
@@ -149,7 +151,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'მიმწოდებელი',
@@ -157,7 +159,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'ზედნადები',
@@ -165,7 +167,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'ზედდებული',
@@ -173,7 +175,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'ინსპ',
@@ -181,7 +183,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           }
         ],
         defaultColDef: {
@@ -189,60 +191,70 @@ export default class Warehouse extends Component {
           resizable: true
         },
         rowSelection: 'single',
-        rowModelType:'serverSide',
-        paginationPageSize:100,
-        cacheOverflowSize:2,
+        rowModelType: 'serverSide',
+        paginationPageSize: 100,
+        cacheOverflowSize: 2,
         maxConcurrentDatasourceRequests: 2,
         infiniteInitialRowCount: 1,
         maxBlocksInCache: 2,
 
         gridOptions: {
           context: {
-            thisComponent : this,
+            thisComponent: this,
           },
           rowSelection: 'single',
           getSelectedRows: 'getSelectedRows',
         }
-       },
-      inventor:{
-        income:{
+      },
+      inventor: {
+        income: {
           dialog: false,
           date: new Date(),
-          supplier:"",
-          detail:{
+          supplier: "",
+          detail: {
             dialog: false
           }
         },
-        outcome:{
+        outcome: {
           dialog: false
         },
-        transfer:{
+        transfer: {
           date: new Date(),
           dialog: false
         },
-        search:{
+        search: {
           dialog: false
         },
-        supplierSuggestions:[],
-        barCodes:[],
-        measureUnitList:[],
-        itemTypes:[],
-        itemStatus:[],
-        stock:[]
+        supplierSuggestions: [],
+        barCodes: [],
+        measureUnitList: [],
+        itemTypes: [],
+        itemStatus: [],
+        stock: [],
+        itemGroup:{
+          dialog: false,
+          data:[]
+        }
+      },
+      tab: 11,
+      cart:{
+        tab11:[],
+        tab12:[],
+        dialog:false
       }
-    }
+    };
     this.loadConstructor();
-
   }
   componentDidMount() {
+    console.log("did")
   }
-  onGridReady(params, filter= false) {
+  onGridReady=(params, filter= false)=>{
     this.eventData = params;
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
     const filterData = this.filter;
-    const selectedTabId = this.selectedTabId;
-    const cartItems = this.cartItems;
+    const selectedTabId = this.state.tab;
+    const cartItems = _.map(this.state.cart["tab"+this.state.tab],(value,index)=>index);
     const datasource = {
       getRows(params) {
         const parameters = [];
@@ -267,7 +279,7 @@ export default class Warehouse extends Component {
           }
         }
 
-        http.get(Config.management.warehouse.get.items+"?stockId=11&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
+        http.get(Config.management.warehouse.get.items+"?stockId="+selectedTabId+"&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
           .then(response => {
             params.successCallback(response['data'].map((v, k) => {
               v['rowId'] = (params['request']['startRow'] + 1 + k );
@@ -277,7 +289,7 @@ export default class Warehouse extends Component {
               v['count'] = 1;
               v['cartId'] = v['id'];
               v['barcode'] = (v['spend'] === 1) ? '' : (v['barcode'].toString() === '0') ? '' : v['barcode'];
-              //v['inCart'] = (cartItems.indexOf(v['id'].toString()) > -1);
+              v['inCart'] = (cartItems.indexOf(v['id'].toString()) > -1);
               return v;
             }), response['totalCount']);
           })
@@ -318,11 +330,18 @@ export default class Warehouse extends Component {
       }
     });
   };
-
-
-
+  onReady = (params) => {
+      this.getCartItems().then(()=>{
+        this.onGridReady(params)
+      })
+  };
   render() {
-
+    function renderTree(status) {
+        if(status){
+          return <TreeTableGroup column={[{field:'name',title:'Name'}]} URL="/api/secured/ItemGroup/Select?node=root"/>
+        }
+        return null;
+    }
 
     return (
       <React.Fragment >
@@ -340,6 +359,7 @@ export default class Warehouse extends Component {
             <Button label="ინვ.გაცემა" icon="pi pi-arrow-up" className="p-button-danger" onClick={()=>this.setState(State('inventor.outcome.dialog',true,this.state))}/>
             <Button label="მოძრაობა A-B"  className="ui-button-raised arrow-icon" onClick={()=>this.setState(State('inventor.transfer.dialog',true,this.state))}/>
             <Button label="ძებნა" icon="pi pi-search"  onClick={()=>this.setState(State('inventor.search.dialog',true,this.state))}/>
+            <i className="fa fa-cart-plus fa-lg " onClick={()=>this.setState(State('cart.dialog',true,this.state))} style={{fontSize: '32px', marginRight: '12', color: '#007ad9', cursor:'pointer'}}/><sup>{_.size(this.state.cart['tab'+this.state.tab])}</sup>
           </div>
         </div>
         <div
@@ -361,7 +381,8 @@ export default class Warehouse extends Component {
             animateRows={true}
             debug={false}
             gridOptions={this.state.grid.gridOptions}
-            onGridReady={this.onGridReady}
+            onGridReady={this.onReady}
+            onCellClicked={this.onClickedCell}
           />
         </div>
         <Modal header="ინვენტარის მიღება" visible={this.state.inventor.income.detail.dialog} onHide={()=>this.setState(State('inventor.income.detail.dialog',false,this.state))} style={{width:'1200px'}}>
@@ -407,7 +428,10 @@ export default class Warehouse extends Component {
             </div>
             <div className="fullwidth p-col-2">
               <label>საქონლის ჯგუფი</label>
-              <InputText type="text" />
+              <div className="p-inputgroup">
+                <InputText placeholder="საქონლის ჯგუფი"/>
+                <Button icon="pi pi-align-justify" className="p-button-info" style={{left: '-10px'}} onClick={()=>this.setState(State('inventor.itemGroup.dialog',true,this.state))}/>
+              </div>
             </div>
             <div className="fullwidth p-col-2">
               <label>ინვენტარის ტიპი</label>
@@ -422,7 +446,7 @@ export default class Warehouse extends Component {
             </div>
           </div>
         </Modal>
-        <Modal header="ინვენტარის მიღება" visible={this.state.inventor.income.dialog} onHide={()=>this.setState({inventor:{income: {...this.state.inventor.income, dialog:false}}})} style={{width:'1200px'}} >
+        <Modal header="ინვენტარის მიღება" visible={this.state.inventor.income.dialog} onHide={()=>this.setState(State('inventor.income.dialog',false,this.state))} style={{width:'1200px'}} >
           <div className="incomeModal p-grid">
             <div className="fullwidth p-col-3">
               <label>მიღების თარიღი</label>
@@ -591,8 +615,10 @@ export default class Warehouse extends Component {
               <InputText type="text" placeholder="დასახელება" />
             </div>
           </div>
+          <hr/>
+          <Cart data={this.state.cart['tab'+this.state.tab]}/>
         </Modal>
-        <Modal header="ინვენტარის მოძრაობა A-B" visible={this.state.inventor.transfer.dialog} onHide={()=>this.setState(State('inventor.transfer.dialog',false,this.state))} style={{width:'1200px'}}>
+        <Modal header="ინვენტარის მოძრაობა სექციებს შორის" visible={this.state.inventor.transfer.dialog} onHide={()=>this.setState(State('inventor.transfer.dialog',false,this.state))} style={{width:'1200px'}}>
           <div className="incomeModal p-grid">
             <div className="fullwidth p-col-2">
               <label>თარიღი</label>
@@ -619,6 +645,16 @@ export default class Warehouse extends Component {
               <InputText type="text" placeholder="დასახელება" />
             </div>
           </div>
+          <hr/>
+          <Cart data={this.state.cart['tab'+this.state.tab]}/>
+        </Modal>
+        <Modal header="კალათა" visible={this.state.cart.dialog} onHide={()=>this.setState(State('cart.dialog',false,this.state))} style={{width:'800px'}} >
+            <Cart data={this.state.cart['tab'+this.state.tab]}/>
+        </Modal>
+        <Modal header="საქონლის ჯგუფი" visible={this.state.inventor.itemGroup.dialog} onHide={()=>this.setState(State('inventor.itemGroup.dialog',false,this.state))} style={{width:'800px'}} >
+          {
+            renderTree(this.state.inventor.itemGroup.dialog)
+          }
         </Modal>
       </React.Fragment>
     );
@@ -634,24 +670,55 @@ export default class Warehouse extends Component {
   };
   itemTemplate=(event)=>{
     const {generatedName}=event;
-    console.log(generatedName)
+    console.log(generatedName);
     return (
       <div className="p-clearfix">
         <div style={{ fontSize: '16px', float: 'right', margin: '10px 10px 0 0' }}>{generatedName}</div>
       </div>
     );
   }
-  getStockData=()=>{
+  getStockData = () => {
     http.get("/api/secured/stock/Select")
       .then(result => {
-        if(result.status === 200){
+        if (result.status === 200) {
           this.setState(State('inventor.stock', result.data, this.state));
         }
       })
       .catch()
-  }
+  };
+  onClickedCell = (params) => {
+    if(params.colDef.field==="cartId"){
+        if(!params.data.inCart){
+          putInCart({"globalKey":this.state.tab, "key": params.data.id,"value":JSON.stringify(params.data)})
+            .then(result => {
+              params.data.inCart=true;
+              this.gridApi.refreshCells({ force: true });
+              this.getCartItems()
+            })
+            .then()
 
-  loadConstructor() {
+        }else {
+          removeCartItem({"globalKey":this.state.tab, "key": params.data.id,"value":JSON.stringify(params.data)})
+            .then(result => {
+              params.data.inCart=false;
+              this.gridApi.refreshCells({ force: true });
+              this.getCartItems()
+
+            })
+            .then()
+
+        }
+    }
+  };
+  loadConstructor = async () => {
+    await this.getCartItems();
     this.getStockData();
+  };
+  getCartItems= async ()=>{
+    await getCartItems({'globalKey':this.state.tab})
+      .then(result => {
+        (_.isUndefined(result)) ? this.setState(State('cart.tab' + this.state.tab, [], this.state)) : this.setState(State('cart.tab' + this.state.tab, result, this.state));
+      })
+      .catch()
   }
 }
