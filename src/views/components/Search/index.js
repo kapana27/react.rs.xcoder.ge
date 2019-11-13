@@ -54,8 +54,8 @@ export const Search = (props) => {
           <div className="p-col-3" style={{maxWidth:'320px'}}>
             <label>თარიღი: დან-მდე:</label>
             <div className="flex-box">
-              <InputText type="text" />
-              <InputText type="text" />
+              <InputText type="text"/>
+              <InputText type="text"/>
             </div>
           </div>
           <div className="p-col-3" style={{maxWidth:'280px'}}>
