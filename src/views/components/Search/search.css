@@ -1,0 +1,21 @@
+.search {
+  background: #dedede;
+  padding: 20px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  display: flex; }
+  .search label {
+    margin-bottom: 3px; }
+  .search button {
+    font-family: lbet-mt,sans-serif !important;
+    font-size: 12px !important; }
+  .search .p-col-3 {
+    max-width: 200px;
+    padding: 0.2em 0.5em; }
+  .search .flex-box {
+    display: flex; }
+    .search .flex-box input {
+      flex: 1 1 auto;
+      width: 1%; }
+
+/*# sourceMappingURL=search.css.map */
