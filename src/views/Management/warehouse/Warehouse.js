@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import http from  '../../../api/http';
 import {Config} from "../../../config/Config";
-import {CardCellRenderer, Modal, Calendar, AutoComplete,FileUploader} from '../../components'
+import {CardCellRenderer, Modal, Calendar, AutoComplete, FileUploader, Search} from '../../components'
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
@@ -12,9 +12,6 @@ import {InputText} from 'primereact/inputtext';
 import {InputTextarea} from 'primereact/inputtextarea';
 import {Dropdown} from 'primereact/dropdown';
 import {TabView,TabPanel} from 'primereact/tabview';
-
-
-
 import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import './warehouse.css';
@@ -343,10 +340,10 @@ export default class Warehouse extends Component {
             <Button label="ძებნა" icon="pi pi-search"  onClick={()=>this.setState(State('inventor.search.dialog',true,this.state))}/>
           </div>
         </div>
-        <div
-          id="myGrid"
-          className="ag-theme-balham"
-        >
+
+        <Search/>
+
+        <div id="myGrid"  className="ag-theme-balham">
           <AgGridReact
             pivotPanelShow={true}
             floatingFilter={true}
@@ -365,6 +362,7 @@ export default class Warehouse extends Component {
             onGridReady={this.onGridReady}
           />
         </div>
+
         <Modal header="ინვენტარის მიღება" visible={this.state.inventor.income.detail.dialog} onHide={()=>this.setState(State('inventor.income.detail.dialog',false,this.state))} style={{width:'1200px'}}>
           <div className="incomeModal p-grid">
             <div className="fullwidth p-col-2">
@@ -423,6 +421,7 @@ export default class Warehouse extends Component {
             </div>
           </div>
         </Modal>
+
         <Modal header="ინვენტარის მიღება" visible={this.state.inventor.income.dialog} onHide={()=>this.setState({inventor:{income: {...this.state.inventor.income, dialog:false}}})} style={{width:'1200px'}} >
           <div className="incomeModal p-grid">
             <div className="fullwidth p-col-3">
@@ -563,7 +562,6 @@ export default class Warehouse extends Component {
               </tbody>
             </table>
           </div>
-
         </Modal>
 
 
@@ -593,7 +591,7 @@ export default class Warehouse extends Component {
                 </div>
                 <div className="fullwidth p-col-4">
                   <label>კომენტარი</label>
-                  <InputTextarea rows={4} placeholder="შენიშვნა" style={{width:'100%'}} />
+                  <InputTextarea rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
                 </div>
               </div>
             </TabPanel>
@@ -659,13 +657,14 @@ export default class Warehouse extends Component {
             </div>
             <div className="fullwidth p-col-4">
               <label>კომენტარი</label>
-              <InputTextarea rows={4} placeholder="შენიშვნა" style={{width:'100%'}} />
+              <InputTextarea rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
             </div>
           </div>
         </Modal>
       </React.Fragment>
     );
   }
+
   suggestSupplier = (event) => {
     console.log(event)
     this.setState(State('inventor.supplierSuggestions', [], this.state));
@@ -675,6 +674,7 @@ export default class Warehouse extends Component {
       }
     })
   };
+
   itemTemplate=(event)=>{
     const {generatedName}=event;
     console.log(generatedName)
@@ -683,7 +683,8 @@ export default class Warehouse extends Component {
         <div style={{ fontSize: '16px', float: 'right', margin: '10px 10px 0 0' }}>{generatedName}</div>
       </div>
     );
-  }
+  };
+
   getStockData=()=>{
     http.get("/api/secured/stock/Select")
       .then(result => {
@@ -692,7 +693,7 @@ export default class Warehouse extends Component {
         }
       })
       .catch()
-  }
+  };
 
   loadConstructor() {
     this.getStockData();
