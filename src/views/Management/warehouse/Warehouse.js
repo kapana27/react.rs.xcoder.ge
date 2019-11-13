@@ -210,7 +210,8 @@ export default class Warehouse extends Component {
           date: new Date(),
           supplier:"",
           detail:{
-            dialog: false
+            dialog: false,
+            itemGroup: { name:''}
           }
         },
         outcome:{
@@ -226,9 +227,13 @@ export default class Warehouse extends Component {
         supplierSuggestions:[],
         barCodes:[],
         measureUnitList:[],
+        itemGroup:{
+          dialog: false,
+          data:{}
+        },
         itemTypes:[],
         itemStatus:[],
-        stock:[]
+        stock:[],
       },
       tab: 11,
       cart:{
@@ -324,6 +329,23 @@ export default class Warehouse extends Component {
         this.setState(State('inventor.itemStatus', result.data, this.state));
       }
     });
+    http.get("/api/secured/ItemGroup/Select?node=root").then(result => {
+      let data = {
+        root: _.map(result.data, (value, index) => {
+          value['key'] = index.toString();
+          if (!_.isUndefined(value.children) && _.size(value.children) > 0) {
+            value.children = _.map(value.children, (value1, index1) => {
+              value1['key'] = (index + "-" + index1);
+              return value1;
+            });
+            return value;
+          } else {
+            return value;
+          }
+        })
+      };
+      this.setState(State("inventor.itemGroup.data", data, this.state),()=>console.log(this.state));
+    });
   };
   onReady = (params) => {
       this.getCartItems().then(()=>{
@@ -331,12 +353,7 @@ export default class Warehouse extends Component {
       })
   };
   render() {
-    function renderTree(status) {
-        if(status){
-          return <TreeTableGroup column={[{field:'name',title:'Name'}]} URL="/api/secured/ItemGroup/Select?node=root"/>
-        }
-        return null;
-    }
+
 
     return (
       <React.Fragment >
@@ -424,7 +441,7 @@ export default class Warehouse extends Component {
             <div className="fullwidth p-col-2">
               <label>საქონლის ჯგუფი</label>
               <div className="p-inputgroup">
-                <InputText placeholder="საქონლის ჯგუფი"/>
+                <InputText placeholder="საქონლის ჯგუფი" value={this.state.inventor.income.detail.itemGroup.name} disabled/>
                 <Button icon="pi pi-align-justify" className="p-button-info" style={{left: '-10px'}} onClick={()=>this.setState(State('inventor.itemGroup.dialog',true,this.state))}/>
               </div>
             </div>
@@ -682,7 +699,11 @@ export default class Warehouse extends Component {
         <Modal header="კალათა" visible={this.state.cart.dialog} onHide={()=>this.setState(State('cart.dialog',false,this.state))} style={{width:'800px'}} >
             <Cart data={this.state.cart['tab'+this.state.tab]}/>
         </Modal>
-
+        <Modal className="itemGroup" header="საქონლის ჯგუფი" visible={this.state.inventor.itemGroup.dialog} onHide={()=>this.setState(State('inventor.itemGroup.dialog',false,this.state))} style={{width:'800px', maxHeight:'500px'}} >
+          {
+            (this.state.inventor.itemGroup.dialog)? <TreeTableGroup column={[{field:'name',title:'Name'}]} data={this.state.inventor.itemGroup.data} onSelectItemGroup={(e)=>this.setState(State("inventor.income.detail.itemGroup",e,this.state),()=>this.setState(State("inventor.itemGroup.dialog",false,this.state),()=>console.log(this.state)))}/>:''
+          }
+        </Modal>
       </React.Fragment>
     );
   }

@@ -13,7 +13,9 @@ export const Modal = (props) => {
 
   return (
     <Dialog header={props.header} visible={props.visible} style={props.style} footer={footer} onHide={props.onHide}  maximizable={true} draggable={true}>
-      {props.children}
+      <div className={props.className}>
+        {props.children}
+      </div>
     </Dialog>
   )
 };

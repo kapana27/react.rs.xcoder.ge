@@ -5,30 +5,12 @@ import _ from  'lodash';
 import {Column} from "primereact/column";
 import http from "../../../api/http";
 
-
 export const TreeTableGroup = (props) => {
-  let data = [];
-  if(!_.isEmpty(props.URL)){
-      http.get(props.URL).then((result) => {
-        data = {
-          root: _.map(result.data, (value, index) => {
-            value['key'] = index;
-            if (!_.isUndefined(value.children) && _.size(value.children) > 0) {
-              _.map(value.children, (value1, index1) => {
-                value1['key'] = (index+"-"+index1 );
-                return value1;
-              });
-            }
-            return value;
-          })
-        };
-        console.log(JSON.stringify(data))
-      }).catch()
-  }
 
+  console.log(props)
   return (
     <div>
-      <TreeTable value={data}>
+      <TreeTable value={props.data.root} selectionMode="single" onSelect={(e) => props.onSelectItemGroup(e.node.data)} >
         {
           _.map(props.column,(value,index)=>{
             return <Column key={index} field={value.field} header={value.title} expander/>
@@ -40,9 +22,11 @@ export const TreeTableGroup = (props) => {
 };
 TreeTableGroup.propTypes = {
   column:PropTypes.array,
-  URL: PropTypes.string
+  data:PropTypes.any,
+  onSelectItemGroup: PropTypes.func
 };
 TreeTableGroup.defaultProps = {
   column:[],
-  URL:''
+  data:null
 };
+
