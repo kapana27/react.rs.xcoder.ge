@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import http from  '../../../api/http';
 import {Config} from "../../../config/Config";
-import {CardCellRenderer, Modal, Calendar, AutoComplete, FileUploader, Cart, TreeTableGroup} from '../../components'
+import {CardCellRenderer, Modal, Calendar, AutoComplete, FileUploader, Cart, TreeTableGroup, Search} from '../../components'
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
@@ -11,6 +11,7 @@ import 'primereact/resources/primereact.min.css';
 import {InputText} from 'primereact/inputtext';
 import {InputTextarea} from 'primereact/inputtextarea';
 import {Dropdown} from 'primereact/dropdown';
+import {TabView,TabPanel} from 'primereact/tabview';
 import _ from 'lodash';
 
 
@@ -18,15 +19,14 @@ import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import './warehouse.css';
 import 'primeflex/primeflex.css';
-import {putInCart, State, getCartItems, clearCartItem, removeCartItem} from '../../../utils';
-import {Col} from "reactstrap";
+import {State} from '../../../utils';
 export default class Warehouse extends Component {
   constructor(props){
     super(props);
-    this.state = {
-      grid: {
+    this.state={
+      grid:{
         components: {
-          loadingCellRenderer: function (params) {
+          loadingCellRenderer: function(params) {
             if (params.value !== undefined) {
               return params.value;
             } else {
@@ -52,7 +52,6 @@ export default class Warehouse extends Component {
             sortable: false,
             suppressMenu: false,
 
-
           },
           {
             headerName: 'თარიღი',
@@ -75,7 +74,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: {defaultOption: 'startsWith'}
+            filterParams: { defaultOption: 'startsWith' }
           },
           {
             headerName: 'მოდელი',
@@ -83,7 +82,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: {defaultOption: 'startsWith'}
+            filterParams: { defaultOption: 'startsWith' }
           },
           {
             headerName: 'ფასი',
@@ -111,7 +110,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: {defaultOption: 'startsWith'}
+            filterParams: { defaultOption: 'startsWith' }
           },
           {
             headerName: 'შტრიხკოდი',
@@ -119,7 +118,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: {defaultOption: 'startsWith'}
+            filterParams: { defaultOption: 'startsWith' }
           },
           {
             headerName: 'ქარხ.#',
@@ -127,7 +126,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: {defaultOption: 'startsWith'}
+            filterParams: { defaultOption: 'startsWith' }
           },
           {
             headerName: 'ჯგუფი',
@@ -135,7 +134,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: {defaultOption: 'startsWith'}
+            filterParams: { defaultOption: 'startsWith' }
           },
           {
             headerName: 'ტიპი',
@@ -143,7 +142,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: {defaultOption: 'startsWith'}
+            filterParams: { defaultOption: 'startsWith' }
           },
           {
             headerName: 'სტატუსი',
@@ -151,7 +150,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: {defaultOption: 'startsWith'}
+            filterParams: { defaultOption: 'startsWith' }
           },
           {
             headerName: 'მიმწოდებელი',
@@ -159,7 +158,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: {defaultOption: 'startsWith'}
+            filterParams: { defaultOption: 'startsWith' }
           },
           {
             headerName: 'ზედნადები',
@@ -167,7 +166,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: {defaultOption: 'startsWith'}
+            filterParams: { defaultOption: 'startsWith' }
           },
           {
             headerName: 'ზედდებული',
@@ -175,7 +174,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: {defaultOption: 'startsWith'}
+            filterParams: { defaultOption: 'startsWith' }
           },
           {
             headerName: 'ინსპ',
@@ -183,7 +182,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: {defaultOption: 'startsWith'}
+            filterParams: { defaultOption: 'startsWith' }
           }
         ],
         defaultColDef: {
@@ -191,70 +190,61 @@ export default class Warehouse extends Component {
           resizable: true
         },
         rowSelection: 'single',
-        rowModelType: 'serverSide',
-        paginationPageSize: 100,
-        cacheOverflowSize: 2,
+        rowModelType:'serverSide',
+        paginationPageSize:100,
+        cacheOverflowSize:2,
         maxConcurrentDatasourceRequests: 2,
         infiniteInitialRowCount: 1,
         maxBlocksInCache: 2,
 
         gridOptions: {
           context: {
-            thisComponent: this,
+            thisComponent : this,
           },
           rowSelection: 'single',
           getSelectedRows: 'getSelectedRows',
         }
-      },
-      inventor: {
-        income: {
+       },
+      inventor:{
+        income:{
           dialog: false,
           date: new Date(),
-          supplier: "",
-          detail: {
+          supplier:"",
+          detail:{
             dialog: false
           }
         },
-        outcome: {
+        outcome:{
           dialog: false
         },
-        transfer: {
+        transfer:{
           date: new Date(),
           dialog: false
         },
-        search: {
+        search:{
           dialog: false
         },
-        supplierSuggestions: [],
-        barCodes: [],
-        measureUnitList: [],
-        itemTypes: [],
-        itemStatus: [],
-        stock: [],
-        itemGroup:{
-          dialog: false,
-          data:[]
-        }
-      },
-      tab: 11,
-      cart:{
-        tab11:[],
-        tab12:[],
-        dialog:false
+        supplierSuggestions:[],
+        barCodes:[],
+        measureUnitList:[],
+        itemTypes:[],
+        itemStatus:[],
+        stock:[]
       }
-    };
+    }
     this.loadConstructor();
+
   }
   componentDidMount() {
     console.log("did")
   }
-  onGridReady=(params, filter= false)=>{
+  onGridReady(params, filter= false) {
     this.eventData = params;
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
     const filterData = this.filter;
-    const selectedTabId = this.state.tab;
-    const cartItems = _.map(this.state.cart["tab"+this.state.tab],(value,index)=>index);
+    const selectedTabId = this.selectedTabId;
+    const cartItems = this.cartItems;
     const datasource = {
       getRows(params) {
         const parameters = [];
@@ -279,7 +269,7 @@ export default class Warehouse extends Component {
           }
         }
 
-        http.get(Config.management.warehouse.get.items+"?stockId="+selectedTabId+"&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
+        http.get(Config.management.warehouse.get.items+"?stockId=11&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
           .then(response => {
             params.successCallback(response['data'].map((v, k) => {
               v['rowId'] = (params['request']['startRow'] + 1 + k );
@@ -289,7 +279,7 @@ export default class Warehouse extends Component {
               v['count'] = 1;
               v['cartId'] = v['id'];
               v['barcode'] = (v['spend'] === 1) ? '' : (v['barcode'].toString() === '0') ? '' : v['barcode'];
-              v['inCart'] = (cartItems.indexOf(v['id'].toString()) > -1);
+              //v['inCart'] = (cartItems.indexOf(v['id'].toString()) > -1);
               return v;
             }), response['totalCount']);
           })
@@ -588,62 +578,98 @@ export default class Warehouse extends Component {
           </div>
 
         </Modal>
-        <Modal header="ინვენტარის გაცემა" visible={this.state.inventor.outcome.dialog} onHide={()=>this.setState(State('inventor.outcome.dialog',false,this.state))} style={{width:'1200px'}}>
-          <div className="incomeModal p-grid">
-            <div className="fullwidth p-col-2">
-              <label>დასახელება</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>მარკა</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>მოდელი</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>რაოდენობა</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>ერთეულის ფასი</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>სულ ფასი:</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-          </div>
-          <hr/>
+
+        <Modal header="ინვენტარის გაცემა" visible={this.state.inventor.outcome.dialog} onHide={()=>this.setState(State('inventor.outcome.dialog',false,this.state))} style={{width:'900px'}}>
+          <TabView renderActiveOnly={false}>
+            <TabPanel header="შენობა">
+              <div className="incomeModal p-grid">
+                <div className="fullwidth p-col-8">
+                  <div className="p-grid">
+                    <div className="fullwidth p-col-6">
+                      <label>თარიღი</label>
+                      <InputText type="text" placeholder="თარიღი" />
+                    </div>
+                    <div className="fullwidth p-col-6">
+                      <label>ქონების მართვა</label>
+                      <InputText type="text" placeholder="ქონების მართვა" />
+                    </div>
+                    <div className="fullwidth p-col-6">
+                      <label>მომთხოვნი პიროვნება</label>
+                      <InputText type="text" placeholder="მომთხოვნი პიროვნება" />
+                    </div>
+                    <div className="fullwidth p-col-6">
+                      <label>ტრანსპორტირების პასხ. პირი</label>
+                      <InputText type="text" placeholder="ტრანსპორტირების პასხ. პირი" />
+                    </div>
+                  </div>
+                </div>
+                <div className="fullwidth p-col-4">
+                  <label>კომენტარი</label>
+                  <InputTextarea rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
+                </div>
+              </div>
+            </TabPanel>
+            <TabPanel header="პიროვნება">
+              <div className="incomeModal p-grid">
+                <div className="fullwidth p-col-4">
+                  <label>თარიღი</label>
+                  <InputText type="text" placeholder="თარიღი" />
+                </div>
+                <div className="fullwidth p-col-4">
+                  <label>პიროვნება</label>
+                  <InputText type="text" placeholder="პიროვნება" />
+                </div>
+                <div className="fullwidth p-col-4">
+                  <label>ქონების მართვა</label>
+                  <InputText type="text" placeholder="ქონების მართვა" />
+                </div>
+                <div className="fullwidth p-col-4">
+                  <label>სექცია</label>
+                  <Dropdown optionLabel="name" placeholder="სექცია" style={{width:'100%'}} />
+                </div>
+                <div className="fullwidth p-col-4">
+                  <label>ტრანსპორტირების პასხ. პირი</label>
+                  <InputText type="text" placeholder="ტრანსპორტირების პასხ. პირი" />
+                </div>
+                <div className="fullwidth p-col-4">
+                  <label>მომთხოვნი პიროვნება</label>
+                  <InputText type="text" placeholder="მომთხოვნი პიროვნება" />
+                </div>
+                <div className="fullwidth p-col-12">
+                  <label>კომენტარი</label>
+                  <InputTextarea rows={1} placeholder="შენიშვნა" style={{width:'100%'}} />
+                </div>
+              </div>
+            </TabPanel>
+          </TabView>
           <Cart data={this.state.cart['tab'+this.state.tab]}/>
         </Modal>
         <Modal header="ინვენტარის მოძრაობა სექციებს შორის" visible={this.state.inventor.transfer.dialog} onHide={()=>this.setState(State('inventor.transfer.dialog',false,this.state))} style={{width:'1200px'}}>
           <div className="incomeModal p-grid">
-            <div className="fullwidth p-col-2">
-              <label>თარიღი</label>
-              <Calendar date={this.state.inventor.transfer.date} onDateChange={props=>this.setState(State('inventor.transfer.date',props,this.state)) } />
+            <div className="fullwidth p-col-8">
+              <div className="p-grid">
+                <div className="fullwidth p-col-6">
+                  <label>თარიღი</label>
+                  <InputText type="text" placeholder="თარიღი" />
+                </div>
+                <div className="fullwidth p-col-6">
+                  <label>სექცია</label>
+                  <Dropdown optionLabel="name" placeholder="სექცია" style={{width:'100%'}} />
+                </div>
+                <div className="fullwidth p-col-6">
+                  <label>ქონების მართვა</label>
+                  <Dropdown optionLabel="name" placeholder="სექცია" style={{width:'100%'}} />
+                </div>
+                <div className="fullwidth p-col-6">
+                  <label>ტრანსპორტირების პასხ. პირი</label>
+                  <InputText type="text" placeholder="ტრანსპორტირების პასხ. პირი" />
+                </div>
+              </div>
             </div>
-            <div className="fullwidth p-col-2">
-              <label>მარკა</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>მოდელი</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>რაოდენობა</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>ერთეულის ფასი</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>სულ ფასი:</label>
-              <InputText type="text" placeholder="დასახელება" />
-            </div>
+            <div className="fullwidth p-col-4">
+              <label>კომენტარი</label>
+              <InputTextarea rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
+           </div>
           </div>
           <hr/>
           <Cart data={this.state.cart['tab'+this.state.tab]}/>
@@ -680,7 +706,7 @@ export default class Warehouse extends Component {
   getStockData = () => {
     http.get("/api/secured/stock/Select")
       .then(result => {
-        if (result.status === 200) {
+        if(result.status === 200){
           this.setState(State('inventor.stock', result.data, this.state));
         }
       })
