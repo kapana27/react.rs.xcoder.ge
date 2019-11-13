@@ -14,7 +14,6 @@ export {
   AutoComplete,
   FileUploader,
   Search,
-  FileUploader,
   Cart,
   TreeTableGroup
 }

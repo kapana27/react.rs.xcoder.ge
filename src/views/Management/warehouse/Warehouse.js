@@ -19,7 +19,7 @@ import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import './warehouse.css';
 import 'primeflex/primeflex.css';
-import {State} from '../../../utils';
+import {State,putInCart,clearCartItem,removeCartItem,getCartItems} from '../../../utils';
 export default class Warehouse extends Component {
   constructor(props){
     super(props);
@@ -196,7 +196,6 @@ export default class Warehouse extends Component {
         maxConcurrentDatasourceRequests: 2,
         infiniteInitialRowCount: 1,
         maxBlocksInCache: 2,
-
         gridOptions: {
           context: {
             thisComponent : this,
@@ -230,6 +229,12 @@ export default class Warehouse extends Component {
         itemTypes:[],
         itemStatus:[],
         stock:[]
+      },
+      tab: 11,
+      cart:{
+        tab11:[],
+        tab12:[],
+        dialog:false
       }
     }
     this.loadConstructor();
@@ -677,11 +682,7 @@ export default class Warehouse extends Component {
         <Modal header="კალათა" visible={this.state.cart.dialog} onHide={()=>this.setState(State('cart.dialog',false,this.state))} style={{width:'800px'}} >
             <Cart data={this.state.cart['tab'+this.state.tab]}/>
         </Modal>
-        <Modal header="საქონლის ჯგუფი" visible={this.state.inventor.itemGroup.dialog} onHide={()=>this.setState(State('inventor.itemGroup.dialog',false,this.state))} style={{width:'800px'}} >
-          {
-            renderTree(this.state.inventor.itemGroup.dialog)
-          }
-        </Modal>
+
       </React.Fragment>
     );
   }
