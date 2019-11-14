@@ -13,20 +13,20 @@ import {InputTextarea} from 'primereact/inputtextarea';
 import {Dropdown} from 'primereact/dropdown';
 import {TabView,TabPanel} from 'primereact/tabview';
 import _ from 'lodash';
-
-
 import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import './warehouse.css';
 import 'primeflex/primeflex.css';
 import {State,putInCart,clearCartItem,removeCartItem,getCartItems} from '../../../utils';
 export default class Warehouse extends Component {
+
   constructor(props){
+
     super(props);
-    this.state={
-      grid:{
+    this.state = {
+      grid: {
         components: {
-          loadingCellRenderer: function(params) {
+          loadingCellRenderer: function (params) {
             if (params.value !== undefined) {
               return params.value;
             } else {
@@ -74,7 +74,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'მოდელი',
@@ -82,7 +82,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'ფასი',
@@ -110,7 +110,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'შტრიხკოდი',
@@ -118,7 +118,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'ქარხ.#',
@@ -126,7 +126,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'ჯგუფი',
@@ -134,7 +134,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'ტიპი',
@@ -142,7 +142,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'სტატუსი',
@@ -150,7 +150,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'მიმწოდებელი',
@@ -158,7 +158,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'ზედნადები',
@@ -166,7 +166,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'ზედდებული',
@@ -174,7 +174,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           },
           {
             headerName: 'ინსპ',
@@ -182,7 +182,7 @@ export default class Warehouse extends Component {
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
+            filterParams: {defaultOption: 'startsWith'}
           }
         ],
         defaultColDef: {
@@ -190,58 +190,72 @@ export default class Warehouse extends Component {
           resizable: true
         },
         rowSelection: 'single',
-        rowModelType:'serverSide',
-        paginationPageSize:100,
-        cacheOverflowSize:2,
+        rowModelType: 'serverSide',
+        paginationPageSize: 100,
+        cacheOverflowSize: 2,
         maxConcurrentDatasourceRequests: 2,
         infiniteInitialRowCount: 1,
         maxBlocksInCache: 2,
         gridOptions: {
           context: {
-            thisComponent : this,
+            thisComponent: this,
           },
           rowSelection: 'single',
           getSelectedRows: 'getSelectedRows',
         }
-       },
-      inventor:{
-        income:{
+      },
+      inventor: {
+        income: {
           dialog: false,
           date: new Date(),
-          supplier:"",
-          detail:{
+          supplier: "",
+          detail: {
             dialog: false,
-            itemGroup: { name:''}
+            itemGroup: {name: '', id: null},
+            item: {name: '', id: null},
+            maker: {name: '', id: null},
+            measureUnit: {name: '', id: null},
+            type: {name: '', id: null},
+            status: {name: '', id: null},
+            count: '',
+            price: '',
+            barcodeType: {name: '', id: null, key: null},
+            barcode: '',
+            factoryNumber:'',
+            files:[]
           }
         },
-        outcome:{
+        outcome: {
           dialog: false
         },
-        transfer:{
+        transfer: {
           date: new Date(),
           dialog: false
         },
-        search:{
+        search: {
           dialog: false
         },
-        supplierSuggestions:[],
-        barCodes:[],
-        measureUnitList:[],
-        itemGroup:{
+        supplierSuggestions: [],
+        barCodes: [],
+        measureUnitList: [],
+        itemGroup: {
           dialog: false,
-          data:{}
+          data: {}
         },
-        itemTypes:[],
-        itemStatus:[],
-        stock:[],
+        itemTypes: [],
+        itemStatus: [],
+        stock: [],
+        itemSuggestions: [],
+        makerSuggestions: [],
+        modelSuggestions: []
       },
       tab: 11,
-      cart:{
-        tab11:[],
-        tab12:[],
-        dialog:false
+      cart: {
+        tab11: [],
+        tab12: [],
+        dialog: false
       }
-    }
+    };
     this.loadConstructor();
 
   }
@@ -311,7 +325,7 @@ export default class Warehouse extends Component {
   loadInventorData = () => {
     http.get("/api/secured/List/BarCode/Select").then(result => {
       if (result.status === 200) {
-        this.setState(State('inventor.barCodes', result.data, this.state));
+        this.setState(State('inventor.barCodes', _.map(result.data,(value,index)=>{  return { key: index, id:value.id, name: value.name}  }), this.state));
       }
     });
     http.get("/api/secured/MeasureUnit/List").then(result => {
@@ -344,7 +358,7 @@ export default class Warehouse extends Component {
           }
         })
       };
-      this.setState(State("inventor.itemGroup.data", data, this.state),()=>console.log(this.state));
+      this.setState(State("inventor.itemGroup.data", data, this.state));
     });
   };
   onReady = (params) => {
@@ -353,8 +367,6 @@ export default class Warehouse extends Component {
       })
   };
   render() {
-
-
     return (
       <React.Fragment >
         <div className="actionButton">
@@ -401,42 +413,65 @@ export default class Warehouse extends Component {
           <div className="incomeModal p-grid">
             <div className="fullwidth p-col-2">
               <label>დასახელება</label>
-              <InputText type="text" placeholder="დასახელება" />
+              <AutoComplete
+                placeholder="დასახელება"
+                field="name"
+                suggestions={this.state.inventor.itemSuggestions}
+                onComplete={this.suggestItem}
+                onSelect={(e)=>this.setState(State('inventor.income.detail.item',e,this.state))}
+                onChange={(e) => this.setState(State('inventor.income.detail.item',e,this.state))}
+                value={this.state.inventor.income.detail.item}
+              />
             </div>
             <div className="fullwidth p-col-2">
               <label>მარკა</label>
-              <InputText type="text" placeholder="დასახელება" />
+              <AutoComplete
+                placeholder="მარკა"
+                field="name"
+                suggestions={this.state.inventor.makerSuggestions}
+                onComplete={this.suggestMaker}
+                onSelect={(e)=>this.setState(State('inventor.income.detail.maker',e,this.state))}
+                onChange={(e) => this.setState(State('inventor.income.detail.maker',e,this.state))}
+                value={this.state.inventor.income.detail.maker}
+              />
             </div>
             <div className="fullwidth p-col-2">
               <label>მოდელი</label>
-              <InputText type="text" placeholder="დასახელება" />
+              <AutoComplete
+                placeholder="მოდელი"
+                field="name"
+                disabled={_.isNull(this.state.inventor.income.detail.maker.id) && _.isEmpty(this.state.inventor.income.detail.maker.name) }
+                suggestions={this.state.inventor.modelSuggestions}
+                onComplete={this.suggestModel}
+                onSelect={(e)=>this.setState(State('inventor.income.detail.model',e,this.state))}
+                onChange={(e) => this.setState(State('inventor.income.detail.model',e,this.state))}
+                value={this.state.inventor.income.detail.model}
+              />
             </div>
             <div className="fullwidth p-col-2">
               <label>რაოდენობა</label>
-              <InputText type="text" placeholder="დასახელება" />
+              <InputText type="text" placeholder="დასახელება" value={this.state.inventor.income.detail.count} onChange={(e)=>this.setState(State("inventor.income.detail.count",e.target.value,this.state))}/>
             </div>
             <div className="fullwidth p-col-2">
               <label>ერთეულის ფასი</label>
-              <InputText type="text" placeholder="დასახელება" />
+              <InputText type="text" placeholder="დასახელება" value={this.state.inventor.income.detail.price} onChange={(e)=>this.setState(State("inventor.income.detail.price",e.target.value,this.state))}/>
             </div>
             <div className="fullwidth p-col-2">
               <label>სულ ფასი:</label>
-              <InputText type="text" placeholder="დასახელება" />
+              <div style={{lineHeight: '30px'}}>{Math.round(this.state.inventor.income.detail.price*this.state.inventor.income.detail.count)}</div>
             </div>
-
-
             <div className="fullwidth barcode p-col-2">
               <label>შტრიხკოდი</label>
-              <Dropdown optionLabel="name" />
-              <InputText type="text" placeholder="შტრ. კოდი" style={{textIndent:'0px',width:'78px',fontSize:'12px'}} />
+              <Dropdown value={this.state.inventor.income.detail.barcodeType} options={this.state.inventor.barCodes} onChange={(e) => this.setState(State( "inventor.income.detail.barcodeType",{key: e.value.key, id: e.value.id, name: e.value.name},this.state))} placeholder="ბარკოდი" optionLabel="name"/>
+              <InputText type="text" placeholder="შტრ. კოდი" style={{textIndent:'0px',width:'78px',fontSize:'12px'}} value={this.state.inventor.income.detail.barcode} onChange={(e)=>this.setState(State("inventor.income.detail.barcode",e.target.value,this.state))}/>
             </div>
             <div className="fullwidth p-col-2">
               <label>ქარხნული ნომერი:</label>
-              <InputText type="text" />
+              <InputText type="text" value={this.state.inventor.income.detail.factoryNumber} onChange={(e)=>this.setState(State("inventor.income.detail.factoryNumber",e.target.value,this.state))}/>
             </div>
             <div className="fullwidth p-col-2">
               <label>განზომილების ერთეული</label>
-              <Dropdown optionLabel="name" />
+              <Dropdown value={this.state.inventor.income.detail.measureUnit} options={this.state.inventor.measureUnitList} onChange={(e) => this.setState(State( "inventor.income.detail.measureUnit",{ id: e.value.id, name: e.value.name},this.state))} placeholder="განზომილების ერთეული" optionLabel="name"/>
             </div>
             <div className="fullwidth p-col-2">
               <label>საქონლის ჯგუფი</label>
@@ -447,14 +482,14 @@ export default class Warehouse extends Component {
             </div>
             <div className="fullwidth p-col-2">
               <label>ინვენტარის ტიპი</label>
-              <Dropdown optionLabel="name" />
+              <Dropdown value={this.state.inventor.income.detail.type} options={this.state.inventor.itemTypes} onChange={(e) => this.setState(State( "inventor.income.detail.type",{ id: e.value.id, name: e.value.name},this.state))} placeholder="ინვენტარის ტიპი" optionLabel="name"/>
             </div>
             <div className="fullwidth p-col-2">
               <label>ინვენტარის სტატუსი</label>
-              <Dropdown optionLabel="name" />
+              <Dropdown value={this.state.inventor.income.detail.status} options={this.state.inventor.itemStatus} onChange={(e) => this.setState(State( "inventor.income.detail.status",{ id: e.value.id, name: e.value.name},this.state))} placeholder="ინვენტარის სტატუსი" optionLabel="name"/>
             </div>
             <div className="fullwidth p-col-12">
-                <FileUploader onUpload={files=>console.log(files)}/>
+                <FileUploader onUpload={files=>this.setState(State("inventor.income.detail.files",files,this.state),()=>console.log(this.state.inventor))}/>
             </div>
           </div>
         </Modal>
@@ -489,7 +524,6 @@ export default class Warehouse extends Component {
               <Button label="დამატება" icon="pi pi-plus" onClick={()=>this.setState(State('inventor.income.detail.dialog',true,this.state))} />
             </div>
           </div>
-
           <div className="incomeAddedTable">
             <table>
               <thead>
@@ -598,9 +632,7 @@ export default class Warehouse extends Component {
               </tbody>
             </table>
           </div>
-
         </Modal>
-
         <Modal header="ინვენტარის გაცემა" visible={this.state.inventor.outcome.dialog} onHide={()=>this.setState(State('inventor.outcome.dialog',false,this.state))} style={{width:'900px'}}>
           <TabView renderActiveOnly={false}>
             <TabPanel header="შენობა">
@@ -701,24 +733,47 @@ export default class Warehouse extends Component {
         </Modal>
         <Modal className="itemGroup" header="საქონლის ჯგუფი" visible={this.state.inventor.itemGroup.dialog} onHide={()=>this.setState(State('inventor.itemGroup.dialog',false,this.state))} style={{width:'800px', maxHeight:'500px'}} >
           {
-            (this.state.inventor.itemGroup.dialog)? <TreeTableGroup column={[{field:'name',title:'Name'}]} data={this.state.inventor.itemGroup.data} onSelectItemGroup={(e)=>this.setState(State("inventor.income.detail.itemGroup",e,this.state),()=>this.setState(State("inventor.itemGroup.dialog",false,this.state),()=>console.log(this.state)))}/>:''
+            (this.state.inventor.itemGroup.dialog)? <TreeTableGroup column={[{field:'name',title:'Name'}]} data={this.state.inventor.itemGroup.data} onSelectItemGroup={(e)=>this.setState(State("inventor.income.detail.itemGroup",e,this.state),()=>this.setState(State("inventor.itemGroup.dialog",false,this.state)))}/>:''
           }
         </Modal>
       </React.Fragment>
     );
   }
   suggestSupplier = (event) => {
-    console.log(event)
+
     this.setState(State('inventor.supplierSuggestions', [], this.state));
     http.get("/api/secured/Supplier/Filter?query=" + event).then(result => {
       if (result.status === 200) {
-        this.setState(State('inventor.supplierSuggestions', result.data, this.state), () => console.log(this.state.inventor));
+        this.setState(State('inventor.supplierSuggestions', result.data, this.state));
+      }
+    })
+  };
+  suggestItem = (event) => {
+    this.setState(State('inventor.itemSuggestions', [], this.state));
+    http.get("/api/secured/Item/Filter/ByName?str=" + event).then(result => {
+      if (result.status === 200) {
+        this.setState(State('inventor.itemSuggestions', result.data, this.state));
+      }
+    })
+  };
+  suggestMaker = (event) => {
+    this.setState(State('inventor.makerSuggestions', [], this.state));
+    http.get("/api/secured/List/Maker/Filter?query=" + event).then(result => {
+      if (result.status === 200) {
+        this.setState(State('inventor.makerSuggestions', result.data, this.state));
+      }
+    })
+  };
+  suggestModel = (event) => {
+    this.setState(State('inventor.modelSuggestions', [], this.state));
+    http.get("/api/secured/List/Model/Filter?query="+event+"&parent=" + this.state.inventor.income.detail.maker.id ).then(result => {
+      if (result.status === 200) {
+        this.setState(State('inventor.modelSuggestions', result.data, this.state));
       }
     })
   };
   itemTemplate=(event)=>{
     const {generatedName}=event;
-    console.log(generatedName);
     return (
       <div className="p-clearfix">
         <div style={{ fontSize: '16px', float: 'right', margin: '10px 10px 0 0' }}>{generatedName}</div>

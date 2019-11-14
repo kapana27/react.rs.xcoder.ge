@@ -6,8 +6,6 @@ import {Column} from "primereact/column";
 import http from "../../../api/http";
 
 export const TreeTableGroup = (props) => {
-
-  console.log(props)
   return (
     <div>
       <TreeTable value={props.data.root} selectionMode="single" onSelect={(e) => props.onSelectItemGroup(e.node.data)} >
