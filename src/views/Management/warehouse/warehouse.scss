@@ -143,3 +143,9 @@ body .p-inputtext {
   padding: 0.3em 0.429em;
   margin: 0 !important;
 }
+.details-table{
+  width: 100%;
+  tr,td {
+     border: 1px solid #c7c7c7 !important;
+  }
+}

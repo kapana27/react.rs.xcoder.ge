@@ -124,4 +124,11 @@ body .p-inputtext {
   margin: 0 !important;
 }
 
+.details-table {
+  width: 100%;
+}
+.details-table tr, .details-table td {
+  border: 1px solid #c7c7c7 !important;
+}
+
 /*# sourceMappingURL=warehouse.css.map */

@@ -209,7 +209,9 @@ export default class Warehouse extends Component {
           dialog: false,
           date: new Date(),
           supplier: "",
+          comment:"",
           detail: {
+            expand:false,
             dialog: false,
             itemGroup: {name: '', id: null},
             item: {name: '', id: null},
@@ -222,8 +224,11 @@ export default class Warehouse extends Component {
             barcodeType: {name: '', id: null, key: null},
             barcode: '',
             factoryNumber:'',
-            files:[]
-          }
+            files:[],
+            lastBarCode: {value: '', name: '', length: '', id: '', barCodeVisualValue: "", startPoint: "", endPoint: ""},
+            list: []
+          },
+          data: []
         },
         outcome: {
           dialog: false
@@ -256,7 +261,7 @@ export default class Warehouse extends Component {
         dialog: false
       }
     };
-    this.loadConstructor();
+    //this.loadConstructor();
 
   }
   componentDidMount() {
@@ -409,89 +414,147 @@ export default class Warehouse extends Component {
             onCellClicked={this.onClickedCell}
           />
         </div>
-        <Modal header="ინვენტარის მიღება" visible={this.state.inventor.income.detail.dialog} onHide={()=>this.setState(State('inventor.income.detail.dialog',false,this.state))} style={{width:'1200px'}}>
-          <div className="incomeModal p-grid">
-            <div className="fullwidth p-col-2">
-              <label>დასახელება</label>
-              <AutoComplete
-                placeholder="დასახელება"
-                field="name"
-                suggestions={this.state.inventor.itemSuggestions}
-                onComplete={this.suggestItem}
-                onSelect={(e)=>this.setState(State('inventor.income.detail.item',e,this.state))}
-                onChange={(e) => this.setState(State('inventor.income.detail.item',e,this.state))}
-                value={this.state.inventor.income.detail.item}
-              />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>მარკა</label>
-              <AutoComplete
-                placeholder="მარკა"
-                field="name"
-                suggestions={this.state.inventor.makerSuggestions}
-                onComplete={this.suggestMaker}
-                onSelect={(e)=>this.setState(State('inventor.income.detail.maker',e,this.state))}
-                onChange={(e) => this.setState(State('inventor.income.detail.maker',e,this.state))}
-                value={this.state.inventor.income.detail.maker}
-              />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>მოდელი</label>
-              <AutoComplete
-                placeholder="მოდელი"
-                field="name"
-                disabled={_.isNull(this.state.inventor.income.detail.maker.id) && _.isEmpty(this.state.inventor.income.detail.maker.name) }
-                suggestions={this.state.inventor.modelSuggestions}
-                onComplete={this.suggestModel}
-                onSelect={(e)=>this.setState(State('inventor.income.detail.model',e,this.state))}
-                onChange={(e) => this.setState(State('inventor.income.detail.model',e,this.state))}
-                value={this.state.inventor.income.detail.model}
-              />
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>რაოდენობა</label>
-              <InputText type="text" placeholder="დასახელება" value={this.state.inventor.income.detail.count} onChange={(e)=>this.setState(State("inventor.income.detail.count",e.target.value,this.state))}/>
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>ერთეულის ფასი</label>
-              <InputText type="text" placeholder="დასახელება" value={this.state.inventor.income.detail.price} onChange={(e)=>this.setState(State("inventor.income.detail.price",e.target.value,this.state))}/>
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>სულ ფასი:</label>
-              <div style={{lineHeight: '30px'}}>{Math.round(this.state.inventor.income.detail.price*this.state.inventor.income.detail.count)}</div>
-            </div>
-            <div className="fullwidth barcode p-col-2">
-              <label>შტრიხკოდი</label>
-              <Dropdown value={this.state.inventor.income.detail.barcodeType} options={this.state.inventor.barCodes} onChange={(e) => this.setState(State( "inventor.income.detail.barcodeType",{key: e.value.key, id: e.value.id, name: e.value.name},this.state))} placeholder="ბარკოდი" optionLabel="name"/>
-              <InputText type="text" placeholder="შტრ. კოდი" style={{textIndent:'0px',width:'78px',fontSize:'12px'}} value={this.state.inventor.income.detail.barcode} onChange={(e)=>this.setState(State("inventor.income.detail.barcode",e.target.value,this.state))}/>
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>ქარხნული ნომერი:</label>
-              <InputText type="text" value={this.state.inventor.income.detail.factoryNumber} onChange={(e)=>this.setState(State("inventor.income.detail.factoryNumber",e.target.value,this.state))}/>
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>განზომილების ერთეული</label>
-              <Dropdown value={this.state.inventor.income.detail.measureUnit} options={this.state.inventor.measureUnitList} onChange={(e) => this.setState(State( "inventor.income.detail.measureUnit",{ id: e.value.id, name: e.value.name},this.state))} placeholder="განზომილების ერთეული" optionLabel="name"/>
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>საქონლის ჯგუფი</label>
-              <div className="p-inputgroup">
-                <InputText placeholder="საქონლის ჯგუფი" value={this.state.inventor.income.detail.itemGroup.name} disabled/>
-                <Button icon="pi pi-align-justify" className="p-button-info" style={{left: '-10px'}} onClick={()=>this.setState(State('inventor.itemGroup.dialog',true,this.state))}/>
-              </div>
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>ინვენტარის ტიპი</label>
-              <Dropdown value={this.state.inventor.income.detail.type} options={this.state.inventor.itemTypes} onChange={(e) => this.setState(State( "inventor.income.detail.type",{ id: e.value.id, name: e.value.name},this.state))} placeholder="ინვენტარის ტიპი" optionLabel="name"/>
-            </div>
-            <div className="fullwidth p-col-2">
-              <label>ინვენტარის სტატუსი</label>
-              <Dropdown value={this.state.inventor.income.detail.status} options={this.state.inventor.itemStatus} onChange={(e) => this.setState(State( "inventor.income.detail.status",{ id: e.value.id, name: e.value.name},this.state))} placeholder="ინვენტარის სტატუსი" optionLabel="name"/>
-            </div>
-            <div className="fullwidth p-col-12">
-                <FileUploader onUpload={files=>this.setState(State("inventor.income.detail.files",files,this.state),()=>console.log(this.state.inventor))}/>
-            </div>
-          </div>
+        <Modal
+          header="ინვენტარის მიღება დეტალები"
+          visible={this.state.inventor.income.detail.dialog}
+          onHide={()=>this.setState(State('inventor.income.detail.dialog',false,this.state))}
+          style={{width:'1200px'}}
+          footer={
+            (<div>
+              {this.state.inventor.income.detail.expand ?
+              <Button label="დამახსოვრება" icon="pi pi-check" onClick={this.onSaveDetail}/> :
+              <Button label="ჩაშლა" icon="pi pi-check" onClick={this.onInventorDetailExpand}/>}
+              <Button label="გაუქმება" icon="pi pi-times" className="p-button-secondary" onClick={()=>this.setState(State('inventor.income.detail.dialog',false,this.state))}/>
+            </div>)
+          }
+        >
+          {
+            this.state.inventor.income.detail.expand?
+              (<div className="incomeAddedTable">
+                <table >
+                    <thead>
+                      <tr>
+                        <th>დასახელება</th>
+                        <th>მარკა</th>
+                        <th>მოდელი</th>
+                        <th>ფასი</th>
+                        <th>რაოდენობა</th>
+                        <th>განზ.ერთ</th>
+                        <th>შტრიხცოდი</th>
+                        <th>მანქანისნომერი</th>
+                        <th>ჯგუფი</th>
+                        <th>ტიპი</th>
+                        <th>სტატუსი</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {
+                      _.map(this.state.inventor.income.detail.list, (value,index)=>{
+                        return (
+                          <tr key={index}>
+                            <td>{this.state.inventor.income.detail.item.name}</td>
+                            <td>{this.state.inventor.income.detail.maker.name}</td>
+                            <td>{this.state.inventor.income.detail.model.name}</td>
+                            <td>{this.state.inventor.income.detail.price}</td>
+                            <td>{this.state.inventor.income.detail.count}</td>
+                            <td>{this.state.inventor.income.detail.measureUnit.name}</td>
+                            <td>{this.state.inventor.income.detail.maker.name}</td>
+                            <td>
+                              {value.barcodeName}
+                              <input type="text" value={value.barCode} onChange={event => this.setState(State('inventor.income.detail.list.'+index+'.barCode',event.target.value,this.state))}/>
+                            </td>
+                            <td>ჯგუფი</td>
+                            <td>ტიპი</td>
+                            <td>სტატუსი</td>
+                          </tr>
+                        )
+                      })
+                    }
+                    </tbody>
+                </table>
+              </div>):(<div className="incomeModal p-grid">
+                <div className="fullwidth p-col-2">
+                  <label>დასახელება</label>
+                  <AutoComplete
+                    placeholder="დასახელება"
+                    field="name"
+                    suggestions={this.state.inventor.itemSuggestions}
+                    onComplete={this.suggestItem}
+                    onSelect={(e)=>this.setState(State('inventor.income.detail.item',e,this.state))}
+                    onChange={(e) => this.setState(State('inventor.income.detail.item',e,this.state))}
+                    value={this.state.inventor.income.detail.item}
+                  />
+                </div>
+                <div className="fullwidth p-col-2">
+                  <label>მარკა</label>
+                  <AutoComplete
+                    placeholder="მარკა"
+                    field="name"
+                    suggestions={this.state.inventor.makerSuggestions}
+                    onComplete={this.suggestMaker}
+                    onSelect={(e)=>this.setState(State('inventor.income.detail.maker',e,this.state))}
+                    onChange={(e) => this.setState(State('inventor.income.detail.maker',e,this.state))}
+                    value={this.state.inventor.income.detail.maker}
+                  />
+                </div>
+                <div className="fullwidth p-col-2">
+                  <label>მოდელი</label>
+                  <AutoComplete
+                    placeholder="მოდელი"
+                    field="name"
+                    disabled={_.isNull(this.state.inventor.income.detail.maker.id) && _.isEmpty(this.state.inventor.income.detail.maker.name) }
+                    suggestions={this.state.inventor.modelSuggestions}
+                    onComplete={this.suggestModel}
+                    onSelect={(e)=>this.setState(State('inventor.income.detail.model',e,this.state))}
+                    onChange={(e) => this.setState(State('inventor.income.detail.model',e,this.state))}
+                    value={this.state.inventor.income.detail.model}
+                  />
+                </div>
+                <div className="fullwidth p-col-2">
+                  <label>რაოდენობა</label>
+                  <InputText type="text" placeholder="დასახელება" value={this.state.inventor.income.detail.count} onChange={(e)=>this.setState(State("inventor.income.detail.count",e.target.value,this.state))}/>
+                </div>
+                <div className="fullwidth p-col-2">
+                  <label>ერთეულის ფასი</label>
+                  <InputText type="text" placeholder="დასახელება" value={this.state.inventor.income.detail.price} onChange={(e)=>this.setState(State("inventor.income.detail.price",e.target.value,this.state))}/>
+                </div>
+                <div className="fullwidth p-col-2">
+                  <label>სულ ფასი:</label>
+                  <div style={{lineHeight: '30px'}}>{Math.round(parseInt(this.state.inventor.income.detail.price)*parseInt(this.state.inventor.income.detail.count))}</div>
+                </div>
+                <div className="fullwidth barcode p-col-2">
+                  <label>შტრიხკოდი</label>
+                  <Dropdown value={this.state.inventor.income.detail.barcodeType} options={this.state.inventor.barCodes} onChange={(e) => this.setState(State( "inventor.income.detail.barcodeType",{key: e.value.key, id: e.value.id, name: e.value.name},this.state),()=>this.lastBarCode(this.state.inventor.income.detail.barcodeType))} placeholder="ბარკოდი" optionLabel="name"/>
+                  <InputText type="text" placeholder="შტრ. კოდი" style={{textIndent:'0px',width:'78px',fontSize:'12px'}} value={this.state.inventor.income.detail.barcode} onChange={(e)=>this.setState(State("inventor.income.detail.barcode",e.target.value,this.state))}/>
+                </div>
+                <div className="fullwidth p-col-2">
+                  <label>ქარხნული ნომერი:</label>
+                  <InputText type="text" value={this.state.inventor.income.detail.factoryNumber} onChange={(e)=>this.setState(State("inventor.income.detail.factoryNumber",e.target.value,this.state))}/>
+                </div>
+                <div className="fullwidth p-col-2">
+                  <label>განზომილების ერთეული</label>
+                  <Dropdown value={this.state.inventor.income.detail.measureUnit} options={this.state.inventor.measureUnitList} onChange={(e) => this.setState(State( "inventor.income.detail.measureUnit",{ id: e.value.id, name: e.value.name},this.state))} placeholder="განზომილების ერთეული" optionLabel="name"/>
+                </div>
+                <div className="fullwidth p-col-2">
+                  <label>საქონლის ჯგუფი</label>
+                  <div className="p-inputgroup">
+                    <InputText placeholder="საქონლის ჯგუფი" value={this.state.inventor.income.detail.itemGroup.name} disabled/>
+                    <Button icon="pi pi-align-justify" className="p-button-info" style={{left: '-10px'}} onClick={()=>this.setState(State('inventor.itemGroup.dialog',true,this.state))}/>
+                  </div>
+                </div>
+                <div className="fullwidth p-col-2">
+                  <label>ინვენტარის ტიპი</label>
+                  <Dropdown value={this.state.inventor.income.detail.type} options={this.state.inventor.itemTypes} onChange={(e) => this.setState(State( "inventor.income.detail.type",{ id: e.value.id, name: e.value.name},this.state))} placeholder="ინვენტარის ტიპი" optionLabel="name"/>
+                </div>
+                <div className="fullwidth p-col-2">
+                  <label>ინვენტარის სტატუსი</label>
+                  <Dropdown value={this.state.inventor.income.detail.status} options={this.state.inventor.itemStatus} onChange={(e) => this.setState(State( "inventor.income.detail.status",{ id: e.value.id, name: e.value.name},this.state))} placeholder="ინვენტარის სტატუსი" optionLabel="name"/>
+                </div>
+                <div className="fullwidth p-col-12">
+                  <FileUploader onUpload={files=>this.setState(State("inventor.income.detail.files",files,this.state),()=>console.log(this.state.inventor))}/>
+                </div>
+              </div>)
+          }
         </Modal>
         <Modal header="ინვენტარის მიღება" visible={this.state.inventor.income.dialog} onHide={()=>this.setState(State('inventor.income.dialog',false,this.state))} style={{width:'1200px'}} >
           <div className="incomeModal p-grid">
@@ -520,11 +583,11 @@ export default class Warehouse extends Component {
             </div>
             <div className="fullwidth p-col-12">
               <label>კომენტარი</label>
-              <InputTextarea rows={1} />
+              <InputTextarea rows={1} value={this.state.inventor.income.comment} onChange={e=>this.setState(State('inventor.income.comment',e.target.event,this.state))} />
               <Button label="დამატება" icon="pi pi-plus" onClick={()=>this.setState(State('inventor.income.detail.dialog',true,this.state))} />
             </div>
           </div>
-          <div className="incomeAddedTable">
+          <div className="incomeAddedTable" style={{ maxHeight: '200px', overflowY: 'scroll'}}>
             <table>
               <thead>
               <tr>
@@ -539,96 +602,28 @@ export default class Warehouse extends Component {
                 <th>ინვენტარის სტატუსი</th>
                 <th>ფასი</th>
                 <th>სულ ფასი</th>
-                <th width="30px"><span></span></th>
               </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34</td>
-                </tr>
-                <tr>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34</td>
-                </tr>
-                <tr>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34</td>
-                </tr>
-                <tr>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34</td>
-                </tr>
-                <tr>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34</td>
-                </tr>
-                <tr>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34 4</td>
-                  <td>34</td>
-                </tr>
-
-
+              {
+                _.map(this.state.inventor.income.data,(value,index)=>{
+                    return (
+                      <tr key={index}>
+                        <td>{value.item.name}</td>
+                        <td>{value.maker.name}</td>
+                        <td>{value.model.name}</td>
+                        <td>{value.count}</td>
+                        <td>{value.measureUnit.name}</td>
+                        <td>{value.itemGroup.name}</td>
+                        <td>{value.factoryNumber}</td>
+                        <td>{value.type.name}</td>
+                        <td>{value.status.name}</td>
+                        <td>{value.price}</td>
+                        <td>{Math.round(parseInt(value.price)*parseInt(value.count))}</td>
+                      </tr>
+                    )
+                })
+              }
               </tbody>
             </table>
           </div>
@@ -823,5 +818,60 @@ export default class Warehouse extends Component {
         (_.isUndefined(result)) ? this.setState(State('cart.tab' + this.state.tab, [], this.state)) : this.setState(State('cart.tab' + this.state.tab, result, this.state));
       })
       .catch()
+  }
+  onInventorDetailExpand = () => {
+    this.setState(State('inventor.income.detail.expand', true, this.state));
+    http.get("/api/secured/List/BarCode/Get/FreeCodes?barCodeType="+this.state.inventor.income.detail.barcodeType.id+"&count="+this.state.inventor.income.detail.count)
+      .then(result => {
+        this.setState(State("inventor.income.detail.list", _.map(result.data, value => {
+          return {
+            "barcodeName": value.value,
+            "barCode": value.barCodeVisualValue,
+            "serialNumber": this.state.inventor.income.detail.factoryNumber,
+            "amount": 1
+          }
+        }), this.state));
+
+
+      })
+      .catch()
+
+
+  };
+  lastBarCode=(type)=> {
+    http.get("/api/secured/List/BarCode/Get/LastCode?barCodeType="+type.id)
+      .then(result => {
+
+        this.setState(State('inventor.income.detail.lastBarCode', result.data, this.state));
+      })
+      .catch()
+  }
+  onSaveDetail=()=>{
+    let data= this.state.inventor.income.data;
+    data.push(this.state.inventor.income.detail);
+    this.setState(State('inventor.itemSuggestions', [], this.state));
+    this.setState(State('inventor.makerSuggestions', [], this.state));
+    this.setState(State('inventor.modelSuggestions', [], this.state));
+       this.setState(State("inventor.income.data",data,this.state),
+         ()=>this.setState(State('inventor.income.detail.dialog',false,this.state),
+           ()=>this.setState(State('inventor.income.detail',{
+             expand:false,
+             dialog: false,
+             itemGroup: {name: '', id: null},
+             item: {name: '', id: null},
+             maker: {name: '', id: null},
+             measureUnit: {name: '', id: null},
+             type: {name: '', id: null},
+             status: {name: '', id: null},
+             count: '',
+             price: '',
+             barcodeType: {name: '', id: null, key: null},
+             barcode: '',
+             factoryNumber:'',
+             files:[],
+             lastBarCode: {value: '', name: '', length: '', id: '', barCodeVisualValue: "", startPoint: "", endPoint: ""},
+             list: []
+           }, this.state))))
+
   }
 }
