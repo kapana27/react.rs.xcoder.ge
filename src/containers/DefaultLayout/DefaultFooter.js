@@ -15,7 +15,9 @@ class DefaultFooter extends Component {
 
     return (
       <React.Fragment>
-        <!--span className="ml-auto">Powered by <a href="https://www.youtube.com/watch?v=5A6zm887mLA" target="_blank">ზაზა, ზაზაააა შენი კარგი , ტრალალალა</a></span-->
+/*
+        <span className="ml-auto">Powered by <a href="https://www.youtube.com/watch?v=5A6zm887mLA" target="_blank">ზაზა, ზაზაააა შენი კარგი , ტრალალალა</a></span>
+*/
       </React.Fragment>
     );
   }
@@ -25,3 +27,4 @@ DefaultFooter.propTypes = propTypes;
 DefaultFooter.defaultProps = defaultProps;
 
 export default DefaultFooter;
+
