@@ -1105,23 +1105,21 @@ export default class Warehouse extends Component {
     this.setState(State('inventor.makerSuggestions', [], this.state));
     this.setState(State('inventor.modelSuggestions', [], this.state));
     let formData= new FormData();
-    formData.append('data', JSON.stringify(_.map([...data,this.state.inventor.income.detail], value => {
-      return {
-        name: value.item.name,
-        list: value.list,
-        selectedMaker: value.maker,
-        selectedModel: value.model,
-        amount: value.count,
-        price: value.price,
-        barCodeType: value.barCodeType.id,
-        barCode: value.barCode,
-        factoryNumber: value.factoryNumber,
-        measureUnit: value.measureUnit.id,
-        itemGroup: value.itemGroup.id,
-        selectedItemType: value.type,
-        status: value.status.id
-      }
-    })));
+    formData.append('data', JSON.stringify({
+      name: this.state.inventor.income.detail.item.name,
+      list: this.state.inventor.income.detail.list,
+      selectedMaker: this.state.inventor.income.detail.maker,
+      selectedModel: this.state.inventor.income.detail.model,
+      amount: this.state.inventor.income.detail.count,
+      price: this.state.inventor.income.detail.price,
+      barCodeType: this.state.inventor.income.detail.barCodeType.id,
+      barCode: this.state.inventor.income.detail.barCode,
+      factoryNumber: this.state.inventor.income.detail.factoryNumber,
+      measureUnit: this.state.inventor.income.detail.measureUnit.id,
+      itemGroup: this.state.inventor.income.detail.itemGroup.id,
+      selectedItemType: this.state.inventor.income.detail.type,
+      status: this.state.inventor.income.detail.status.id
+    }));
     http.post('/api/secured/Item/PreInsert/Add',formData).then(result => {
       if(result.status===200){
         data.push(this.state.inventor.income.detail);
