@@ -6,9 +6,6 @@ import PropTypes from "prop-types";
 export const FileUploader = (props) => {
 
     const [files,setFiles]=useState([]);
-  useEffect(()=>{
-    props.onUpload(files)
-  },[files])
 
   function onSelect(e) {
    if(e.xhr.status===200){
@@ -21,10 +18,9 @@ export const FileUploader = (props) => {
   <FileUpload
     name="file"
     url={props.url}
-    accept="pdf,png"
+    accept=".pdf,.png"
     maxFileSize={1000000}
-    onUpload={(e)=>onSelect(e)}
-
+    onSelect={(e)=>props.onSelectFile(e)}
     auto={false}
     chooseLabel="აირჩიეთ ფაილი"
     cancelLabel="გაუქმება"
@@ -59,7 +55,7 @@ const styles = {
 
 FileUploader.propTypes = {
   url: PropTypes.string,
-  onUpload:PropTypes.func
+  onSelectFile:PropTypes.func
 };
 FileUploader.defaultProps = {
   url:'/api/secured/Document/Upload',

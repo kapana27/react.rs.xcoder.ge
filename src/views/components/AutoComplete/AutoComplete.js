@@ -43,6 +43,7 @@ export const AutoComplete = (props) => {
     <React.Fragment>
       <div style={{position:'relative'}}>
         <InputText
+          className={props.class}
           disabled={props.disabled}
           placeholder={props.placeholder}
           value={(typeof props.value === "string")? props.value: props.value[props.field]}
@@ -90,5 +91,6 @@ const style = {
     background: 'white',
     zIndex:2222,
     whiteSpace: 'nowrap'
-  }
+  },
+
 };
