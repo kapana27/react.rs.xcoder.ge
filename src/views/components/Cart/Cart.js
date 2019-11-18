@@ -4,7 +4,7 @@ import {Button} from 'primereact/button';
 
 import PropTypes from "prop-types";
 export const Cart = (props) => {
-    return <div>
+    return <React.Fragment>
         <table style={style.table}>
           <thead>
             <tr>
@@ -32,7 +32,7 @@ export const Cart = (props) => {
           }
           </tbody>
         </table>
-    </div>
+    </React.Fragment>
 };
 const style = {
   table: {

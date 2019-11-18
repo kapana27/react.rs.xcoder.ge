@@ -1,3 +1,4 @@
+
 export default {
   items: [
     {
@@ -32,22 +33,22 @@ export default {
         {
           name: 'ზედდებულები',
           url: '/report/invoices',
-          icon: 'icon-puzzle',
+          //icon: 'icon-puzzle',
         },
         {
           name: 'დოკუმენტბრუნვა',
           url: '/report/documentTurnover',
-          icon: 'icon-puzzle',
+          //icon: 'icon-puzzle',
         },
         {
           name: 'ინვენტარიზაცია',
           url: '/report/inventory',
-          icon: 'icon-puzzle',
+          //icon: 'icon-puzzle',
         },
         {
           name: 'ხელმძღვანელობა',
           url: '/report/leadership',
-          icon: 'icon-puzzle',
+          //icon: 'icon-puzzle',
         },
       ]
     },
@@ -56,6 +57,13 @@ export default {
       url: '/directory',
       icon: 'icon-drop',
     },
+
+
+  ],
+};
+
+// მენიუს ნარჩენები
+/*
     {
       title: true,
       name: 'Theme',
@@ -332,5 +340,4 @@ export default {
       variant: 'danger',
       attributes: { target: '_blank', rel: "noopener" },
     },
-  ],
-};
+* */

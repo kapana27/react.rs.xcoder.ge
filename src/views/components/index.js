@@ -6,6 +6,7 @@ import {FileUploader} from  './FileUploader/FileUploader';
 import {Cart} from  './Cart/Cart';
 import {TreeTableGroup} from './TreeTable/TreeTable';
 import {Search} from "./Search";
+import {Overhead} from "./Overhead/Overhead";
 
 export {
   CardCellRenderer,
@@ -15,6 +16,7 @@ export {
   FileUploader,
   Search,
   Cart,
-  TreeTableGroup
+  TreeTableGroup,
+  Overhead,
 }
 

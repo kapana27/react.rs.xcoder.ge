@@ -4,6 +4,19 @@
 }
 .app {
   height: 100vh;
+
+  .nav {
+    font-family: lbet-mt,sans-serif !important;
+    .nav-title {}
+    .nav-item {
+      .nav-link {
+        padding: 0.45rem 1rem;
+      }
+      .nav-dropdown-items {
+
+      }
+    }
+  }
   .app-body {
     height: calc(100vh - 105px);
   }
@@ -27,6 +40,13 @@
   .bRed{
     border:1px solid red !important;
   }
+}
+
+.ag-red{
+  background: rgba(255, 0, 0, 0.41) !important;
+}
+.ag-gray{
+  background: rgba(255, 167, 0, 0.41) !important;
 }
 
 // ავტოცომპლეიტის ბაგის გასწორება
