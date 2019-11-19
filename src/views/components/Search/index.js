@@ -76,9 +76,9 @@ export const Search = (props) => {
 
           <div  style={{minWidth:'350px',maxWidth:'100%', paddingRight:'20px', paddingTop:'21px',flex:'1'}}>
             <div style={{float:'right'}}>
-              <Button label="ძებნა" icon="pi pi-home" />
-              <Button label="გასუფთავება" icon="pi pi-home" style={{marginLeft:'10px'}} />
-              <Button label="დახურვა" icon="pi pi-home" style={{marginLeft:'20px', float:'right'}} />
+              <Button className="p-button-warning" label="ძებნა" icon="pi pi-search" />
+              <Button className="p-button-danger" label="გასუფთავება" icon="pi pi-times" style={{marginLeft:'10px'}} />
+              <Button className="p-button-secondary" label="დახურვა" style={{marginLeft:'20px', float:'right'}} onClick = {props.onClick}/>
             </div>
           </div>
 

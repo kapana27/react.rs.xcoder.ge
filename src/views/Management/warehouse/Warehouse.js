@@ -1,7 +1,16 @@
 import React, { Component } from 'react';
 import http from  '../../../api/http';
 import {Config} from "../../../config/Config";
-import {CardCellRenderer, Modal, Calendar, AutoComplete, FileUploader, Cart, TreeTableGroup, } from '../../components'
+import {
+  CardCellRenderer,
+  Modal,
+  Calendar,
+  AutoComplete,
+  FileUploader,
+  Cart,
+  TreeTableGroup,
+  Search,
+} from '../../components'
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
@@ -268,7 +277,8 @@ export default class Warehouse extends Component {
           dialog: false
         },
         search: {
-          dialog: false
+          show: false,
+          dialog: false,
         },
         supplierSuggestions: [],
         barCodes: [],
@@ -409,8 +419,8 @@ export default class Warehouse extends Component {
       <React.Fragment>
         <div className="actionButton">
           <div className="buttonBox" style={{width: '150px'}}>
-            <Button label="A" icon="pi pi-home"/>
-            <Button label="B" icon="pi pi-home"/>
+            <Button label="A" icon="pi pi-home" className={this.state.tab === 11?'':'p-button-secondary'} onClick={()=>this.tabClick(11)}/>
+            <Button label="B" icon="pi pi-home" className={this.state.tab === 12?'':'p-button-secondary'} onClick={()=>this.tabClick(12)}/>
           </div>
           <div className="buttonBox">
             <Button label="ინვ.მიღება" icon="pi pi-plus" onClick={() => this.onInventorIncome()}/>
@@ -420,19 +430,20 @@ export default class Warehouse extends Component {
           <div className="buttonBox">
             <Button label="ინვ.გაცემა" icon="pi pi-arrow-up" className="p-button-danger"
                     onClick={() => this.setState(State('inventor.outcome.dialog', true, this.state))}/>
-            <Button label="მოძრაობა A-B" className="ui-button-raised arrow-icon"
-                    onClick={() => this.setState(State('inventor.transfer.dialog', true, this.state))}/>
-            <Button label="ძებნა" icon="pi pi-search"
-                    onClick={() => this.setState(State('inventor.search.dialog', true, this.state))}/>
-            <i className="fa fa-cart-plus fa-lg " onClick={() => this.setState(State('cart.dialog', true, this.state))}
-               style={{
-                 fontSize: '32px',
-                 marginRight: '12',
-                 color: '#007ad9',
-                 cursor: 'pointer'
-               }}/><sup>{_.size(this.state.cart['tab' + this.state.tab])}</sup>
+            <Button label="მოძრაობა A-B" className="ui-button-raised arrow-icon" onClick={() => this.setState(State('inventor.transfer.dialog', true, this.state))}/>
+            {
+              (!this.state.inventor.search.show)?
+                <Button label="ძებნა" icon="pi pi-search"  onClick={()=>this.setState(State('inventor.search.show',true,this.state))}/>:''
+            }
+            <div className="cart_count">
+              <i className="fa fa-cart-plus fa-lg " onClick={()=>this.setState(State('cart.dialog',true,this.state))}/>
+              <span>{_.size(this.state.cart['tab'+this.state.tab])}</span>
+            </div>
           </div>
         </div>
+
+        {(this.state.inventor.search.show)?<Search onClick={()=>this.setState(State('inventor.search.show',false,this.state))}/>:''}
+
         <div
           id="myGrid"
           className="ag-theme-balham"
@@ -956,8 +967,13 @@ export default class Warehouse extends Component {
       </React.Fragment>
     );
   }
-  suggestSupplier = (event) => {
 
+  tabClick(tabID) {
+    this.setState(State('tab',tabID,this.state));
+    this.onReady(this.eventData);
+  }
+
+  suggestSupplier = (event) => {
     this.setState(State('inventor.supplierSuggestions', [], this.state));
     http.get("/api/secured/Supplier/Filter?query=" + event).then(result => {
       if (result.status === 200) {

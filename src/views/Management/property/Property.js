@@ -250,7 +250,7 @@ export default class Property extends Component {
           comment: "",
           transPerson: "",
           propertyManagement: "",
-          requestMan: "",
+          requestPerson: "",
           files:[],
         },
         // ინვენტარის საწყობში დაბრუნება
@@ -261,6 +261,10 @@ export default class Property extends Component {
           transPerson: "",
           stockMan: "",
           comment: "",
+          files:[],
+        },
+        search: {
+          show: false,
         },
         // პიროვნებების მასივი
         personality:[],
@@ -272,10 +276,12 @@ export default class Property extends Component {
         stockManList: [],
         propertyManagementList: [],
         transPersonList: [],
+        // მომთხოვნი პიროვნება
+        requestPersonList: [],
         lastCode: "",
         newCode: "",
       },
-      tab: 11,
+      tab: 21,
       cart:{
         tab11:[],
         tab12:[],
@@ -374,31 +380,41 @@ export default class Property extends Component {
     });
   };
   render() {
+    let tabClass = 'p-button-secondary';
+
     return (
       <React.Fragment >
 
         <div className="actionButton">
           <div className="buttonBox" style={{width: '150px'}}>
-            <Button label="გასანაწილებელი" />
-            <Button label="განაწილებული" />
+            <Button label="გასანაწილებელი" className={this.state.tab === 21?'':'p-button-secondary'} onClick={()=>this.tabClick(21)} />
+            <Button label="განაწილებული"   className={this.state.tab === 22?'':'p-button-secondary'} onClick={()=>this.tabClick(22)} />
           </div>
           <div className="buttonBox"></div>
           <div className="buttonBox">
-            <div data-tab="1">
-              <Button label="განპიროვნება" className="p-button-danger" onClick={()=>this.onDisposition()} />
-              <Button label="ინვ. შებრუნება"  className="ui-button-raised" onClick={()=>this.onOutcome()} />
-              <Button label="ინვ. მოძრაობა შენობებს შორის"  className="ui-button-raised" onClick={()=>this.onMoveAB()} />
+            {
+              (this.state.tab === 21)?
+                <React.Fragment >
+                  <Button label="განპიროვნება" className="p-button-danger" onClick={()=>this.onDisposition()} />
+                  <Button label="ინვ. შებრუნება"  className="ui-button-raised" onClick={()=>this.onOutcome()} />
+                  <Button label="ინვ. მოძრაობა შენობებს შორის"  className="ui-button-raised" onClick={()=>this.onMoveAB()} />
+                </React.Fragment>
+                :
+                <Button label="ინვ. საწყობში დაბრუნება"  className="ui-button-raised" onClick={()=>this.onInverse()} />
+            }
+            {
+              (!this.state.property.search.show)?
+              <Button label="ძებნა" icon="pi pi-search"  onClick={()=>this.setState(State('property.search.show',true,this.state))}/>:''
+            }
+            <div className="cart_count">
+              <i className="fa fa-cart-plus fa-lg " onClick={()=>this.setState(State('cart.dialog',true,this.state))}/>
+              <span>{_.size(this.state.cart['tab'+this.state.tab])}</span>
             </div>
-            <div data-tab="2">
-              <Button label="ინვ. საწყობში დაბრუნება"  className="ui-button-raised" onClick={()=>this.setState(State('property.inverse.dialog',true,this.state))} />
-            </div>
-
-            <Button label="ძებნა" icon="pi pi-search"  onClick={()=>this.setState(State('inventor.search.dialog',true,this.state))}/>
-            <i className="fa fa-cart-plus fa-lg " onClick={()=>this.setState(State('cart.dialog',true,this.state))} style={{fontSize: '32px', marginRight: '12', color: '#007ad9', cursor:'pointer'}}/><sup>{_.size(this.state.cart['tab'+this.state.tab])}</sup>
           </div>
         </div>
 
-        <Search/>
+        {(this.state.property.search.show)?<Search onClick={()=>this.setState(State('property.search.show',false,this.state))}/>:''}
+
 
         <div id="myGrid" className="ag-theme-balham" >
           <AgGridReact
@@ -529,9 +545,9 @@ export default class Property extends Component {
                     <div className="fullwidth p-col-6">
                       <label>ტრანსპორტ. პასხ. პირი:</label>
                       <AutoComplete
-                        field="name"
+                        field="fullName"
                         suggestions={this.state.property.transPersonList}
-                        onComplete={(e) => this.transPersonList()}
+                        onComplete={(e) => this.transPersonList(e)}
                         onSelect={(e)=>this.setState(State('property.outcome.transPerson',e,this.state),()=>this.dispositionPersonRoom(this.state.property.outcome.transPerson.id))}
                         onChange={(e) => this.setState(State('property.outcome.transPerson',e,this.state))}
                         value={this.state.property.outcome.transPerson}
@@ -559,14 +575,14 @@ export default class Property extends Component {
               </div>
               {
                 (!this.state.property.movAB.expand)?
-                  <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.outcomeGenerateOverhead()} />
+                  <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.movABGenerateOverhead()} />
                   :
                   <React.Fragment>
                     <span className="last_code">ბოლო კოდი - {this.state.property.lastCode} </span>
-                    <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.outcomeActiveOverhead()}/>
+                    <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.movABActiveOverhead()}/>
                   </React.Fragment>
               }
-              <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.setState(State('property.movAB.dialog',false,this.state))}/>
+              <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.resetModalParam('movAB')} />
             </div>
           }>
           {
@@ -588,11 +604,25 @@ export default class Property extends Component {
                     </div>
                     <div className="fullwidth p-col-6">
                       <label>მომთხოვნი პიროვნება</label>
-                      <InputText value={this.state.property.movAB.requestMan} onChange = {(e)=>this.setState(State('property.movAB.requestMan',e.target.value,this.state))} type="text" placeholder="ტრანსპორტ. პასხ. პირი" />
+                      <AutoComplete
+                        field="fullName"
+                        suggestions={this.state.property.requestPersonList}
+                        onComplete={(e) => this.requestPersonList(e)}
+                        onSelect = {(e)=>this.setState(State('property.movAB.requestPerson',e,this.state))}
+                        onChange = {(e)=>this.setState(State('property.movAB.requestPerson',e,this.state))}
+                        value={this.state.property.movAB.requestPerson}
+                      />
                     </div>
                     <div className="fullwidth p-col-6">
                       <label>ტრანსპორტ. პასხ. პირი:</label>
-                      <InputText value={this.state.property.movAB.transPerson} onChange = {(e)=>this.setState(State('property.movAB.transPerson',e.target.value,this.state))} type="text" placeholder="ტრანსპორტ. პასხ. პირი" />
+                      <AutoComplete
+                        field="fullName"
+                        suggestions={this.state.property.transPersonList}
+                        onComplete={(e) => this.transPersonList(e)}
+                        onSelect={(e)=>this.setState(State('property.movAB.transPerson',e,this.state))}
+                        onChange={(e) => this.setState(State('property.movAB.transPerson',e,this.state))}
+                        value={this.state.property.movAB.transPerson}
+                      />
                     </div>
                   </div>
                 </div>
@@ -606,7 +636,7 @@ export default class Property extends Component {
         </Modal>
 
         <Modal
-          header="ინვენტარის საწყობში დაბრუნება" visible={this.state.property.inverse.dialog} onHide={()=>this.onInverse()} style={{width:'900px'}}
+          header="ინვენტარის საწყობში დაბრუნება" visible={this.state.property.inverse.dialog} onHide={()=>this.setState(State('property.inverse.dialog',false,this.state))} style={{width:'900px'}}
           footer = {
             <div className="dialog_footer">
               <div className="left_side">
@@ -615,14 +645,14 @@ export default class Property extends Component {
               </div>
               {
                 (!this.state.property.inverse.expand)?
-                  <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.outcomeGenerateOverhead()} />
+                  <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.inverseGenerateOverhead()} />
                   :
                   <React.Fragment>
                     <span className="last_code">ბოლო კოდი - {this.state.property.lastCode} </span>
-                    <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.outcomeActiveOverhead()}/>
+                    <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.inverseActiveOverhead()}/>
                   </React.Fragment>
               }
-              <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.setState(State('property.inverse.dialog',false,this.state))}/>
+              <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.resetModalParam('inverse')}/>
             </div>
           }>
           {
@@ -648,7 +678,14 @@ export default class Property extends Component {
                     </div>
                     <div className="fullwidth p-col-6">
                       <label>ტრანსპორტ. პასხ. პირი:</label>
-                      <InputText value={this.state.property.inverse.transPerson} onChange = {(e)=>this.setState(State('property.inverse.transPerson',e.target.value,this.state))} type="text" placeholder="ტრანსპორტ. პასხ. პირი" />
+                      <AutoComplete
+                        field="fullName"
+                        suggestions={this.state.property.transPersonList}
+                        onComplete={(e) => this.transPersonList(e)}
+                        onSelect={(e)=>this.setState(State('property.inverse.transPerson',e,this.state))}
+                        onChange={(e) => this.setState(State('property.inverse.transPerson',e,this.state))}
+                        value={this.state.property.inverse.transPerson}
+                      />
                     </div>
                   </div>
                 </div>
@@ -669,6 +706,22 @@ export default class Property extends Component {
     );
   }
 
+  tabClick(tabID) {
+    this.setState(State('tab',tabID,this.state));
+    this.onReady(this.eventData);
+  }
+
+  getCode(type) {
+    http.get("/api/secured/Item/Addon?type=Person/Transfer&subType="+type).then(result => {
+      if (result.status === 200) {
+        if(type === 'last'){
+          this.setState(State('property.lastCode',result.data.Right,this.state));
+        }else if(type === 'new'){
+          this.setState(State('property.newCode',result.data.Right,this.state));
+        }
+      }
+    });
+  }
 
   onClickedCell = (params) => {
     if(params.colDef.field==="cartId"){
@@ -695,7 +748,7 @@ export default class Property extends Component {
     }
   };
 
-  getCartItems= async ()=>{
+  getCartItems = async ()=>{
     await getCartItems({'globalKey':this.state.tab})
       .then(result => {
         (_.isUndefined(result)) ? this.setState(State('cart.tab' + this.state.tab, [], this.state)) : this.setState(State('cart.tab' + this.state.tab, result, this.state));
@@ -722,19 +775,39 @@ export default class Property extends Component {
   };
 
   resetModalParam(modal){
-    this.setState(State('property.personality',[],this.state));
-    this.setState(State('property.roomList',[],this.state));
-
-    this.setState(State('property.'+modal+'.person','',this.state));
-    this.setState(State('property.'+modal+'.date',new Date(),this.state));
     this.setState(State('property.'+modal+'.dialog',false,this.state));
     this.setState(State('property.'+modal+'.expand',false,this.state));
-    this.setState(State('property.'+modal+'.comment','',this.state));
 
+    this.setState(State('property.personality',[],this.state));
+    this.setState(State('property.roomList',[],this.state));
+    this.setState(State('property.stockManList',[],this.state));
+    this.setState(State('property.propertyManagementList',[],this.state));
+    this.setState(State('property.transPersonList',[],this.state));
+    this.setState(State('property.requestPersonList',[],this.state));
+
+
+    this.setState(State('property.'+modal+'.date',new Date(),this.state));
+    this.setState(State('property.'+modal+'.comment','',this.state));
+    this.setState(State('property.'+modal+'.files',[],this.state));
+
+
+    if(modal === 'disposition') {
+      this.setState(State('property.'+modal+'.person','',this.state));
+    }
     if(modal === 'outcome'){
       this.setState(State('property.'+modal+'.transPerson','',this.state));
       this.setState(State('property.'+modal+'.stockMan','',this.state));
       this.setState(State('property.'+modal+'.section','',this.state));
+    }
+    if(modal === 'movAB') {
+      this.setState(State('property.'+modal+'.transPerson','',this.state));
+      this.setState(State('property.'+modal+'.propertyManagement','',this.state));
+      this.setState(State('property.'+modal+'.requestPerson','',this.state));
+    }
+    if(modal === 'inverse') {
+      this.setState(State('property.'+modal+'.transPerson','',this.state));
+      this.setState(State('property.'+modal+'.section','',this.state));
+      this.setState(State('property.'+modal+'.stockMan','',this.state));
     }
   }
 
@@ -749,11 +822,22 @@ export default class Property extends Component {
     });
   }
 
-  transPersonList(){
-    http.get("/api/secured/Staff/Filter/ByName/V2?name="+this.state.property.outcome.transPerson).then(result => {
+  transPersonList(e){
+    http.get("/api/secured/Staff/Filter/ByName/V2?name="+e).then(result => {
       if (result.status === 200) {
         this.setState(State('property.transPersonList',_.map(result.data,(value)=>{
-          return {id:value.id, name:value.fullname}
+          return {id:value.id, name:value.fullname, fullName: value.fullname}
+        }), this.state));
+      }
+    });
+  }
+
+  // მომთხოვნი პიროვნება
+  requestPersonList(e) {
+    http.get("/api/secured/Staff/Filter/ByName/V2?name="+e).then(result => {
+      if (result.status === 200) {
+        this.setState(State('property.requestPersonList', _.map(result.data,(value) =>{
+          return {id:value.id, name:value.fullname, fullName: value.fullname}
         }), this.state));
       }
     });
@@ -790,22 +874,14 @@ export default class Property extends Component {
 
   dispositionGenerateOverhead() {
     this.setState(State('property.disposition.expand',true,this.state));
-    http.get("/api/secured/Item/Addon?type=Person/Transfer&subType=new").then(result => {
-      if (result.status === 200) {
-        this.setState(State('property.newCode',result.data.Right,this.state));
-      }
-    });
+    this.getCode('new');
   };
 
   onDisposition() {
     this.setState(State('property.disposition.dialog',true,this.state));
     this.setState(State('property.disposition.expand',false,this.state));
 
-    http.get("/api/secured/Item/Addon?type=Person/Transfer&subType=last").then(result => {
-      if (result.status === 200) {
-        this.setState(State('property.lastCode',result.data.Right,this.state));
-      }
-    });
+    this.getCode('last');
   };
 
   dispositionPersonRoom = (id) => {
@@ -861,22 +937,14 @@ export default class Property extends Component {
 
   outcomeGenerateOverhead() {
     this.setState(State('property.outcome.expand',true,this.state));
-    http.get("/api/secured/Item/Addon?type=Person/Transfer&subType=new").then(result => {
-      if (result.status === 200) {
-        this.setState(State('property.newCode',result.data.Right,this.state));
-      }
-    });
+    this.getCode('new');
   };
 
   onOutcome = (event) => {
     this.setState(State('property.outcome.dialog',true,this.state));
     this.setState(State('property.outcome.expand',false,this.state));
 
-    http.get("/api/secured/Item/Addon?type=Person/Transfer&subType=last").then(result => {
-      if (result.status === 200) {
-        this.setState(State('property.lastCode',result.data.Right,this.state));
-      }
-    });
+    this.getCode('last');
   };
 
   warehouseManagement = (id) => {
@@ -891,13 +959,44 @@ export default class Property extends Component {
   // </editor-fold>
 
   // <editor-fold defaultstate="collapsed" desc="ინვენტარის მოძრაობა შენობებს შორის მოდალი">
-  onMoveAB = (event) => {
-    this.setState(State('property.movAB.dialog',true,this.state));
-    http.get("/api/secured/Staff/Filter/ByName/V2?name=" + event).then(result => {
-      if (result.status === 200) {
-        this.setState(State('property.personality', result.data, this.state));
+  movABActiveOverhead() {
+    let formData = new FormData();
+
+    formData.append('note', this.state.property.movAB.comment);
+    formData.append('addon', this.state.property.newCode);
+    formData.append('trDate',moment(this.state.property.movAB.date).format('DD-MM-YYYY'));
+
+    formData.append('carrierPerson', this.state.property.movAB.transPerson.id); // ტრანსპორტ. პასხ. პირი:
+    formData.append('toWhomSection', this.state.property.movAB.propertyManagement.id); // ქონების მართვა
+    formData.append('requestPerson', this.state.property.movAB.requestPerson.id); // მომთხოვნი პიროვნება
+
+    formData.append('files', this.state.property.movAB.files);
+    formData.append('list', JSON.stringify(_.map(this.state.cart["tab"+this.state.tab], value => {
+      let val =  JSON.parse(value);
+      return {
+        itemId: val.id,
+        amount: val.amount,
+        list:""
       }
-    })
+    })));
+
+    http.post("/api/secured/Item/Section/Transfer",formData).then(result => {
+      if (result.status === 200) {
+        this.removeCartItem();
+        this.resetModalParam('movAB');
+        this.onReady(this.eventData);
+      }
+    });
+  }
+
+  movABGenerateOverhead() {
+    this.setState(State('property.movAB.expand',true,this.state));
+    this.getCode('new');
+  };
+  onMoveAB = (event) => {
+    this.resetModalParam('movAB');
+    this.getCode('last');
+    this.setState(State('property.movAB.dialog',true,this.state));
   };
 
   propertyManagement = () => {
@@ -912,14 +1011,45 @@ export default class Property extends Component {
   // </editor-fold>
 
   // <editor-fold defaultstate="collapsed" desc="ინვენტარის საწყობში დაბრუნება მოდალი">
-  onInverse = (event) => {
-    this.setState(State('property.inverse.dialog',false,this.state));
-    http.get("/api/secured/Staff/Filter/ByName/V2?name=" + event).then(result => {
-      if (result.status === 200) {
-        this.setState(State('property.personality', result.data, this.state));
+  inverseActiveOverhead() {
+    let formData = new FormData();
+
+    formData.append('note', this.state.property.inverse.comment);
+    formData.append('addon', this.state.property.newCode);
+    formData.append('trDate',moment(this.state.property.inverse.date).format('DD-MM-YYYY'));
+
+    formData.append('carrierPerson', this.state.property.inverse.transPerson.id);
+    formData.append('toWhomStock', this.state.property.inverse.stockMan.id);
+
+    formData.append('files', this.state.property.inverse.files);
+    formData.append('list', JSON.stringify(_.map(this.state.cart["tab"+this.state.tab], value => {
+      let val =  JSON.parse(value);
+      return {
+        itemId: val.id,
+        amount: val.amount,
+        list:""
       }
-    })
+    })));
+
+    http.post("/api/secured/Item/Stock/Return",formData).then(result => {
+      if (result.status === 200) {
+        this.removeCartItem();
+        this.resetModalParam('inverse');
+        this.onReady(this.eventData);
+      }
+    });
+  }
+
+  inverseGenerateOverhead() {
+    this.setState(State('property.inverse.expand',true,this.state));
+    this.getCode('new');
   };
+
+  onInverse = (event) => {
+    this.getCode('last');
+    this.setState(State('property.inverse.dialog',true,this.state))
+  };
+
   inverseWarehouseManagement = (id) => {
     http.get("/api/secured/Staff/Filter/ByStock?stockId=" + id).then(result => {
       if (result.status === 200) {

@@ -48,7 +48,37 @@
 .ag-gray{
   background: rgba(255, 167, 0, 0.41) !important;
 }
-
+.cart_count {
+  font-size: 18px;
+  color: #007ad9;
+  cursor: pointer;
+  margin-left: 5px;
+  position: relative;
+  padding-right: 22px;
+  i {
+    font-size: 30px;
+  }
+  span {
+    min-width: 24px;
+    height: 24px;
+    line-height: 23px;
+    display: inline-block;
+    text-align: center;
+    background: rgba(252, 216, 23, 0.85);
+    color: #000;
+    border-radius: 30px;
+    font-size: 14px;
+    position: absolute;
+    top: -5px;
+    right: 3px;
+    font-weight: bold;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
+    padding: 0 5px;
+    &:empty {
+      //display: none;
+    }
+  }
+}
 // ავტოცომპლეიტის ბაგის გასწორება
 
 /*

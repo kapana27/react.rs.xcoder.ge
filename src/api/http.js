@@ -2,7 +2,6 @@ import axios from 'axios';
 
 axios.create({
   baseURL: '/',
-
 });
 
 const get = (uri) => {

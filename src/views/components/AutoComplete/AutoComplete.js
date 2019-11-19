@@ -36,7 +36,8 @@ export const AutoComplete = (props) => {
   function change(e) {
     setLoader(true);
     setContainer(true);
-    props.onChange(e.target.value); props.onComplete(e.target.value);
+    props.onChange(e.target.value);
+    props.onComplete(e.target.value);
   }
 
   return (
