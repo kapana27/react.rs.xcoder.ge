@@ -283,8 +283,8 @@ export default class Property extends Component {
       },
       tab: 21,
       cart:{
-        tab11:[],
-        tab12:[],
+        tab21:[],
+        tab22:[],
         dialog:false
       }
     }
@@ -818,6 +818,7 @@ export default class Property extends Component {
     http.post("/api/secured/internal/session/clear",formData).then(result => {
       if (result.status === 200) {
         this.setState(State('cart.tab11',[],this.state));
+        //this.onReady(this.eventData);
       }
     });
   }
@@ -878,6 +879,7 @@ export default class Property extends Component {
   };
 
   onDisposition() {
+    console.log(this.state);
     this.setState(State('property.disposition.dialog',true,this.state));
     this.setState(State('property.disposition.expand',false,this.state));
 

@@ -9,7 +9,7 @@ import {
   FileUploader,
   Cart,
   TreeTableGroup,
-  Search,
+  Search, Overhead,
 } from '../../components'
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -201,6 +201,18 @@ export default class Warehouse extends Component {
           sortable: true,
           resizable: true
         },
+        rowClassRules: {
+          'ag-red': function(params) {
+            try {
+              return params['data']['tmpAmount'] > 0;
+            } catch (e) {}
+          },
+          'ag-gray': function(params) {
+            try {
+              return params['data']['tmpAmount'] === 0 && (params['data']['initialAmount'] !== params['data']['amount']);
+            } catch (e) {}
+          }
+        },
         rowSelection: 'single',
         rowModelType: 'serverSide',
         paginationPageSize: 100,
@@ -274,7 +286,13 @@ export default class Warehouse extends Component {
         },
         transfer: {
           date: new Date(),
-          dialog: false
+          dialog: false,
+          expand: false,
+          comment: "",
+          transPerson: "",
+          propertyManagement: "",
+          section: "",
+          files:[],
         },
         search: {
           show: false,
@@ -292,7 +310,22 @@ export default class Warehouse extends Component {
         stock: [],
         itemSuggestions: [],
         makerSuggestions: [],
-        modelSuggestions: []
+        modelSuggestions: [],
+
+        // პიროვნებების მასივი
+        personality:[],
+        roomList:[],
+        sectionList:[
+          {id:'11', name:'საწყობი A'},
+          {id:'12', name:'საწყობი B'}
+        ],
+        stockManList: [],
+        propertyManagementList: [],
+        transPersonList: [],
+        // მომთხოვნი პიროვნება
+        requestPersonList: [],
+        lastCode: "",
+        newCode: "",
       },
       tab: 11,
       cart: {
@@ -430,7 +463,7 @@ export default class Warehouse extends Component {
           <div className="buttonBox">
             <Button label="ინვ.გაცემა" icon="pi pi-arrow-up" className="p-button-danger"
                     onClick={() => this.setState(State('inventor.outcome.dialog', true, this.state))}/>
-            <Button label="მოძრაობა A-B" className="ui-button-raised arrow-icon" onClick={() => this.setState(State('inventor.transfer.dialog', true, this.state))}/>
+            <Button label="მოძრაობა A-B" className="ui-button-raised arrow-icon" onClick={()=>this.onTransfer()}/>
             {
               (!this.state.inventor.search.show)?
                 <Button label="ძებნა" icon="pi pi-search"  onClick={()=>this.setState(State('inventor.search.show',true,this.state))}/>:''
@@ -463,6 +496,7 @@ export default class Warehouse extends Component {
             animateRows={true}
             debug={false}
             gridOptions={this.state.grid.gridOptions}
+            rowClassRules={this.state.grid.rowClassRules}
             onGridReady={this.onReady}
             onCellClicked={this.onClickedCell}
           />
@@ -919,38 +953,75 @@ export default class Warehouse extends Component {
           </TabView>
           <Cart data={this.state.cart['tab' + this.state.tab]}/>
         </Modal>
-        <Modal header="ინვენტარის მოძრაობა სექციებს შორის" visible={this.state.inventor.transfer.dialog}
-               onHide={() => this.setState(State('inventor.transfer.dialog', false, this.state))}
-               style={{width: '1200px'}}>
-          <div className="incomeModal p-grid">
-            <div className="fullwidth p-col-8">
-              <div className="p-grid">
-                <div className="fullwidth p-col-6">
-                  <label>თარიღი</label>
-                  <InputText type="text" placeholder="თარიღი"/>
-                </div>
-                <div className="fullwidth p-col-6">
-                  <label>სექცია</label>
-                  <Dropdown optionLabel="name" placeholder="სექცია" style={{width: '100%'}}/>
-                </div>
-                <div className="fullwidth p-col-6">
-                  <label>ქონების მართვა</label>
-                  <Dropdown optionLabel="name" placeholder="სექცია" style={{width: '100%'}}/>
-                </div>
-                <div className="fullwidth p-col-6">
-                  <label>ტრანსპორტირების პასხ. პირი</label>
-                  <InputText type="text" placeholder="ტრანსპორტირების პასხ. პირი"/>
-                </div>
+
+
+        <Modal
+          header="ინვენტარის მოძრაობა სექციებს შორის" visible={this.state.inventor.transfer.dialog}
+          onHide={() => this.setState(State('inventor.transfer.dialog', false, this.state))}
+          style={{width: '900px'}}
+          footer = {
+            <div className="dialog_footer">
+              <div className="left_side">
+                <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
+                <Button label="დოკუმენტები" className="ui-button-raised"/>
               </div>
+              {
+                (!this.state.inventor.transfer.expand)?
+                  <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.transferGenerateOverhead()} />
+                  :
+                  <React.Fragment>
+                    <span className="last_code">ბოლო კოდი - {this.state.inventor.lastCode} </span>
+                    <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.transferActiveOverhead()}/>
+                  </React.Fragment>
+              }
+              <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.resetModalParam('transfer')}/>
             </div>
-            <div className="fullwidth p-col-4">
-              <label>კომენტარი</label>
-              <InputTextarea rows={4} placeholder="შენიშვნა" style={{width: '100%', minHeight: '100px'}}/>
-            </div>
-          </div>
-          <hr/>
-          <Cart data={this.state.cart['tab' + this.state.tab]}/>
+          }>
+          {
+            (this.state.inventor.transfer.expand)?
+              <div className="expand_mode">
+                <Overhead title="საწყობიდან გასავლის ელ. ზედდებული ს.გ - " carts={this.state.cart} tab={this.state.tab}  newCode={this.state.inventor.newCode} onChange={e=>this.setState(State('property.newCode',e.target.value,this.state))}/>
+              </div>
+              :
+              <div className="incomeModal p-grid">
+                <div className="fullwidth p-col-8">
+                  <div className="p-grid">
+                    <div className="fullwidth p-col-6">
+                      <label>თარიღი</label>
+                      <Calendar date={this.state.inventor.transfer.date} onDateChange={props=>this.setState(State('inventor.transfer.date',props,this.state)) } />
+                    </div>
+                    <div className="fullwidth p-col-6">
+                      <label>სექცია</label>
+                      <Dropdown value={this.state.inventor.transfer.section} options={this.state.inventor.sectionList} onChange={(e) => this.setState(State( "inventor.transfer.section",{ id: e.value.id, name: e.value.name},this.state), this.warehouseManagement(e.value.id))} optionLabel="name" placeholder="სექცია" style={{width:'100%'}} />
+                    </div>
+                    <div className="fullwidth p-col-6">
+                      <label>ქონების მართვა</label>
+                      <Dropdown value={this.state.inventor.transfer.propertyManagement}  onMouseDown={(e)=>this.propertyManagement()} options={this.state.inventor.propertyManagementList} onChange={(e) => this.setState(State("inventor.transfer.propertyManagement",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="" style={{width:'100%'}} />
+                    </div>
+                    <div className="fullwidth p-col-6">
+                      <label>ტრანსპორტირების პასხ. პირი</label>
+                      <AutoComplete
+                        field="fullName"
+                        suggestions={this.state.inventor.transPersonList}
+                        onComplete={(e) => this.transPersonList(e)}
+                        onSelect={(e)=>this.setState(State('inventor.transfer.transPerson',e,this.state))}
+                        onChange={(e) => this.setState(State('inventor.transfer.transPerson',e,this.state))}
+                        value={this.state.inventor.transfer.transPerson}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="fullwidth p-col-4">
+                  <label>კომენტარი</label>
+                  <InputTextarea rows={4} placeholder="შენიშვნა" style={{width: '100%', minHeight: '100px'}}/>
+                </div>
+                <Cart data={this.state.cart['tab'+this.state.tab]}/>
+              </div>
+          }
         </Modal>
+
+
+
         <Modal header="კალათა" visible={this.state.cart.dialog}
                onHide={() => this.setState(State('cart.dialog', false, this.state))} style={{width: '800px'}}>
           <Cart data={this.state.cart['tab' + this.state.tab]}/>
@@ -968,10 +1039,132 @@ export default class Warehouse extends Component {
     );
   }
 
+  // <editor-fold defaultstate="collapsed" desc="ზურას ფუნქციები">
   tabClick(tabID) {
     this.setState(State('tab',tabID,this.state));
     this.onReady(this.eventData);
   }
+
+  getCode(type) {
+    http.get("/api/secured/Item/Addon?type=Person/Transfer&subType="+type).then(result => {
+      if (result.status === 200) {
+        if(type === 'last'){
+          this.setState(State('inventor.lastCode',result.data.Right,this.state));
+        }else if(type === 'new'){
+          this.setState(State('inventor.newCode',result.data.Right,this.state));
+        }
+      }
+    });
+  }
+
+  warehouseManagement = (id) => {
+    http.get("/api/secured/Staff/Filter/ByStock?stockId=" + id).then(result => {
+      if (result.status === 200) {
+        this.setState(State('inventor.stockManList',_.map(result.data,(value)=> {
+          return {id:value.id, name:value.fullname}
+        }), this.state));
+      }
+    });
+  };
+
+  propertyManagement = () => {
+    http.get("/api/secured/Staff/Filter/ByProperty?name=").then(result => {
+      if (result.status === 200) {
+        this.setState(State('inventor.propertyManagementList', _.map(result.data,(value) =>{
+          return {id:value.id, name:value.fullname}
+        }), this.state));
+      }
+    })
+  };
+
+  transPersonList(e){
+    http.get("/api/secured/Staff/Filter/ByName/V2?name="+e).then(result => {
+      if (result.status === 200) {
+        this.setState(State('inventor.transPersonList',_.map(result.data,(value)=>{
+          return {id:value.id, name:value.fullname, fullName: value.fullname}
+        }), this.state));
+      }
+    });
+  }
+
+  resetModalParam(modal){
+    this.setState(State('inventor.'+modal+'.dialog',false,this.state));
+    this.setState(State('inventor.'+modal+'.expand',false,this.state));
+
+    this.setState(State('inventor.personality',[],this.state));
+    this.setState(State('inventor.roomList',[],this.state));
+    this.setState(State('inventor.stockManList',[],this.state));
+    this.setState(State('inventor.propertyManagementList',[],this.state));
+    this.setState(State('inventor.transPersonList',[],this.state));
+    this.setState(State('inventor.requestPersonList',[],this.state));
+
+    this.setState(State('inventor.'+modal+'.date',new Date(),this.state));
+    this.setState(State('inventor.'+modal+'.comment','',this.state));
+    this.setState(State('inventor.'+modal+'.files',[],this.state));
+
+    if(modal === 'transfer') {
+      this.setState(State('inventor.'+modal+'.transPerson','',this.state));
+      this.setState(State('inventor.'+modal+'.propertyManagement','',this.state));
+      this.setState(State('inventor.'+modal+'.section','',this.state));
+    }
+  }
+  removeCartItem(modal) {
+    let formData = new FormData();
+    formData.append('globalKey', this.state.tab);
+
+    http.post("/api/secured/internal/session/clear",formData).then(result => {
+      if (result.status === 200) {
+        this.setState(State('cart.tab11',[],this.state));
+        //this.onReady(this.eventData);
+      }
+    });
+  }
+  // </editor-fold>
+
+  // <editor-fold defaultstate="collapsed" desc="ინვენტარის მოძრაობა სექციებს შორის">
+  transferActiveOverhead() {
+    let formData = new FormData();
+
+    formData.append('note', this.state.inventor.transfer.comment);
+    formData.append('addon', this.state.inventor.newCode);
+    formData.append('trDate',moment(this.state.inventor.transfer.date).format('DD-MM-YYYY'));
+
+    formData.append('carrierPerson', this.state.inventor.transfer.transPerson.id); // ტრანსპორტ. პასხ. პირი:
+    formData.append('toWhomStock', this.state.inventor.transfer.propertyManagement.id); // ქონების მართვა
+    formData.append('fromStock', this.state.inventor.transfer.section.id);
+
+    formData.append('files', this.state.inventor.transfer.files);
+    formData.append('list', JSON.stringify(_.map(this.state.cart["tab"+this.state.tab], value => {
+      let val =  JSON.parse(value);
+      return {
+        itemId: val.id,
+        amount: val.amount,
+        list:""
+      }
+    })));
+
+    http.post("/api/secured/Item/Stock/Change",formData).then(result => {
+      if (result.status === 200) {
+        this.removeCartItem();
+        this.resetModalParam('transfer');
+        this.onReady(this.eventData);
+      }
+    });
+  }
+
+  transferGenerateOverhead() {
+    this.setState(State('inventor.transfer.expand',true,this.state));
+    this.getCode('new');
+  };
+
+  onTransfer = (event) => {
+    this.setState(State('inventor.transfer.dialog',true,this.state));
+    this.setState(State('inventor.transfer.expend',false,this.state));
+    this.getCode('last');
+  };
+  // </editor-fold>
+
+
 
   suggestSupplier = (event) => {
     this.setState(State('inventor.supplierSuggestions', [], this.state));
