@@ -265,6 +265,23 @@ export default class Property extends Component {
         },
         search: {
           show: false,
+          data: {
+            name:"",
+            maker:"",
+            model:"",
+            price:"",
+            amount:"",
+            measureUnit:"",
+            barcode:"",
+            factoryNumber:"",
+            itemGroup:"",
+            itemType:"",
+            itemStatus:"",
+            supplier:"",
+            invoice:"",
+            invoiceAddon:"",
+            inspectionNumber:""
+          }
         },
         // პიროვნებების მასივი
         personality:[],
@@ -288,7 +305,7 @@ export default class Property extends Component {
         dialog:false
       }
     }
-
+    this.loadInventorData();
   }
   componentDidMount() {
   }
@@ -301,7 +318,7 @@ export default class Property extends Component {
     this.eventData = params;
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
-    const filterData = this.filter;
+    const filterData = this.state.property.search.data;
     const selectedTabId = this.selectedTabId;
     const cartItems = _.map(this.state.cart['tab'+this.state.tab],( (value,index)=>index));
     const datasource = {
@@ -360,22 +377,12 @@ export default class Property extends Component {
   loadInventorData = () => {
     http.get("/api/secured/List/BarCode/Select").then(result => {
       if (result.status === 200) {
-        this.setState(State('inventor.barCodes', result.data, this.state));
+        this.setState(State('property.barCodes', result.data, this.state));
       }
     });
     http.get("/api/secured/MeasureUnit/List").then(result => {
       if (result.status === 200) {
-        this.setState(State('inventor.measureUnitList', result.data, this.state));
-      }
-    });
-    http.get("/api/secured/ItemType/Select").then(result => {
-      if (result.status === 200) {
-        this.setState(State('inventor.itemTypes', result.data, this.state));
-      }
-    });
-    http.get("/api/secured/ItemStatus/Select").then(result => {
-      if (result.status === 200) {
-        this.setState(State('inventor.itemStatus', result.data, this.state));
+        this.setState(State('property.measureUnitList', result.data, this.state));
       }
     });
   };
@@ -413,8 +420,18 @@ export default class Property extends Component {
           </div>
         </div>
 
-        {(this.state.property.search.show)?<Search onClick={()=>this.setState(State('property.search.show',false,this.state))}/>:''}
+        {(this.state.property.search.show)?
 
+          <Search
+            measureUnits={this.state.property.measureUnitList}
+            barcodeTypes={this.state.property.barCodes}
+            data={this.state.property.search.data}
+            onChange={(value,field)=>{
+              this.setState(State('property.search.data.' + field, value,this.state));
+            }}
+            onFilter={()=>this.onGridReady(this.eventData,true)}
+            onClick={()=>this.setState(State('property.search.show',false,this.state))}
+          />:''}
 
         <div id="myGrid" className="ag-theme-balham" >
           <AgGridReact

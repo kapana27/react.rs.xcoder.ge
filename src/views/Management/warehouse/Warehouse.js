@@ -297,6 +297,23 @@ export default class Warehouse extends Component {
         search: {
           show: false,
           dialog: false,
+          data: {
+            name:"",
+            maker:"",
+            model:"",
+            price:"",
+            amount:"",
+            measureUnit:"",
+            barcode:"",
+            factoryNumber:"",
+            itemGroup:"",
+            itemType:"",
+            itemStatus:"",
+            supplier:"",
+            invoice:"",
+            invoiceAddon:"",
+            inspectionNumber:""
+          }
         },
         supplierSuggestions: [],
         barCodes: [],
@@ -334,19 +351,19 @@ export default class Warehouse extends Component {
         dialog: false
       }
     };
-    //this.loadConstructor();
+    this.loadConstructor();
   }
   componentDidMount() {
     console.log("did")
   }
   onGridReady(params, filter= false) {
+
     this.eventData = params;
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
-    const filterData = this.filter;
+    const filterData = this.state.inventor.search.data;
     const selectedTabId = this.selectedTabId;
     const cartItems = _.map(this.state.cart['tab'+this.state.tab],( (value,index)=>index));
-    console.log(cartItems)
     const datasource = {
       getRows(params) {
         const parameters = [];
@@ -359,12 +376,14 @@ export default class Warehouse extends Component {
           });
         }
         if (filter) {
+          console.log(true)
           for (const f in filterData) {
             const name = (f.split('.').length > 0) ? f.split('.')[0] : f;
-            if (filterData[f] != '' && filterData[f] != undefined && filterData[f] !== null) {
+            if (filterData[f] !== '' && filterData[f] !== undefined && filterData[f] !== null) {
+
               parameters.push({
                 property: name,
-                value: filterData[f],
+                value: (_.isObject(filterData[f]))? filterData[f]['id']:filterData[f],
                 operator: 'like'
               });
             }
@@ -374,8 +393,6 @@ export default class Warehouse extends Component {
         http.get(Config.management.warehouse.get.items+"?stockId=11&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
           .then(response => {
             params.successCallback(response['data'].map((v, k) => {
-              console.log(v)
-
               v['rowId'] = (params['request']['startRow'] + 1 + k );
               if (v['barcode'].toString().length <= v['barCodeType']['length']) {
                 v.barcode = v['barCodeType']['value'] + new Array(v['barCodeType']['length'] - (v['barcode'].toString().length - 1)).join('0').slice((v['barCodeType']['length'] - (v['barcode'].toString().length - 1) || 2) * -1) + v['barcode'];
@@ -466,7 +483,8 @@ export default class Warehouse extends Component {
             <Button label="მოძრაობა A-B" className="ui-button-raised arrow-icon" onClick={()=>this.onTransfer()}/>
             {
               (!this.state.inventor.search.show)?
-                <Button label="ძებნა" icon="pi pi-search"  onClick={()=>this.setState(State('inventor.search.show',true,this.state))}/>:''
+                <Button label="ძებნა" icon="pi pi-search"
+                        onClick={()=>this.setState(State('inventor.search.show',true,this.state))}/>:''
             }
             <div className="cart_count">
               <i className="fa fa-cart-plus fa-lg " onClick={()=>this.setState(State('cart.dialog',true,this.state))}/>
@@ -474,9 +492,18 @@ export default class Warehouse extends Component {
             </div>
           </div>
         </div>
-
-        {(this.state.inventor.search.show)?<Search onClick={()=>this.setState(State('inventor.search.show',false,this.state))}/>:''}
-
+        {(this.state.inventor.search.show)?
+          <Search
+            measureUnits={this.state.inventor.measureUnitList}
+            barcodeTypes={this.state.inventor.barCodes}
+            data={this.state.inventor.search.data}
+            onChange={(value,field)=>{
+              this.setState(State('inventor.search.data.' + field, value,this.state));
+            }}
+            onFilter={()=>this.onGridReady(this.eventData,true)}
+            onClick={()=>this.setState(State('inventor.search.show',false,this.state))}
+          />
+          :''}
         <div
           id="myGrid"
           className="ag-theme-balham"
@@ -652,7 +679,7 @@ export default class Warehouse extends Component {
                       <label>შტრიხკოდი</label>
                       <Dropdown
                         value={this.state.inventor.income.detail.barCodeType}
-                        options={this.state.inventor.barCodes}
+                        barcodeTypes={_.map(this.state.inventor.barCodes,value=> {  return {id: value.id, name: value.name} })}
                         onChange={(e) => this.setState(State("inventor.income.detail.barCodeType", {
                           id: e.value.id,
                           name: e.value.name
@@ -953,8 +980,6 @@ export default class Warehouse extends Component {
           </TabView>
           <Cart data={this.state.cart['tab' + this.state.tab]}/>
         </Modal>
-
-
         <Modal
           header="ინვენტარის მოძრაობა სექციებს შორის" visible={this.state.inventor.transfer.dialog}
           onHide={() => this.setState(State('inventor.transfer.dialog', false, this.state))}
@@ -1019,9 +1044,6 @@ export default class Warehouse extends Component {
               </div>
           }
         </Modal>
-
-
-
         <Modal header="კალათა" visible={this.state.cart.dialog}
                onHide={() => this.setState(State('cart.dialog', false, this.state))} style={{width: '800px'}}>
           <Cart data={this.state.cart['tab' + this.state.tab]}/>
@@ -1039,12 +1061,10 @@ export default class Warehouse extends Component {
     );
   }
 
-  // <editor-fold defaultstate="collapsed" desc="ზურას ფუნქციები">
   tabClick(tabID) {
     this.setState(State('tab',tabID,this.state));
     this.onReady(this.eventData);
   }
-
   getCode(type) {
     http.get("/api/secured/Item/Addon?type=Person/Transfer&subType="+type).then(result => {
       if (result.status === 200) {
@@ -1056,7 +1076,6 @@ export default class Warehouse extends Component {
       }
     });
   }
-
   warehouseManagement = (id) => {
     http.get("/api/secured/Staff/Filter/ByStock?stockId=" + id).then(result => {
       if (result.status === 200) {
@@ -1066,7 +1085,6 @@ export default class Warehouse extends Component {
       }
     });
   };
-
   propertyManagement = () => {
     http.get("/api/secured/Staff/Filter/ByProperty?name=").then(result => {
       if (result.status === 200) {
@@ -1076,7 +1094,6 @@ export default class Warehouse extends Component {
       }
     })
   };
-
   transPersonList(e){
     http.get("/api/secured/Staff/Filter/ByName/V2?name="+e).then(result => {
       if (result.status === 200) {
@@ -1086,7 +1103,6 @@ export default class Warehouse extends Component {
       }
     });
   }
-
   resetModalParam(modal){
     this.setState(State('inventor.'+modal+'.dialog',false,this.state));
     this.setState(State('inventor.'+modal+'.expand',false,this.state));
@@ -1119,9 +1135,6 @@ export default class Warehouse extends Component {
       }
     });
   }
-  // </editor-fold>
-
-  // <editor-fold defaultstate="collapsed" desc="ინვენტარის მოძრაობა სექციებს შორის">
   transferActiveOverhead() {
     let formData = new FormData();
 
@@ -1151,21 +1164,15 @@ export default class Warehouse extends Component {
       }
     });
   }
-
   transferGenerateOverhead() {
     this.setState(State('inventor.transfer.expand',true,this.state));
     this.getCode('new');
   };
-
   onTransfer = (event) => {
     this.setState(State('inventor.transfer.dialog',true,this.state));
     this.setState(State('inventor.transfer.expend',false,this.state));
     this.getCode('last');
   };
-  // </editor-fold>
-
-
-
   suggestSupplier = (event) => {
     this.setState(State('inventor.supplierSuggestions', [], this.state));
     http.get("/api/secured/Supplier/Filter?query=" + event).then(result => {
@@ -1240,8 +1247,8 @@ export default class Warehouse extends Component {
     }
   };
   loadConstructor = async () => {
-    await this.getCartItems();
     this.getStockData();
+    this.loadInventorData();
   };
   getCartItems= async ()=>{
     await getCartItems({'globalKey':this.state.tab})
@@ -1420,7 +1427,24 @@ export default class Warehouse extends Component {
           dialog: false
         },
         search: {
-          dialog: false
+          dialog: false,
+          data: {
+            name:"",
+            maker:"",
+            model:"",
+            price:"",
+            amount:"",
+            measureUnit:"",
+            barcode:"",
+            factoryNumber:"",
+            itemGroup:"",
+            itemType:"",
+            itemStatus:"",
+            supplier:"",
+            invoice:"",
+            invoiceAddon:"",
+            inspectionNumber:""
+          }
         },
         supplierSuggestions: [],
         barCodes: [],
