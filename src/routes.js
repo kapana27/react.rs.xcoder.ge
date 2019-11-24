@@ -38,6 +38,7 @@ const User = React.lazy(() => import('./views/Users/User'));
 const Management = React.lazy(() => import('./views/Management'));
 const WareHouse = React.lazy(() => import('./views/Management/warehouse'));
 const Property = React.lazy(() => import('./views/Management/property'));
+const Messages = React.lazy(() => import('./views/Messages'));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -85,6 +86,7 @@ const routes = [
   { path: '/Management', exact: true, name: 'Management', component: Management },
   { path: '/Management/warehouse', name: 'WareHouse', component: WareHouse },
   { path: '/Management/property', name: 'Property', component: Property },
+  { path: '/Messages', name: 'Message', component: Messages },
 ];
 
 export default routes;
