@@ -561,6 +561,14 @@ export default class Warehouse extends Component {
                     <th>მოდელი</th>
                     <th>ფასი</th>
                     <th>რაოდენობა</th>
+                    {
+                      ( this.state.inventor.income.detail.itemGroup.isStrict === 1)?
+                        <React.Fragment>
+                          <td>-დან</td>
+                          <td>-მდე</td>
+                        </React.Fragment>:
+                        ''
+                    }
                     <th>განზ.ერთ</th>
                     <th>შტრიხცოდი</th>
                     <th>{ this.state.inventor.income.detail.itemGroup.isCar === 1? 'Vin კოდი': "ქარხნული ნომერი" }</th>
@@ -572,6 +580,7 @@ export default class Warehouse extends Component {
                         </React.Fragment>:
                         ''
                     }
+
                     <th>ჯგუფი</th>
                     <th>ტიპი</th>
                     <th>სტატუსი</th>
@@ -587,7 +596,16 @@ export default class Warehouse extends Component {
                           <td>{this.state.inventor.income.detail.maker.name}</td>
                           <td>{this.state.inventor.income.detail.model.name}</td>
                           <td>{this.state.inventor.income.detail.price}</td>
-                          <td>{value.amount}</td>
+
+                          {
+                            ( this.state.inventor.income.detail.itemGroup.isStrict === 1)?
+                              <React.Fragment>
+                                <td>{Math.round(this.state.inventor.income.detail.numbers.to*1 - this.state.inventor.income.detail.numbers.from*1)}</td>
+                                <td>{this.state.inventor.income.detail.numbers.from}</td>
+                                <td>{this.state.inventor.income.detail.numbers.to}</td>
+                              </React.Fragment>:
+                              <td>{value.amount}</td>
+                          }
                           <td>{this.state.inventor.income.detail.measureUnit.name}</td>
                           <td>
                             {value.barCodeName}
@@ -603,6 +621,7 @@ export default class Warehouse extends Component {
                               </React.Fragment>:
                               ''
                           }
+
                           <td>{this.state.inventor.income.detail.itemGroup.name}</td>
                           <td>{this.state.inventor.income.detail.type.name}</td>
                           <td>{this.state.inventor.income.detail.status.name}</td>
@@ -622,7 +641,8 @@ export default class Warehouse extends Component {
                   suggestions={this.state.inventor.itemSuggestions}
                   onComplete={this.suggestItem}
                   onSelect={(e) => this.setState(State('inventor.income.detail.item', e, this.state), () => this.parseInventorDetailData(this.state.inventor.income.detail.item))}
-                  onChange={(e) => this.setState(State('inventor.income.detail.item.name', e, this.state))}
+                  onChange={(e) =>
+                    this.setState(State('inventor.income.detail.item.name', e, this.state))}
                   value={this.state.inventor.income.detail.item}
                 />
               </div>
@@ -653,13 +673,24 @@ export default class Warehouse extends Component {
                   value={this.state.inventor.income.detail.model}
                 />
               </div>
-              <div className="fullwidth p-col-2">
-                <label>რაოდენობა</label>
-                <InputText type="text" placeholder="დასახელება"
-                           className={this.state.inventor.income.errors.count ? 'bRed' : ''}
-                           value={this.state.inventor.income.detail.count}
-                           onChange={(e) => this.setState(State("inventor.income.detail.count", e.target.value, this.state))}/>
-              </div>
+
+              {
+                (this.state.inventor.income.detail.itemGroup.isStrict === 1) ?
+                  '':
+                  <div className="fullwidth p-col-2">
+                    <label>რაოდენობა</label>
+                    <InputText type="text" placeholder="დასახელება"
+                               className={this.state.inventor.income.errors.count ? 'bRed' : ''}
+                               value={this.state.inventor.income.detail.count}
+                               onChange={(e) => this.setState(State("inventor.income.detail.count", e.target.value, this.state))}/>
+                  </div>
+
+
+
+              }
+
+
+
               <div className="fullwidth p-col-2">
                 <label>ერთეულის ფასი</label>
                 <InputText type="text" placeholder="დასახელება" value={this.state.inventor.income.detail.price}
@@ -1071,13 +1102,29 @@ export default class Warehouse extends Component {
               </div>
           }
         </Modal>
-        <Modal header="კალათა" visible={this.state.cart.dialog}
-               onHide={() => this.setState(State('cart.dialog', false, this.state))} style={{width: '800px'}}>
+        <Modal
+          header="კალათა"
+          footer = {
+            <div className="dialog_footer">
+              <div className="left_side">
+                <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
+              </div>
+              <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.setState(State('cart.dialog', false, this.state))}/>
+            </div>
+          }
+          onClick={()=>this.removeCartItem()}
+          visible={this.state.cart.dialog}
+          onHide={() => this.setState(State('cart.dialog', false, this.state))}
+          style={{width: '800px'}}
+        >
           <Cart data={this.state.cart['tab' + this.state.tab]}/>
         </Modal>
-        <Modal className="itemGroup" header="საქონლის ჯგუფი" visible={this.state.inventor.itemGroup.dialog}
-               onHide={() => this.setState(State('inventor.itemGroup.dialog', false, this.state))}
-               style={{width: '800px', maxHeight: '500px'}}>
+        <Modal
+          className="itemGroup"
+          header="საქონლის ჯგუფი"
+          visible={this.state.inventor.itemGroup.dialog}
+          onHide={() => this.setState(State('inventor.itemGroup.dialog', false, this.state))}
+          style={{width: '800px', maxHeight: '500px'}}>
           {
             (this.state.inventor.itemGroup.dialog) ?
               <TreeTableGroup
@@ -1085,7 +1132,7 @@ export default class Warehouse extends Component {
                 data={this.state.inventor.itemGroup.data}
                 onSelectItemGroup={(e) => this.setState(State("inventor.income.detail.itemGroup", e, this.state),
                   () => this.setState(State("inventor.itemGroup.dialog", false, this.state),
-                    () =>{ let group = this.state.inventor.income.detail.itemGroup; this.setState(State('inventor.income.detail.barCodeType', (group.isCar ===1 || group.isStrict ===1 || group.spend ===1 )? {id:'', name:""}: this.state.inventor.income.detail.barCodeType, this.state )); } )) }  /> : ''
+                    () =>{ let group = this.state.inventor.income.detail.itemGroup; this.setState(State('inventor.income.detail.barCodeType', (group.isCar ===1 || group.isStrict ===1 || group.spend ===1 )? {id:'', name:""}: this.state.inventor.income.detail.barCodeType, this.state ),()=>console.log(this.state.inventor.income.detail.itemGroup)); } )) }  /> : ''
           }
         </Modal>
       </React.Fragment>
