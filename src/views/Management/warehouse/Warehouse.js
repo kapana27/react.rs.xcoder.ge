@@ -233,7 +233,7 @@ export default class Warehouse extends Component {
           dialog: false,
           showDetails: false,
           date: new Date(),
-          supplier: {id:'',name:''},
+          supplier: {id:null,name:''},
           comment:"",
           addon: {Left: '', Right: ''},
           invoice: '',
@@ -257,6 +257,7 @@ export default class Warehouse extends Component {
             files:[],
             lastbarCode: {value: '', name: '', length: '', id: '', barCodeVisualValue: "", startPoint: "", endPoint: ""},
             list: [],
+            comment:'',
             car: {
               number:"",
               year:""
@@ -562,7 +563,15 @@ export default class Warehouse extends Component {
                     <th>რაოდენობა</th>
                     <th>განზ.ერთ</th>
                     <th>შტრიხცოდი</th>
-                    <th>მანქანისნომერი</th>
+                    <th>{ this.state.inventor.income.detail.itemGroup.isCar === 1? 'Vin კოდი': "ქარხნული ნომერი" }</th>
+                    {
+                      ( this.state.inventor.income.detail.itemGroup.isCar === 1)?
+                        <React.Fragment>
+                        <th>სახელმწიფო ნომერი</th>
+                        <th>წელი</th>
+                        </React.Fragment>:
+                        ''
+                    }
                     <th>ჯგუფი</th>
                     <th>ტიპი</th>
                     <th>სტატუსი</th>
@@ -571,20 +580,29 @@ export default class Warehouse extends Component {
                   <tbody>
                   {
                     _.map(this.state.inventor.income.detail.list, (value, index) => {
+                      console.log(value)
                       return (
                         <tr key={index}>
                           <td>{this.state.inventor.income.detail.item.name}</td>
                           <td>{this.state.inventor.income.detail.maker.name}</td>
                           <td>{this.state.inventor.income.detail.model.name}</td>
                           <td>{this.state.inventor.income.detail.price}</td>
-                          <td>{this.state.inventor.income.detail.count}</td>
+                          <td>{value.amount}</td>
                           <td>{this.state.inventor.income.detail.measureUnit.name}</td>
-                          <td>{this.state.inventor.income.detail.maker.name}</td>
                           <td>
                             {value.barCodeName}
                             <input type="text" value={value.barCode}
                                    onChange={event => this.setState(State('inventor.income.detail.list.' + index + '.barCode', event.target.value, this.state))}/>
                           </td>
+                          <td>{this.state.inventor.income.detail.factoryNumber}</td>
+                          {
+                            ( this.state.inventor.income.detail.itemGroup.isCar === 1)?
+                              <React.Fragment>
+                                <td>{this.state.inventor.income.detail.car.number}</td>
+                                <td>{this.state.inventor.income.detail.car.year}</td>
+                              </React.Fragment>:
+                              ''
+                          }
                           <td>{this.state.inventor.income.detail.itemGroup.name}</td>
                           <td>{this.state.inventor.income.detail.type.name}</td>
                           <td>{this.state.inventor.income.detail.status.name}</td>
@@ -604,7 +622,7 @@ export default class Warehouse extends Component {
                   suggestions={this.state.inventor.itemSuggestions}
                   onComplete={this.suggestItem}
                   onSelect={(e) => this.setState(State('inventor.income.detail.item', e, this.state), () => this.parseInventorDetailData(this.state.inventor.income.detail.item))}
-                  onChange={(e) => this.setState(State('inventor.income.detail.item', e, this.state))}
+                  onChange={(e) => this.setState(State('inventor.income.detail.item.name', e, this.state))}
                   value={this.state.inventor.income.detail.item}
                 />
               </div>
@@ -617,7 +635,7 @@ export default class Warehouse extends Component {
                   suggestions={this.state.inventor.makerSuggestions}
                   onComplete={this.suggestMaker}
                   onSelect={(e) => this.setState(State('inventor.income.detail.maker', e, this.state))}
-                  onChange={(e) => this.setState(State('inventor.income.detail.maker', e, this.state))}
+                  onChange={(e) => this.setState(State('inventor.income.detail.maker.name', e, this.state))}
                   value={this.state.inventor.income.detail.maker}
                 />
               </div>
@@ -679,7 +697,7 @@ export default class Warehouse extends Component {
                       <label>შტრიხკოდი</label>
                       <Dropdown
                         value={this.state.inventor.income.detail.barCodeType}
-                        barcodeTypes={_.map(this.state.inventor.barCodes,value=> {  return {id: value.id, name: value.name} })}
+                        options={_.map(this.state.inventor.barCodes,value=> {  return {id: value.id, name: value.name} })}
                         onChange={(e) => this.setState(State("inventor.income.detail.barCodeType", {
                           id: e.value.id,
                           name: e.value.name
@@ -757,6 +775,12 @@ export default class Warehouse extends Component {
                             name: e.value.name
                           }, this.state))} placeholder="ინვენტარის სტატუსი" optionLabel="name"/>
               </div>
+                <div className="fullwidth p-col-12">
+                  <label>კომენტარი</label>
+                  <InputTextarea rows={1} value={this.state.inventor.income.detail.comment}
+                                 onChange={e => this.setState(State('inventor.income.detail.comment', e.target.value, this.state))}/>
+
+                </div>
               <div className="fullwidth p-col-12">
                 <FileUploader
                   onSelectFile={(file) => this.setState(State('inventor.income.detail.file', file.files[0], this.state))}/>
@@ -862,10 +886,13 @@ export default class Warehouse extends Component {
                   </div>
                   <div className="fullwidth p-col-12">
                     <label>კომენტარი</label>
-                    <InputTextarea rows={1} value={this.state.inventor.income.comment}
-                                   onChange={e => this.setState(State('inventor.income.comment', e.target.value, this.state))}/>
+                    <InputTextarea
+                      rows={1}
+                      value={this.state.inventor.income.comment}
+                      onChange={e => this.setState(State('inventor.income.comment', e.target.value, this.state))}/>
                     <Button label="დამატება" icon="pi pi-plus" onClick={() => {
                       this.resetDetail();
+                      this.loadInventorData();
                       this.setState(State('inventor.income.detail.dialog', true, this.state))
                     }}/>
                   </div>
@@ -1053,8 +1080,12 @@ export default class Warehouse extends Component {
                style={{width: '800px', maxHeight: '500px'}}>
           {
             (this.state.inventor.itemGroup.dialog) ?
-              <TreeTableGroup column={[{field: 'name', title: 'Name'}]} data={this.state.inventor.itemGroup.data}
-                              onSelectItemGroup={(e) => this.setState(State("inventor.income.detail.itemGroup", e, this.state), () => this.setState(State("inventor.itemGroup.dialog", false, this.state), () => console.log(this.state.inventor.income)))}/> : ''
+              <TreeTableGroup
+                column={[{field: 'name', title: 'Name'}]}
+                data={this.state.inventor.itemGroup.data}
+                onSelectItemGroup={(e) => this.setState(State("inventor.income.detail.itemGroup", e, this.state),
+                  () => this.setState(State("inventor.itemGroup.dialog", false, this.state),
+                    () =>{ let group = this.state.inventor.income.detail.itemGroup; this.setState(State('inventor.income.detail.barCodeType', (group.isCar ===1 || group.isStrict ===1 || group.spend ===1 )? {id:'', name:""}: this.state.inventor.income.detail.barCodeType, this.state )); } )) }  /> : ''
           }
         </Modal>
       </React.Fragment>
@@ -1250,13 +1281,13 @@ export default class Warehouse extends Component {
     this.getStockData();
     this.loadInventorData();
   };
-  getCartItems= async ()=>{
-    await getCartItems({'globalKey':this.state.tab})
+  getCartItems = async () => {
+    await getCartItems({'globalKey': this.state.tab})
       .then(result => {
         (_.isUndefined(result)) ? this.setState(State('cart.tab' + this.state.tab, [], this.state)) : this.setState(State('cart.tab' + this.state.tab, result, this.state));
       })
       .catch()
-  }
+  };
   onInventorDetailExpand = async () => {
     this.setState(State('inventor.income.errors', {
       item: false,
@@ -1268,7 +1299,7 @@ export default class Warehouse extends Component {
       price: false,
       barCodeType: false,
     }, this.state));
-    const validate = await Validator(['itemGroup','item', 'maker', 'type', 'status', 'count'], this.state.inventor.income.detail);
+    const validate = await Validator(['itemGroup','item', 'maker', 'type', 'status', 'count'], this.state.inventor.income.detail,'name');
     if(_.size(validate)>0){
       _.forEach(validate, val => {
         this.setState(State('inventor.income.errors.' + val, true, this.state));
@@ -1291,14 +1322,16 @@ export default class Warehouse extends Component {
     if(!_.isNull(this.state.inventor.income.detail.file)){
       formData.append('file', this.state.inventor.income.detail.file);
     }
-    http.post("/api/secured/List/BarCode/Get/FreeCodes?barCodeType=" + this.state.inventor.income.detail.barCodeType.id + "&count=" + this.state.inventor.income.detail.count,formData)
+    const barcode = (this.state.inventor.income.detail.barCodeType.id) ? this.state.inventor.income.detail.barCodeType.id : '';
+
+    http.post("/api/secured/List/BarCode/Get/FreeCodes?barCodeType=" + barcode + "&count=" + this.state.inventor.income.detail.count+"&itemGroup="+this.state.inventor.income.detail.itemGroup.id,formData)
       .then(result => {
         this.setState(State("inventor.income.detail.list", _.map(result.data, value => {
           return {
-            "barCodeName": value.value,
-            "barCode": value.barCodeVisualValue,
+            "barCodeName": value.barCodeItem.value,
+            "barCode": value.barCodeItem.barCodeVisualValue,
             "serialNumber": this.state.inventor.income.detail.factoryNumber,
-            "amount": 1
+            "amount": value.amount
           }
         }), this.state));
 
@@ -1307,7 +1340,7 @@ export default class Warehouse extends Component {
       .catch()
   };
   lastbarCode=(type)=> {
-    console.log(type)
+    console.log(type);
     type['id'] = _.isUndefined(type.id)? '': type.id;
     http.get("/api/secured/List/BarCode/Get/LastCode?barCodeType="+type.id)
       .then(result => {
@@ -1321,6 +1354,8 @@ export default class Warehouse extends Component {
     this.setState(State('inventor.makerSuggestions', [], this.state));
     this.setState(State('inventor.modelSuggestions', [], this.state));
     let formData= new FormData();
+    console.log(this.state.inventor.income.detail.barCodeType)
+
     formData.append('data', JSON.stringify({
       name: this.state.inventor.income.detail.item.name,
       list: this.state.inventor.income.detail.list,
@@ -1328,7 +1363,7 @@ export default class Warehouse extends Component {
       selectedModel: this.state.inventor.income.detail.model,
       amount: this.state.inventor.income.detail.count,
       price: this.state.inventor.income.detail.price,
-      barCodeType: this.state.inventor.income.detail.barCodeType.id,
+      barCodeType: (this.state.inventor.income.detail.barCodeType.id)? this.state.inventor.income.detail.barCodeType.id: "",
       barCode: this.state.inventor.income.detail.barCode,
       factoryNumber: this.state.inventor.income.detail.factoryNumber,
       measureUnit: this.state.inventor.income.detail.measureUnit.id,
@@ -1350,20 +1385,24 @@ export default class Warehouse extends Component {
 
 
   }
-  parseInventorDetailData=(data)=>{
-    this.setState(State('inventor.income.detail.maker', data.maker , this.state));
-    this.setState(State('inventor.income.detail.barCodeType', {id:data['barCodeType']['id'], name:data['barCodeType']['name']} , this.state));
-    this.setState(State('inventor.income.detail.measureUnit', { id:data.measureUnit['id'] ,name:data.measureUnit['name']} , this.state));
+  parseInventorDetailData = (data) => {
+    this.setState(State('inventor.income.detail.maker', (data.maker) ? data.maker : {id: null, name: ""}, this.state));
+    this.setState(State('inventor.income.detail.barCodeType', {
+      id: data['barCodeType']['id'],
+      name: data['barCodeType']['name']
+    }, this.state));
+    this.setState(State('inventor.income.detail.measureUnit', {
+      id: data.measureUnit['id'],
+      name: data.measureUnit['name']
+    }, this.state));
     this.setState(State('inventor.income.detail.itemGroup', data.itemGroup, this.state));
     this.setState(State('inventor.income.detail.type', data.itemType, this.state));
     this.setState(State('inventor.income.detail.status', data.itemStatus, this.state));
     this.setState(State('inventor.income.detail.price', data.price, this.state));
     this.setState(State('inventor.income.detail.count', data.inStock, this.state));
     this.setState(State('inventor.income.detail.factoryNumber', data.factoryNumber, this.state));
-    console.log(this.state)
     this.lastbarCode(this.state.inventor.income.detail.barCodeType);
-
-  }
+  };
   resetInventor=()=>{
     this.setState(State('inventor',
       {
@@ -1371,7 +1410,7 @@ export default class Warehouse extends Component {
           dialog: false,
           showDetails: false,
           date: new Date(),
-          supplier: {id:'',name:''},
+          supplier: {id:null,name:''},
           comment:"",
           addon: {Left: '', Right: ''},
           invoice: '',
@@ -1481,8 +1520,10 @@ export default class Warehouse extends Component {
     )
   }
   generateInventor = async () => {
-    const validate = Validator(['supplier'], this.state.inventor.income);
+    const validate = Validator(['supplier'], this.state.inventor.income,'id');
+    console.log(validate)
     if (_.size(validate) > 0) {
+
       _.forEach(validate, val => {
         this.setState(State('inventor.income.errors.' + val, true, this.state), () => console.log(this.state.inventor.income.errors));
       });
@@ -1494,6 +1535,7 @@ export default class Warehouse extends Component {
   };
   resetDetail=()=> {
     this.setState(State('inventor.income.detail',{
+      comment: "",
       file: null,
       expand:false,
       dialog: false,

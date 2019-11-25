@@ -6,24 +6,33 @@ axios.create({
 
 const get = (uri) => {
   return new Promise((resolve, reject) => {
-    axios.get(uri)
-      .then(response => {
-        resolve(response.data);
-      })
-      .catch(reason => {
-        console.log(reason)
-      });
-  })
+    try {
+      axios.get(uri)
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(reason => {
+          console.log(reason)
+        });
+    } catch (e) {
+      console.log(e)
+    }
+  });
 };
 const post = (uri, formData) => {
   return new Promise((resolve, reject) => {
-    axios.post(uri, formData)
-      .then(response => {
-        resolve(response.data);
-      })
-      .catch(reason => {
-        reject(reason)
-      });
+    try{
+      axios.post(uri, formData)
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(reason => {
+          reject(reason)
+        });
+    }catch (e) {
+      console.log(e)
+    }
+
   })
 };
 export default {
