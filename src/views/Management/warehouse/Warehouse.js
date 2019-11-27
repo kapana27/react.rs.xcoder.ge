@@ -236,6 +236,7 @@ export default class Warehouse extends Component {
           supplier: {id:null,name:''},
           comment:"",
           addon: {Left: '', Right: ''},
+          tempAddon: {Left: '', Right: ''},
           invoice: '',
           inspectionNumber:'',
           detail: {
@@ -561,14 +562,8 @@ export default class Warehouse extends Component {
                     <th>მარკა</th>
                     <th>მოდელი</th>
                     <th>ფასი</th>
-                    {
-                      ( this.state.inventor.income.detail.itemGroup.isStrict === 1)?
-                        <React.Fragment>
-                          <td>-დან</td>
-                          <td>-მდე</td>
-                        </React.Fragment>:
-                        ''
-                    }
+
+
                     <th>რაოდენობა</th>
                     <th>განზ.ერთ</th>
                     {
@@ -589,6 +584,14 @@ export default class Warehouse extends Component {
                         </React.Fragment>:
                         <th>ქარხნული ნომერი</th>
                     }
+                    {
+                      ( this.state.inventor.income.detail.itemGroup.isStrict === 1)?
+                        <React.Fragment>
+                          <td>-დან</td>
+                          <td>-მდე</td>
+                        </React.Fragment>:
+                        ''
+                    }
                     <th>ჯგუფი</th>
                     <th>ტიპი</th>
                     <th>სტატუსი</th>
@@ -605,15 +608,7 @@ export default class Warehouse extends Component {
                           <td>{this.state.inventor.income.detail.model.name}</td>
                           <td>{this.state.inventor.income.detail.price}</td>
 
-                          {
-                            ( this.state.inventor.income.detail.itemGroup.isStrict === 1)?
-                              <React.Fragment>
-                                <td>{this.state.inventor.income.detail.numbers.from}</td>
-                                <td>{this.state.inventor.income.detail.numbers.to}</td>
-                                <td>{Math.round(this.state.inventor.income.detail.numbers.to*1 - this.state.inventor.income.detail.numbers.from*1)}</td>
-                              </React.Fragment>:
-                              <td>{value.amount}</td>
-                          }
+
                           <td>{this.state.inventor.income.detail.measureUnit.name}</td>
                           {
                             (itemGroup.isCar === 1 || itemGroup.isStrict === 1 || itemGroup.spend  === 1)?
@@ -634,7 +629,15 @@ export default class Warehouse extends Component {
                               </React.Fragment>:
                               <td>{this.state.inventor.income.detail.factoryNumber}</td>
                           }
-
+                          {
+                            ( this.state.inventor.income.detail.itemGroup.isStrict === 1)?
+                              <React.Fragment>
+                                <td>{this.state.inventor.income.detail.numbers.from}</td>
+                                <td>{this.state.inventor.income.detail.numbers.to}</td>
+                                <td>{Math.round(this.state.inventor.income.detail.numbers.to*1 - this.state.inventor.income.detail.numbers.from*1)}</td>
+                              </React.Fragment>:
+                              <td>{value.amount}</td>
+                          }
                           <td>{this.state.inventor.income.detail.itemGroup.name}</td>
                           <td>{this.state.inventor.income.detail.type.name}</td>
                           <td>{this.state.inventor.income.detail.status.name}</td>
@@ -844,8 +847,8 @@ export default class Warehouse extends Component {
                   <React.Fragment>
                     {
                       (!_.isEmpty(this.state.inventor.income.addon.Right)) ?
-                        <span style={{ position: 'absolute', left: '10px'}}>
-                              ბოლო კოდი : {this.state.inventor.income.addon.Right}
+                        <span style={{ position: 'absolute', left: '10px',fontSize:'16px'}}>
+                              ბოლო კოდი : {this.state.inventor.income.tempAddon.Right}
                         </span>
                         :
                         <span/>
@@ -867,7 +870,9 @@ export default class Warehouse extends Component {
             this.state.inventor.income.showDetails ?
               <div>
                 <div style={{width:'100%', textAlign: 'center'}}>
-                  საწყობის შემოსავლის ელ. ზედდებული № {this.state.inventor.income.addon.Left} - {this.state.inventor.income.addon.Right}
+                  <h3>
+                    საწყობის შემოსავლის ელ. ზედდებული № {this.state.inventor.income.addon.Left} - <input type="text" style={{ border: '0px' }} value={this.state.inventor.income.addon.Right} onChange={e=>this.setState(State('inventor.income.addon.Right',e.target.value,this.state))}/>
+                  </h3>
                 </div>
                 <div className="incomeAddedTable" style={{maxHeight: '300px', overflowY: 'scroll'}}>
                   <table>
@@ -883,9 +888,9 @@ export default class Warehouse extends Component {
                     </thead>
                     <tbody>
                     {
-                      _.map(this.state.inventor.income.data, (value) => {
+                      _.map(this.state.inventor.income.data, (value,index) => {
                         return (
-                          <tr>
+                          <tr key={index}>
                             <td>{this.state.inventor.income.date.toDateString()}</td>
                             <td>{value.item.name}</td>
                             <td>{value.maker.name}</td>
@@ -1366,14 +1371,15 @@ export default class Warehouse extends Component {
       return;
     }
     this.getFreeCodes();
-    this.getAddon('type=Stock/Income&subType=last');
+    this.getAddon('type=Stock/Income&subType=last').then(result => {
+      this.setState(State('inventor.income.addon', result.data, this.state),()=>console.log(this.state));
+    })
+    this.getAddon('type=Stock/Income&subType=').then(result => {
+      this.setState(State('inventor.income.tempAddon', result.data, this.state),()=>console.log(this.state));
+    })
   };
   getAddon = (params) => {
-      http.get("/api/secured/Item/Addon?"+params)
-        .then(result => {
-          this.setState(State('inventor.income.addon', result.data, this.state),()=>console.log(this.state));
-        })
-        .catch()
+      return http.get("/api/secured/Item/Addon?"+params);
   };
   getFreeCodes = () => {
     this.setState(State('inventor.income.detail.expand', true, this.state));
@@ -1473,6 +1479,7 @@ export default class Warehouse extends Component {
           supplier: {id:null,name:''},
           comment:"",
           addon: {Left: '', Right: ''},
+          tempAddon: {Left: '', Right: ''},
           invoice: '',
           inspectionNumber:'',
           detail: {
