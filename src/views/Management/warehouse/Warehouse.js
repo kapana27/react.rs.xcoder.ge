@@ -260,7 +260,8 @@ export default class Warehouse extends Component {
             comment:'',
             car: {
               number:"",
-              year:""
+              year:"",
+              vin:""
             },
             numbers:{
               from:"",
@@ -560,7 +561,6 @@ export default class Warehouse extends Component {
                     <th>მარკა</th>
                     <th>მოდელი</th>
                     <th>ფასი</th>
-                    <th>რაოდენობა</th>
                     {
                       ( this.state.inventor.income.detail.itemGroup.isStrict === 1)?
                         <React.Fragment>
@@ -569,18 +569,26 @@ export default class Warehouse extends Component {
                         </React.Fragment>:
                         ''
                     }
+                    <th>რაოდენობა</th>
                     <th>განზ.ერთ</th>
-                    <th>შტრიხცოდი</th>
-                    <th>{ this.state.inventor.income.detail.itemGroup.isCar === 1? 'Vin კოდი': "ქარხნული ნომერი" }</th>
+                    {
+                      (( this.state.inventor.income.detail.itemGroup.isStrict === 1)
+                        ||
+                        ( this.state.inventor.income.detail.itemGroup.isCar === 1)
+                        ||
+                        ( this.state.inventor.income.detail.itemGroup.spend === 1))?
+                        <div/>:
+                        <th>შტრიხკოდი</th>
+                    }
                     {
                       ( this.state.inventor.income.detail.itemGroup.isCar === 1)?
                         <React.Fragment>
                         <th>სახელმწიფო ნომერი</th>
                         <th>წელი</th>
+                        <th>Vin კოდი</th>
                         </React.Fragment>:
-                        ''
+                        <th>ქარხნული ნომერი</th>
                     }
-
                     <th>ჯგუფი</th>
                     <th>ტიპი</th>
                     <th>სტატუსი</th>
@@ -589,7 +597,7 @@ export default class Warehouse extends Component {
                   <tbody>
                   {
                     _.map(this.state.inventor.income.detail.list, (value, index) => {
-                      console.log(value)
+                      const  itemGroup =this.state.inventor.income.detail.itemGroup;
                       return (
                         <tr key={index}>
                           <td>{this.state.inventor.income.detail.item.name}</td>
@@ -600,26 +608,31 @@ export default class Warehouse extends Component {
                           {
                             ( this.state.inventor.income.detail.itemGroup.isStrict === 1)?
                               <React.Fragment>
-                                <td>{Math.round(this.state.inventor.income.detail.numbers.to*1 - this.state.inventor.income.detail.numbers.from*1)}</td>
                                 <td>{this.state.inventor.income.detail.numbers.from}</td>
                                 <td>{this.state.inventor.income.detail.numbers.to}</td>
+                                <td>{Math.round(this.state.inventor.income.detail.numbers.to*1 - this.state.inventor.income.detail.numbers.from*1)}</td>
                               </React.Fragment>:
                               <td>{value.amount}</td>
                           }
                           <td>{this.state.inventor.income.detail.measureUnit.name}</td>
-                          <td>
-                            {value.barCodeName}
-                            <input type="text" value={value.barCode}
-                                   onChange={event => this.setState(State('inventor.income.detail.list.' + index + '.barCode', event.target.value, this.state))}/>
-                          </td>
-                          <td>{this.state.inventor.income.detail.factoryNumber}</td>
+                          {
+                            (itemGroup.isCar === 1 || itemGroup.isStrict === 1 || itemGroup.spend  === 1)?
+                              <div/>
+                              :
+                              <td>
+                                {value.barCodeName}
+                                <input type="text" value={value.barCode}
+                                       onChange={event => this.setState(State('inventor.income.detail.list.' + index + '.barCode', event.target.value, this.state))}/>
+                              </td>
+                          }
                           {
                             ( this.state.inventor.income.detail.itemGroup.isCar === 1)?
                               <React.Fragment>
-                                <td>{this.state.inventor.income.detail.car.number}</td>
-                                <td>{this.state.inventor.income.detail.car.year}</td>
+                                <td><input type="text" value={value.car.number} onChange={event => this.setState(State('inventor.income.detail.list.'+index+'.car.number', event.target.value, this.state),()=>console.log(index,this.state.inventor.income.detail.list))}/>  </td>
+                                <td><input type="text" value={value.car.year} onChange={event => this.setState(State('inventor.income.detail.list.'+index+'.car.year', event.target.value, this.state),()=>console.log(index,this.state.inventor.income.detail.list))}/> </td>
+                                <td><input type="text" value={value.car.vin} onChange={event => this.setState(State('inventor.income.detail.list.'+index+'.car.vin', event.target.value, this.state),()=>console.log(index,this.state.inventor.income.detail.list))}/> </td>
                               </React.Fragment>:
-                              ''
+                              <td>{this.state.inventor.income.detail.factoryNumber}</td>
                           }
 
                           <td>{this.state.inventor.income.detail.itemGroup.name}</td>
@@ -1138,7 +1151,6 @@ export default class Warehouse extends Component {
       </React.Fragment>
     );
   }
-
   tabClick(tabID) {
     this.setState(State('tab',tabID,this.state));
     this.onReady(this.eventData);
@@ -1241,7 +1253,7 @@ export default class Warehouse extends Component {
         this.onReady(this.eventData);
       }
     });
-  }
+  }z
   transferGenerateOverhead() {
     this.setState(State('inventor.transfer.expand',true,this.state));
     this.getCode('new');
@@ -1375,6 +1387,7 @@ export default class Warehouse extends Component {
       .then(result => {
         this.setState(State("inventor.income.detail.list", _.map(result.data, value => {
           return {
+            "car": { number: this.state.inventor.income.detail.car.number, year: this.state.inventor.income.detail.car.year, vin:this.state.inventor.income.detail.factoryNumber  },
             "barCodeName": value.barCodeItem.value,
             "barCode": value.barCodeItem.barCodeVisualValue,
             "serialNumber": this.state.inventor.income.detail.factoryNumber,
@@ -1611,7 +1624,6 @@ export default class Warehouse extends Component {
       }
     }, this.state))
   }
-
   onSaveInventor=()=> {
 
     let formData =  new FormData();
