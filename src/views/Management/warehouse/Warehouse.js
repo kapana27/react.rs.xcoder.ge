@@ -9,7 +9,7 @@ import {
   FileUploader,
   Cart,
   TreeTableGroup,
-  Search, Overhead,
+  Search, Overhead, ErrorModal,
 } from '../../components'
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -386,6 +386,10 @@ export default class Warehouse extends Component {
         tab11: [],
         tab12: [],
         dialog: false
+      },
+      errorDialog: {
+        modal: false,
+        text: ''
       }
     };
     this.loadConstructor();
@@ -398,7 +402,6 @@ export default class Warehouse extends Component {
   }
 
   handleClickOutside = () => {
-    console.log("tab click")
     setTimeout(() => {
       this.setState(State('inventor.itemSuggestions', [], this.state));
       this.setState(State('inventor.makerSuggestions', [], this.state));
@@ -517,9 +520,17 @@ export default class Warehouse extends Component {
       this.onGridReady(params)
     })
   };
+
+  error=(error='დაფიქსირდა შეცდომა')=>{
+    this.setState(State('errorDialog',{dialog:true, text: error},this.state));
+  };
+
   render() {
     return (
       <React.Fragment>
+
+        {this.state.errorDialog.modal? <ErrorModal text={this.state.errorDialog.text} onClick={()=>this.setState(State('errorDialog',{modal: false, text: ''},this.state))}/> : ''}
+
         <div className="actionButton">
           <div className="buttonBox" style={{width: '150px'}}>
             <Button label="A" icon="pi pi-home" className={this.state.tab === 11?'':'p-button-secondary'} onClick={()=>this.tabClick(11)}/>
@@ -695,7 +706,7 @@ export default class Warehouse extends Component {
                   </tbody>
                 </table>
               </div>) : (
-                <>
+              <>
                 <div className="incomeModal p-grid">
                   <div className="fullwidth p-col-2">
                     <label>დასახელება</label>
@@ -716,7 +727,6 @@ export default class Warehouse extends Component {
                     <AutoComplete
                       placeholder="მარკა"
                       field="name"
-                      ref={(ref)=>this.makerRef=ref}
                       class={this.state.inventor.income.errors.maker ? 'bRed' : ''}
                       suggestions={this.state.inventor.makerSuggestions}
                       onComplete={this.suggestMaker}
@@ -728,8 +738,6 @@ export default class Warehouse extends Component {
                   <div className="fullwidth p-col-2">
                     <label>მოდელი</label>
                     <AutoComplete
-                      ref={(ref)=>this.modelRef=ref}
-
                       placeholder="მოდელი"
                       field="name"
                       class={this.state.inventor.income.errors.model ? 'bRed' : ''}
@@ -1720,50 +1728,50 @@ export default class Warehouse extends Component {
   };
   resetInventor=()=>{
     this.setState(State('inventor',
-     {
-      income: {
-        id:'',
-        dialog: false,
+      {
+        income: {
+          id:'',
+          dialog: false,
           showDetails: false,
           date: new Date(),
           supplier: {id:null,name:''},
-        comment:"",
+          comment:"",
           addon: {Left: '', Right: ''},
-        tempAddon: {Left: '', Right: ''},
-        invoice: '',
+          tempAddon: {Left: '', Right: ''},
+          invoice: '',
           inspectionNumber:'',
           detail: {
-          file: null,
+            file: null,
             expand:false,
             dialog: false,
             itemGroup: {name: '', id: null, isStrict:0, spend:0, isCar:0},
-          item: {name: '', id: null},
-          maker: {name: '', id: null},
-          model: {name: '', id: null},
-          measureUnit: {name: '', id: null},
-          type: {name: '', id: null},
-          status: {name: '', id: null},
-          count: 1,
+            item: {name: '', id: null},
+            maker: {name: '', id: null},
+            model: {name: '', id: null},
+            measureUnit: {name: '', id: null},
+            type: {name: '', id: null},
+            status: {name: '', id: null},
+            count: 1,
             price: 0,
             barCodeType: {name: '', id: null},
-          barCode: '',
+            barCode: '',
             factoryNumber:'',
             files:[],
             lastbarCode: {value: '', name: '', length: '', id: '', barCodeVisualValue: "", startPoint: "", endPoint: ""},
-          list: [],
+            list: [],
             comment:'',
             car: {
-            number:"",
+              number:"",
               year:"",
               vin:""
-          },
-          numbers:{
-            from:"",
+            },
+            numbers:{
+              from:"",
               to: ""
-          }
-        },
-        errors: {
-          supplier:false,
+            }
+          },
+          errors: {
+            supplier:false,
             item: false,
             maker: false,
             measureUnit:false,
@@ -1774,44 +1782,44 @@ export default class Warehouse extends Component {
             barCodeType: false,
             model: false,
             itemGroup: false
+          },
+          data: []
         },
-        data: []
-      },
-      selected:  {
-        file: null,
+        selected:  {
+          file: null,
           expand:false,
           dialog: false,
           itemGroup: {name: '', id: null, isStrict:0, spend:0, isCar:0},
-        item: {name: '', id: null},
-        maker: {name: '', id: null},
-        model: {name: '', id: null},
-        measureUnit: {name: '', id: null},
-        type: {name: '', id: null},
-        status: {name: '', id: null},
-        count: 1,
+          item: {name: '', id: null},
+          maker: {name: '', id: null},
+          model: {name: '', id: null},
+          measureUnit: {name: '', id: null},
+          type: {name: '', id: null},
+          status: {name: '', id: null},
+          count: 1,
           price: 0,
           barCodeType: {name: '', id: null},
-        barCode: '',
+          barCode: '',
           factoryNumber:'',
           files:[],
           lastbarCode: {value: '', name: '', length: '', id: '', barCodeVisualValue: "", startPoint: "", endPoint: ""},
-        list: [],
+          list: [],
           comment:'',
           car: {
-          number:"",
+            number:"",
             year:"",
             vin:""
-        },
-        numbers:{
-          from:"",
+          },
+          numbers:{
+            from:"",
             to: ""
-        }
-      },
-      outcome: {
-        dialog: false
-      },
-      transfer: {
-        date: new Date(),
+          }
+        },
+        outcome: {
+          dialog: false
+        },
+        transfer: {
+          date: new Date(),
           dialog: false,
           expand: false,
           comment: "",
@@ -1819,12 +1827,12 @@ export default class Warehouse extends Component {
           propertyManagement: "",
           section: "",
           files:[],
-      },
-      search: {
-        show: false,
+        },
+        search: {
+          show: false,
           dialog: false,
           data: {
-          name:"",
+            name:"",
             maker:"",
             model:"",
             price:"",
@@ -1839,16 +1847,16 @@ export default class Warehouse extends Component {
             invoice:"",
             invoiceAddon:"",
             inspectionNumber:""
-        }
-      },
-      supplierSuggestions: [],
+          }
+        },
+        supplierSuggestions: [],
         barCodes: [],
         measureUnitList: [],
         itemGroup: {
-        dialog: false,
+          dialog: false,
           data: {}
-      },
-      itemTypes: [],
+        },
+        itemTypes: [],
         itemStatus: [],
         stock: [],
         itemSuggestions: [],
@@ -1859,9 +1867,9 @@ export default class Warehouse extends Component {
         personality:[],
         roomList:[],
         sectionList:[
-        {id:'11', name:'საწყობი A'},
-        {id:'12', name:'საწყობი B'}
-      ],
+          {id:'11', name:'საწყობი A'},
+          {id:'12', name:'საწყობი B'}
+        ],
         stockManList: [],
         propertyManagementList: [],
         transPersonList: [],
@@ -1869,7 +1877,7 @@ export default class Warehouse extends Component {
         requestPersonList: [],
         lastCode: "",
         newCode: "",
-    }
+      }
       , this.state)
     );
     this.setState(State('inventor.income.errors',
@@ -1943,7 +1951,7 @@ export default class Warehouse extends Component {
     formData.append('comment', this.state.inventor.income.comment);
     formData.append('inspectionNumber', this.state.inventor.income.inspectionNumber);
     formData.append('invoice', this.state.inventor.income.invoice);
-    formData.append('invoiceAddon', this.state.inventor.income.addon.Right);
+    formData.append('invoiceAddon', this.state.inventor.income.tempAddon.Right);
     formData.append('data', JSON.stringify(_.map(this.state.inventor.income.data, value => {
       return {
         govNumber:value.car.number,

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import http from  '../../../api/http';
 import {Config} from "../../../config/Config";
-import {CardCellRenderer, Modal, Calendar, AutoComplete, FileUploader, Cart, Search, Overhead} from '../../components'
+import {CardCellRenderer, Modal, Calendar, AutoComplete, FileUploader, Cart, Search, Overhead, ErrorModal} from '../../components'
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
@@ -303,8 +303,12 @@ export default class Property extends Component {
         tab21:[],
         tab22:[],
         dialog:false
+      },
+      errorDialog: {
+        modal: false,
+        text: ''
       }
-    }
+    };
     this.loadInventorData();
   }
   componentDidMount() {
@@ -349,12 +353,15 @@ export default class Property extends Component {
           .then(response => {
             params.successCallback(response['data'].map((v, k) => {
               v['rowId'] = (params['request']['startRow'] + 1 + k );
-              if (v['barcode'].toString().length <= v['barCodeType']['length']) {
-                v.barcode = v['barCodeType']['value'] + new Array(v['barCodeType']['length'] - (v['barcode'].toString().length - 1)).join('0').slice((v['barCodeType']['length'] - (v['barcode'].toString().length - 1) || 2) * -1) + v['barcode'];
+              if(v.barCodeType){
+                if (v['barcode'].toString().length <= v['barCodeType']['length']) {
+                  v.barcode = v['barCodeType']['value'] + new Array(v['barCodeType']['length'] - (v['barcode'].toString().length - 1)).join('0').slice((v['barCodeType']['length'] - (v['barcode'].toString().length - 1) || 2) * -1) + v['barcode'];
+                }
+                v['barcode'] = (v['spend'] === 1) ? '' : (v['barcode'].toString() === '0') ? '' : v['barcode'];
               }
+
               v['count'] = 1;
               v['cartId'] = v['id'];
-              v['barcode'] = (v['spend'] === 1) ? '' : (v['barcode'].toString() === '0') ? '' : v['barcode'];
               v['inCart'] = (cartItems.indexOf(v['id'].toString()) > -1);
               return v;
             }), response['totalCount']);
@@ -378,19 +385,30 @@ export default class Property extends Component {
     http.get("/api/secured/List/BarCode/Select").then(result => {
       if (result.status === 200) {
         this.setState(State('property.barCodes', result.data, this.state));
+      }else{
+        this.error(result.error)
       }
-    });
+    }).catch(result =>  this.error(result.error));
     http.get("/api/secured/MeasureUnit/List").then(result => {
       if (result.status === 200) {
         this.setState(State('property.measureUnitList', result.data, this.state));
+      }else{
+        this.error(result.error)
       }
-    });
+    }).catch(result =>  this.error(result.error));
   };
+
+  error=(error='დაფიქსირდა შეცდომა')=>{
+    this.setState(State('errorDialog',{dialog:true, text: error},this.state));
+  };
+
   render() {
     let tabClass = 'p-button-secondary';
 
     return (
       <React.Fragment >
+
+        {this.state.errorDialog.modal? <ErrorModal text={this.state.errorDialog.text} onClick={()=>this.setState(State('errorDialog',{modal: false, text: ''},this.state))}/> : ''}
 
         <div className="actionButton">
           <div className="buttonBox" style={{width: '150px'}}>
@@ -454,6 +472,8 @@ export default class Property extends Component {
             onCellClicked={this.onClickedCell}
           />
         </div>
+
+
 
         <Modal
           header="განპიროვნება"

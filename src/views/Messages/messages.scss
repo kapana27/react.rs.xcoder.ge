@@ -48,7 +48,6 @@
     }
   }
 }
-
 .arrow-icon {
   position: relative;
   padding-left: 25px;
@@ -64,9 +63,6 @@
 .arrow-icon span{
   position: relative;
 }
-
-
-
 .p-dialog[role="dialog"] {
   .expand_mode {
     h3 {
@@ -108,8 +104,7 @@
     }
 
   }
-  .p-dialog-title,
-  .p-tabview-title {
+  .p-dialog-title {
     font-family: lbet-mt,sans-serif!important;
   }
   .incomeModal {
@@ -169,7 +164,6 @@
     }
   }
 }
-
 .incomeAddedTable {
   table {
     width: 100%;
@@ -198,7 +192,6 @@
   }
 
 }
-
 body .p-inputtext {
   padding: 0.3em 0.429em;
   margin: 0 !important;
@@ -208,4 +201,53 @@ body .p-inputtext {
   tr,td {
      border: 1px solid #c7c7c7 !important;
   }
+}
+
+section {
+  display: flex;
+  .menu {
+    max-width: 450px;
+  }
+  .menu, .cont {
+    margin: 0 5px;
+    flex: 1;
+    background-color: #f4f4f4;
+
+    .subdiv {
+      height: calc(100% - 35px);
+      margin-bottom: 1px;
+    }
+    table {
+      width: 100%;
+      thead {
+        background: #f4f4f4;
+        tr {
+          th {
+            font-size: 10px;
+            padding: .571em .857em;
+            border: 1px solid #c8c8c8;
+            font-weight: 700;
+            color: #333;
+          }
+        }
+      }
+      tbody {
+        tr {
+          &:nth-child(even) {background: #f9f9f9}
+          &:nth-child(odd) {background: #FFF}
+          &:hover {
+            cursor: pointer;
+            background-color: #eaeaea;
+            color: #333;
+          }
+          td {
+            padding: .571em .857em;
+            background-color: inherit;
+            border: 1px solid #c8c8c8;
+          }
+        }
+      }
+    }
+  }
+  .cont {}
 }

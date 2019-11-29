@@ -79,6 +79,60 @@
     }
   }
 }
+
+.errorOverflow {
+  position: absolute;
+  z-index: 999999;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  top: 0;
+  left: 0;
+  .errorBox {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 500px;
+    background: #fff;
+    border-radius: 3px;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    padding: 50px 20px 20px 20px;
+    text-align: center;
+    box-shadow: 0 0 13px rgb(110, 110, 110);
+    overflow: hidden;
+    font-family: 'lbet-st', sans-serif;
+
+    &:before {
+      position: absolute;
+      content: attr(data-title);
+      left: 0;
+      line-height: 40px;
+      top: 0;
+      width: 100%;
+      background: #eaeaea;
+      text-indent: 10px;
+      text-align: left;
+      font-family: "lbet-mt", sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+    }
+    i {
+      position: absolute;
+      top:0;
+      right: 0;
+      width: 40px;
+      height: 40px;
+      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAiCAMAAAANmfvwAAAAqFBMVEX/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AADRqaBdAAAAN3RSTlMAAQQHCQsOEBQaHSBdYGFiZ2hsb3Byc3R1dnd4eXp7fH2EhYyNj5Cbnp+nsba3vr/EytLT/P3+bdJD5wAAAPRJREFUeAF1kmdTwzAQRJdeCMKUEJSS0AmEDvb9/3+G0ZwnO7L2ffXO843mAdh4mkBQvWzjn6XZEEVCbastYHNpLdOiw1pWO3i2xGXRkTZYmNicNpZ4BKJvsnuOfXEPAHPfjECc1J0jEfv/CuRIjH0zze+4g8Oe/A7asKeq2VHyBCMHc+0fzgZ8R9mjHPQ+9B7K4w7B+a8lmhsoBt3kAoKQFqINL4iYiAqZEaAKuh3yRhTEjamC5nyzKCjSv0oF8WbWu0M0JgqK/D6ioKv1PZUqaOGbMV7dIdv4wv67KMjf5/sI2P1gR+75OQCAvbcHCGafh8Af1ipgdqRn/gEAAAAASUVORK5CYII=) no-repeat center center;
+      background-color: #eee;
+      background-size: 20px;
+      &:hover {
+        cursor: pointer;
+        background-color: #dadada;
+      }
+    }
+  }
+}
 // ავტოცომპლეიტის ბაგის გასწორება
 
 /*

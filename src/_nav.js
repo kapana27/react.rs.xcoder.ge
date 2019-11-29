@@ -22,7 +22,7 @@ export default {
     },
     {
       name: 'შეტყობინებები',
-      url: '/Messages',
+      url: '/messages',
       icon: 'icon-drop',
     },
     {

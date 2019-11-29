@@ -7,6 +7,7 @@ import {Cart} from  './Cart/Cart';
 import {TreeTableGroup} from './TreeTable/TreeTable';
 import {Search} from "./Search";
 import {Overhead} from "./Overhead/Overhead";
+import {ErrorModal} from "./ErrorModal";
 
 export {
   CardCellRenderer,
@@ -18,5 +19,6 @@ export {
   Cart,
   TreeTableGroup,
   Overhead,
+  ErrorModal,
 }
 
