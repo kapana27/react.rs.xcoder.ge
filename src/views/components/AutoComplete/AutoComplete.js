@@ -53,7 +53,7 @@ export const AutoComplete = (props) => {
         <i className="p-autocomplete-loader pi pi-spinner pi-spin" style={{display: `${loader? 'block':'none'}`}}/>
       </div>
 
-      <div style={{position:'relative'}} >
+      <div style={{position:'relative'}}  >
         {renderSuggestions(props)}
       </div>
     </React.Fragment>
