@@ -429,7 +429,7 @@ export default class Property extends Component {
             }
             {
               (!this.state.property.search.show)?
-              <Button label="ძებნა" icon="pi pi-search"  onClick={()=>this.setState(State('property.search.show',true,this.state))}/>:''
+              <Button label="ძებნა" icon="pi pi-search" style={{minWidth:'115px'}}  onClick={()=>this.setState(State('property.search.show',true,this.state))}/>:''
             }
             <div className="cart_count">
               <i className="fa fa-cart-plus fa-lg " onClick={()=>this.setState(State('cart.dialog',true,this.state))}/>
@@ -585,7 +585,7 @@ export default class Property extends Component {
                         field="fullName"
                         suggestions={this.state.property.transPersonList}
                         onComplete={(e) => this.transPersonList(e)}
-                        onSelect={(e)=>this.setState(State('property.outcome.transPerson',e,this.state),()=>this.dispositionPersonRoom(this.state.property.outcome.transPerson.id))}
+                        onSelect={(e)=>this.setState(State('property.outcome.transPerson',e,this.state))}
                         onChange={(e) => this.setState(State('property.outcome.transPerson',e,this.state))}
                         value={this.state.property.outcome.transPerson}
                       />

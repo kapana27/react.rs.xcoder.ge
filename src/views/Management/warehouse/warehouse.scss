@@ -9,6 +9,11 @@
 
 
   .buttonBox {
+    &:not(:first-child){
+      button {
+        min-width: 120px;
+      }
+    }
     span.p-button-text {
       font-family: 'lbet-mt',sans-serif!important;
       font-size: 12px!important;

@@ -6,6 +6,8 @@
   justify-content: space-between;
   margin: 10px 0;
   align-items: center; }
+  .actionButton .buttonBox:not(:first-child) button {
+    min-width: 120px; }
   .actionButton .buttonBox span.p-button-text {
     font-family: "lbet-mt", sans-serif !important;
     font-size: 12px !important; }

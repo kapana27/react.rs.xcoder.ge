@@ -319,7 +319,17 @@ export default class Warehouse extends Component {
           }
         },
         outcome: {
-          dialog: false
+          dialog: false,
+          expand:false,
+          date: new Date(),
+          tab: 0,
+          transPerson: "",
+          propertyManagement: "",
+          requestPerson: "",
+          stockMan: "",
+          section: "",
+          comment: "",
+          files:[],
         },
         transfer: {
           date: new Date(),
@@ -542,9 +552,8 @@ export default class Warehouse extends Component {
             <Button label="რედაქტირება" icon="pi pi-pencil" onClick={()=>this.setState(State('inventor.selected.dialog',true,this.state))}/>
           </div>
           <div className="buttonBox">
-            <Button label="ინვ.გაცემა" icon="pi pi-arrow-up" className="p-button-danger"
-                    onClick={() => this.setState(State('inventor.outcome.dialog', true, this.state))}/>
-            <Button label="მოძრაობა A-B" className="ui-button-raised arrow-icon" onClick={()=>this.onTransfer()}/>
+            <Button label="ინვენტარის გაცემა" icon="pi pi-arrow-up" className="p-button-danger" onClick={() => this.onInventorOutcome()}/>
+            <Button label="მოძრაობა A-B" className="ui-button-raised arrow-icon" onClick={()=>this.onTransfer()} style={{width:'140px'}}/>
             {
               (!this.state.inventor.search.show)?
                 <Button label="ძებნა" icon="pi pi-search"
@@ -1242,71 +1251,153 @@ export default class Warehouse extends Component {
               </React.Fragment>
           }
         </Modal>
-        <Modal header="ინვენტარის გაცემა" visible={this.state.inventor.outcome.dialog}
-               onHide={() => this.setState(State('inventor.outcome.dialog', false, this.state))}
-               style={{width: '900px'}}>
-          <TabView renderActiveOnly={false}>
-            <TabPanel header="შენობა">
-              <div className="incomeModal p-grid">
-                <div className="fullwidth p-col-8">
-                  <div className="p-grid">
-                    <div className="fullwidth p-col-6">
-                      <label>თარიღი</label>
-                      <InputText type="text" placeholder="თარიღი"/>
+        <Modal
+          header="ინვენტარის გაცემა" visible={this.state.inventor.outcome.dialog}
+          onHide={() => this.setState(State('inventor.outcome.dialog', false, this.state))}
+          style={{width: '900px'}}
+          footer = {
+            (this.state.inventor.outcome.tab === 0)?
+              // შენობა ტაბის  ღილაკები
+            <div className="dialog_footer">
+              <div className="left_side">
+                <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
+                <Button label="დოკუმენტები" className="ui-button-raised"/>
+              </div>
+              {
+                (!this.state.inventor.outcome.expand)?
+                  <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.outcameTab0GenerateOverhead()} />
+                  :
+                  <React.Fragment>
+                    <span className="last_code">ბოლო კოდი - {this.state.inventor.lastCode} </span>
+                    <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.outcameTab0ActiveOverhead()}/>
+                  </React.Fragment>
+              }
+              <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.resetModalParam('outcame')}/>
+            </div>
+              :
+              // პიროვნება ტაბის  ღილაკები
+            <div className="dialog_footer">
+                <div className="left_side">
+                  <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
+                  <Button label="დოკუმენტები" className="ui-button-raised"/>
+                </div>
+                {
+                  (!this.state.inventor.outcome.expand)?
+                    <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.outcameTab1GenerateOverhead()} />
+                    :
+                    <React.Fragment>
+                      <span className="last_code">ბოლო კოდი - {this.state.inventor.lastCode} </span>
+                      <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.outcameTab1ActiveOverhead()}/>
+                    </React.Fragment>
+                }
+                <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.resetModalParam('outcame')}/>
+              </div>
+          }>
+          {
+            (this.state.inventor.outcome.expand) ?
+              <div className="expand_mode">
+                <Overhead title="ქონების მართვის გასავლის ელ. ზედდებული ქ.გ - " carts={this.state.cart} tab={this.state.tab}  newCode={this.state.inventor.newCode} onChange={e=>this.setState(State('inventor.newCode',e.target.value,this.state))}/>
+              </div>
+              :
+              <TabView renderActiveOnly={false} activeIndex={this.state.inventor.outcome.tab} onTabChange={(e)=>this.inventorOutcomeTabChange(e)}>
+                <TabPanel header="შენობა">
+                  <div className="incomeModal p-grid">
+                    <div className="fullwidth p-col-8">
+                      <div className="p-grid">
+                        <div className="fullwidth p-col-6">
+                          <label>თარიღი</label>
+                          <Calendar date={this.state.inventor.outcome.date} onDateChange={props=>this.setState(State('inventor.outcome.date',props,this.state)) } />
+                        </div>
+                        <div className="fullwidth p-col-6">
+                          <label>ქონების მართვა</label>
+                          <Dropdown value={this.state.inventor.outcome.propertyManagement}  onMouseDown={(e)=>this.propertyManagement()} options={this.state.inventor.propertyManagementList} onChange={(e) => this.setState(State("inventor.outcome.propertyManagement",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="" style={{width:'100%'}} />
+                        </div>
+                        <div className="fullwidth p-col-6">
+                          <label>მომთხოვნი პიროვნება</label>
+                          <AutoComplete
+                            field="fullName"
+                            suggestions={this.state.inventor.requestPersonList}
+                            onComplete={(e) => this.requestPersonList(e)}
+                            onSelect = {(e)=>this.setState(State('inventor.outcome.requestPerson',e,this.state))}
+                            onChange = {(e)=>this.setState(State('inventor.outcome.requestPerson',e,this.state))}
+                            value={this.state.inventor.outcome.requestPerson}
+                          />
+                        </div>
+                        <div className="fullwidth p-col-6">
+                          <label>ტრანსპორტირების პასხ. პირი</label>
+                          <AutoComplete
+                            field="fullName"
+                            suggestions={this.state.inventor.transPersonList}
+                            onComplete={(e) => this.transPersonList(e)}
+                            onSelect={(e)=>this.setState(State('inventor.outcome.transPerson',e,this.state))}
+                            onChange={(e) => this.setState(State('inventor.outcome.transPerson',e,this.state))}
+                            value={this.state.inventor.outcome.transPerson}
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div className="fullwidth p-col-6">
-                      <label>ქონების მართვა</label>
-                      <InputText type="text" placeholder="ქონების მართვა"/>
-                    </div>
-                    <div className="fullwidth p-col-6">
-                      <label>მომთხოვნი პიროვნება</label>
-                      <InputText type="text" placeholder="მომთხოვნი პიროვნება"/>
-                    </div>
-                    <div className="fullwidth p-col-6">
-                      <label>ტრანსპორტირების პასხ. პირი</label>
-                      <InputText type="text" placeholder="ტრანსპორტირების პასხ. პირი"/>
+                    <div className="fullwidth p-col-4">
+                      <label>კომენტარი</label>
+                      <InputTextarea rows={4} placeholder="შენიშვნა" style={{width: '100%', minHeight: '100px'}}/>
                     </div>
                   </div>
-                </div>
-                <div className="fullwidth p-col-4">
-                  <label>კომენტარი</label>
-                  <InputTextarea rows={4} placeholder="შენიშვნა" style={{width: '100%', minHeight: '100px'}}/>
-                </div>
-              </div>
-            </TabPanel>
-            <TabPanel header="პიროვნება">
-              <div className="incomeModal p-grid">
-                <div className="fullwidth p-col-4">
-                  <label>თარიღი</label>
-                  <InputText type="text" placeholder="თარიღი"/>
-                </div>
-                <div className="fullwidth p-col-4">
-                  <label>პიროვნება</label>
-                  <InputText type="text" placeholder="პიროვნება"/>
-                </div>
-                <div className="fullwidth p-col-4">
-                  <label>ქონების მართვა</label>
-                  <InputText type="text" placeholder="ქონების მართვა"/>
-                </div>
-                <div className="fullwidth p-col-4">
-                  <label>სექცია</label>
-                  <Dropdown optionLabel="name" placeholder="სექცია" style={{width: '100%'}}/>
-                </div>
-                <div className="fullwidth p-col-4">
-                  <label>ტრანსპორტირების პასხ. პირი</label>
-                  <InputText type="text" placeholder="ტრანსპორტირების პასხ. პირი"/>
-                </div>
-                <div className="fullwidth p-col-4">
-                  <label>მომთხოვნი პიროვნება</label>
-                  <InputText type="text" placeholder="მომთხოვნი პიროვნება"/>
-                </div>
-                <div className="fullwidth p-col-12">
-                  <label>კომენტარი</label>
-                  <InputTextarea rows={1} placeholder="შენიშვნა" style={{width: '100%'}}/>
-                </div>
-              </div>
-            </TabPanel>
-          </TabView>
+                </TabPanel>
+                <TabPanel header="პიროვნება">
+                  <div className="incomeModal p-grid">
+                    <div className="fullwidth p-col-4">
+                      <label>თარიღი</label>
+                      <Calendar date={this.state.inventor.outcome.date} onDateChange={props=>this.setState(State('inventor.outcome.date',props,this.state)) } />
+                    </div>
+                    <div className="fullwidth p-col-4">
+                      <label>პიროვნება</label>
+                      <AutoComplete
+                        field="fullname"
+                        suggestions={this.state.inventor.personality}
+                        onComplete={this.Person}
+                        onSelect={(e)=>this.setState(State('inventor.outcome.person',e,this.state))}
+                        onChange={(e) => this.setState(State('inventor.outcome.person',e,this.state))}
+                        value={this.state.inventor.outcome.person}
+                      />
+                    </div>
+                    <div className="fullwidth p-col-4">
+                      <label>ქონების მართვა</label>
+                      <Dropdown value={this.state.inventor.outcome.propertyManagement}  onMouseDown={(e)=>this.propertyManagement()} options={this.state.inventor.propertyManagementList} onChange={(e) => this.setState(State("inventor.outcome.propertyManagement",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="" style={{width:'100%'}} />
+                    </div>
+                    <div className="fullwidth p-col-4">
+                      <label>სექცია</label>
+                      <Dropdown value={this.state.inventor.outcome.section} options={this.state.inventor.sectionList} onChange={(e) => this.setState(State( "inventor.outcome.section",{ id: e.value.id, name: e.value.name},this.state), this.inverseWarehouseManagement(e.value.id))} optionLabel="name" placeholder="სექცია" style={{width:'100%'}} />
+                    </div>
+                    <div className="fullwidth p-col-4">
+                      <label>ტრანსპორტირების პასხ. პირი</label>
+                      <AutoComplete
+                        field="fullName"
+                        suggestions={this.state.inventor.transPersonList}
+                        onComplete={(e) => this.transPersonList(e)}
+                        onSelect={(e)=>this.setState(State('inventor.outcome.transPerson',e,this.state))}
+                        onChange={(e) => this.setState(State('inventor.outcome.transPerson',e,this.state))}
+                        value={this.state.inventor.outcome.transPerson}
+                      />
+                    </div>
+                    <div className="fullwidth p-col-4">
+                      <label>მომთხოვნი პიროვნება</label>
+                      <AutoComplete
+                        field="fullName"
+                        suggestions={this.state.inventor.requestPersonList}
+                        onComplete={(e) => this.requestPersonList(e)}
+                        onSelect = {(e)=>this.setState(State('inventor.outcome.requestPerson',e,this.state))}
+                        onChange = {(e)=>this.setState(State('inventor.outcome.requestPerson',e,this.state))}
+                        value={this.state.inventor.outcome.requestPerson}
+                      />
+                    </div>
+                    <div className="fullwidth p-col-12">
+                      <label>კომენტარი</label>
+                      <InputTextarea rows={1} placeholder="შენიშვნა" style={{width: '100%'}}/>
+                    </div>
+                  </div>
+                </TabPanel>
+              </TabView>
+          }
+
           <Cart data={this.state.cart['tab' + this.state.tab]}/>
         </Modal>
         <Modal
@@ -1424,6 +1515,112 @@ export default class Warehouse extends Component {
       }
     });
   }
+
+  // <editor-fold defaultstate="collapsed" desc="ინვენტარის გაცემა">
+  inventorOutcomeTabChange=(e)=>{
+    if(this.state.inventor.outcome.tab !== e.index){
+      let otcm = {
+        dialog: true,
+        expand:false,
+        date: new Date(),
+        tab: 0,
+        transPerson: "",
+        propertyManagement: "",
+        requestPerson: "",
+        stockMan: "",
+        section: "",
+        comment: "",
+        files:[],
+      };
+      this.setState(State('inventor.outcome', otcm, this.state));
+      this.setState(State('inventor.requestPersonList', [], this.state));
+      this.setState(State('inventor.stockManList', [], this.state));
+      this.setState(State('inventor.personality', [], this.state));
+      this.setState(State('inventor.transPersonList', [], this.state));
+      this.setState(State('inventor.propertyManagementList', [], this.state));
+    }
+    this.setState(State('inventor.outcome.tab', e.index, this.state));
+  };
+
+  onInventorOutcome=()=> {
+    console.log(this.state);
+    this.setState(State('inventor.outcome.dialog', true, this.state));
+    this.setState(State('inventor.outcome.expend', false, this.state));
+    this.getCode('last');
+  };
+
+  // შენობა ტაბის  ღილაკები
+  outcameTab0GenerateOverhead=()=> {
+    this.setState(State('inventor.outcome.expand',true,this.state));
+    this.getCode('new');
+  };
+  outcameTab0ActiveOverhead=()=> {
+    let formData = new FormData();
+
+    formData.append('note', this.state.inventor.outcome.comment);
+    formData.append('addon', this.state.inventor.newCode);
+    formData.append('trDate',moment(this.state.inventor.outcome.date).format('DD-MM-YYYY'));
+
+    formData.append('carrierPerson', this.state.inventor.outcome.transPerson.id); // ტრანსპორტ. პასხ. პირი:
+    formData.append('toWhomSection', this.state.inventor.outcome.propertyManagement.id); // ქონების მართვა
+    formData.append('requestPerson', this.state.inventor.outcome.requestPerson.id); // მომთხოვნი პიროვნება
+
+    formData.append('files', this.state.inventor.outcome.files);
+    formData.append('list', JSON.stringify(_.map(this.state.cart["tab"+this.state.tab], value => {
+      let val =  JSON.parse(value);
+      return {
+        itemId: val.id,
+        amount: val.amount,
+        list:""
+      }
+    })));
+
+    http.post("/api/secured/Item/Section/Transfer",formData).then(result => {
+      if (result.status === 200) {
+        this.removeCartItem();
+        this.resetModalParam('outcome');
+        this.onReady(this.eventData);
+      }
+    });
+  };
+
+  // პიროვნება ტაბის  ღილაკები
+  outcameTab1GenerateOverhead=()=> {
+    this.setState(State('inventor.outcome.expand',true,this.state));
+    this.getCode('new');
+  };
+  outcameTab1ActiveOverhead=()=> {
+    let formData = new FormData();
+
+    formData.append('note', this.state.inventor.outcome.comment);
+    formData.append('addon', this.state.inventor.newCode);
+    formData.append('trDate',moment(this.state.inventor.outcome.date).format('DD-MM-YYYY'));
+
+    formData.append('carrierPerson', this.state.inventor.outcome.transPerson.id); // ტრანსპორტ. პასხ. პირი:
+    formData.append('toWhomSection', this.state.inventor.outcome.propertyManagement.id); // ქონების მართვა
+    formData.append('requestPerson', this.state.inventor.outcome.requestPerson.id); // მომთხოვნი პიროვნება
+
+    formData.append('files', this.state.inventor.outcome.files);
+    formData.append('list', JSON.stringify(_.map(this.state.cart["tab"+this.state.tab], value => {
+      let val =  JSON.parse(value);
+      return {
+        itemId: val.id,
+        amount: val.amount,
+        list:""
+      }
+    })));
+
+    http.post("/api/secured/Item/Section/Transfer",formData).then(result => {
+      if (result.status === 200) {
+        this.removeCartItem();
+        this.resetModalParam('outcome');
+        this.onReady(this.eventData);
+      }
+    });
+  };
+  // </editor-fold>
+
+
   warehouseManagement = (id) => {
     http.get("/api/secured/Staff/Filter/ByStock?stockId=" + id).then(result => {
       if (result.status === 200) {
@@ -1451,6 +1648,36 @@ export default class Warehouse extends Component {
       }
     });
   }
+  // მომთხოვნი პიროვნება
+  requestPersonList(e) {
+    http.get("/api/secured/Staff/Filter/ByName/V2?name="+e).then(result => {
+      if (result.status === 200) {
+        this.setState(State('inventor.requestPersonList', _.map(result.data,(value) =>{
+          return {id:value.id, name:value.fullname, fullName: value.fullname}
+        }), this.state));
+      }
+    });
+  }
+
+  inverseWarehouseManagement = (id) => {
+    http.get("/api/secured/Staff/Filter/ByStock?stockId=" + id).then(result => {
+      if (result.status === 200) {
+        this.setState(State('inventor.stockManList',_.map(result.data,(value)=> {
+          return {id:value.id, name:value.fullname}
+        }), this.state));
+      }
+    });
+  };
+
+  Person=(event)=>{
+    this.setState(State('inventor.personality', [], this.state));
+    http.get("/api/secured/Staff/Filter/ByName/V2?name=" + event).then(result => {
+      if (result.status === 200) {
+        this.setState(State('inventor.personality', result.data, this.state));
+      }
+    })
+  };
+
   resetModalParam(modal){
     this.setState(State('inventor.'+modal+'.dialog',false,this.state));
     this.setState(State('inventor.'+modal+'.expand',false,this.state));
@@ -1470,6 +1697,10 @@ export default class Warehouse extends Component {
       this.setState(State('inventor.'+modal+'.transPerson','',this.state));
       this.setState(State('inventor.'+modal+'.propertyManagement','',this.state));
       this.setState(State('inventor.'+modal+'.section','',this.state));
+    }
+    if(modal === 'outcame') {
+      this.setState(State('inventor.'+modal+'.transPerson','',this.state));
+      this.setState(State('inventor.'+modal+'.propertyManagement','',this.state));
     }
   }
   removeCartItem(modal) {
@@ -2027,7 +2258,6 @@ export default class Warehouse extends Component {
   }
 
   onUpdate=()=>{
-
     const data = {
       govNumber: this.state.inventor.selected.car.number,
       pYear: this.state.inventor.selected.car.year,
@@ -2054,5 +2284,9 @@ export default class Warehouse extends Component {
     http.post("/api/secured/Item/Update",formData)
       .then(result => console.log(result))
       .catch(reason => console.log(reason))
-  }
+  };
+
+
+
+
 }
