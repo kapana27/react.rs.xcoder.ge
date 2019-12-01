@@ -1971,7 +1971,7 @@ export default class Warehouse extends Component {
   parseInventorDetailData = (data) => {
     this.setState(State('inventor.income.detail.maker', (data.maker) ? data.maker : {id: null, name: ""}, this.state));
 
-    if(this.state.inventor.income.barCodeType){
+    if(data.barCodeType){
       this.setState(State('inventor.income.detail.barCodeType', {
         id: data['barCodeType']['id'],
         name: data['barCodeType']['name']

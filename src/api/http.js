@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+const PREFIX = '/rs';
 axios.create({
   baseURL: '/',
 });
@@ -7,7 +7,7 @@ axios.create({
 const get = (uri) => {
   return new Promise((resolve, reject) => {
     try {
-      axios.get(uri)
+      axios.get(PREFIX+uri)
         .then(response => {
           resolve(response.data);
         })
@@ -22,7 +22,7 @@ const get = (uri) => {
 const post = (uri, formData) => {
   return new Promise((resolve, reject) => {
     try{
-      axios.post(uri, formData)
+      axios.post(PREFIX+uri, formData)
         .then(response => {
           resolve(response.data);
         })
