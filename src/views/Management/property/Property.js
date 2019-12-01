@@ -116,7 +116,7 @@ export default class Property extends Component {
           },
           {
             headerName: 'შტრიხკოდი',
-            field: 'barcode',
+            field: 'fullBarcode',
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',

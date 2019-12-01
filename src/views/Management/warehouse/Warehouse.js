@@ -1264,7 +1264,7 @@ export default class Warehouse extends Component {
         </Modal>
         <Modal
           header="ინვენტარის გაცემა" visible={this.state.inventor.outcome.dialog}
-          onHide={() => this.setState(State('inventor.outcome.dialog', false, this.state))}
+          onHide={() => this.resetModalParam('outcome')}
           style={{width: '900px'}}
           footer = {
             (this.state.inventor.outcome.tab === 0)?
@@ -1310,6 +1310,7 @@ export default class Warehouse extends Component {
                 <Overhead title="ქონების მართვის გასავლის ელ. ზედდებული ქ.გ - " carts={this.state.cart} tab={this.state.tab}  newCode={this.state.inventor.newCode} onChange={e=>this.setState(State('inventor.newCode',e.target.value,this.state))}/>
               </div>
               :
+              <>
               <TabView renderActiveOnly={false} activeIndex={this.state.inventor.outcome.tab} onTabChange={(e)=>this.inventorOutcomeTabChange(e)}>
                 <TabPanel header="შენობა">
                   <div className="incomeModal p-grid">
@@ -1407,9 +1408,9 @@ export default class Warehouse extends Component {
                   </div>
                 </TabPanel>
               </TabView>
+              <Cart data={this.state.cart['tab' + this.state.tab]}/>
+              </>
           }
-
-          <Cart data={this.state.cart['tab' + this.state.tab]}/>
         </Modal>
         <Modal
           header="ინვენტარის მოძრაობა სექციებს შორის" visible={this.state.inventor.transfer.dialog}
@@ -1730,6 +1731,8 @@ export default class Warehouse extends Component {
       this.setState(State('inventor.'+modal+'.transPerson','',this.state));
       this.setState(State('inventor.'+modal+'.propertyManagement','',this.state));
       this.setState(State('inventor.'+modal+'.requestPerson','',this.state));
+      this.setState(State('inventor.'+modal+'.person','',this.state));
+      this.setState(State('inventor.'+modal+'.tab',0,this.state));
     }
   }
 
