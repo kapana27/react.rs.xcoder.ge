@@ -48,7 +48,7 @@ class Messages extends Component{
   render() {
     return  (
       <React.Fragment>
-        <div className="actionButton">
+        {/*<div className="actionButton">
           <div className="buttonBox">
             <Button label="მისაღები" className={this.state.tab === 31?'':'p-button-secondary'} onClick={()=>this.tabClick(31)} />
             <Button label="მიღებული"   className={this.state.tab === 32?'':'p-button-secondary'} onClick={()=>this.tabClick(32)} />
@@ -57,8 +57,8 @@ class Messages extends Component{
           </div>
           <div className="buttonBox"></div>
           <div className="buttonBox"></div>
-        </div>
-        <section>
+        </div>*/}
+        {/*<section>
           <div className="menu">
             <div className="subdiv">
               <table>
@@ -157,7 +157,7 @@ class Messages extends Component{
 
             <Paginator first={this.state.paginator.first} rows={this.state.paginator.rows} totalRecords={120}  onPageChange={this.onPageChange}></Paginator>
           </div>
-        </section>
+        </section>*/}
         <div style={{height: '100vh', width: '100vw'}}>
           <iframe src="http://rsnew.xcoder.ge/" frameBorder="0" style={{width: '100%', height: '100%'}}/>
         </div>
