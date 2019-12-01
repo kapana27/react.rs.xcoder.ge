@@ -8,9 +8,6 @@
   margin: 10px 0;
   align-items: center;
 }
-.actionButton .buttonBox:not(:first-child) button {
-  min-width: 120px;
-}
 .actionButton .buttonBox span.p-button-text {
   font-family: "lbet-mt", sans-serif !important;
   font-size: 12px !important;
@@ -97,8 +94,7 @@
   font-family: "lbet-st", sans-serif;
   font-size: 13px;
 }
-.p-dialog[role=dialog] .p-dialog-title,
-.p-dialog[role=dialog] .p-tabview-title {
+.p-dialog[role=dialog] .p-dialog-title {
   font-family: lbet-mt, sans-serif !important;
 }
 .p-dialog[role=dialog] .incomeModal .react-datepicker-wrapper {
@@ -184,4 +180,49 @@ body .p-inputtext {
   border: 1px solid #c7c7c7 !important;
 }
 
-/*# sourceMappingURL=warehouse.css.map */
+section {
+  display: flex;
+}
+section .menu {
+  max-width: 450px;
+}
+section .menu, section .cont {
+  margin: 0 5px;
+  flex: 1;
+  background-color: #f4f4f4;
+}
+section .menu .subdiv, section .cont .subdiv {
+  height: calc(100% - 35px);
+  margin-bottom: 1px;
+}
+section .menu table, section .cont table {
+  width: 100%;
+}
+section .menu table thead, section .cont table thead {
+  background: #f4f4f4;
+}
+section .menu table thead tr th, section .cont table thead tr th {
+  font-size: 10px;
+  padding: 0.571em 0.857em;
+  border: 1px solid #c8c8c8;
+  font-weight: 700;
+  color: #333;
+}
+section .menu table tbody tr:nth-child(even), section .cont table tbody tr:nth-child(even) {
+  background: #f9f9f9;
+}
+section .menu table tbody tr:nth-child(odd), section .cont table tbody tr:nth-child(odd) {
+  background: #FFF;
+}
+section .menu table tbody tr:hover, section .cont table tbody tr:hover {
+  cursor: pointer;
+  background-color: #eaeaea;
+  color: #333;
+}
+section .menu table tbody tr td, section .cont table tbody tr td {
+  padding: 0.571em 0.857em;
+  background-color: inherit;
+  border: 1px solid #c8c8c8;
+}
+
+/*# sourceMappingURL=messages.css.map */
