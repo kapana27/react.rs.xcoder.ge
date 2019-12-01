@@ -139,7 +139,7 @@ export default class Warehouse extends Component {
           },
           {
             headerName: 'შტრიხკოდი',
-            field: 'barCode',
+            field: 'fullBarcode',
             width: 150,
             suppressMenu: true,
             filter: 'agTextColumnFilter',
@@ -316,6 +316,7 @@ export default class Warehouse extends Component {
           files:[],
           lastbarCode: {value: '', name: '', length: '', id: '', barCodeVisualValue: "", startPoint: "", endPoint: ""},
           list: [],
+          data: [],
           comment:'',
           car: {
             number:"",
@@ -560,7 +561,7 @@ export default class Warehouse extends Component {
           <div className="buttonBox">
             <Button label="ინვ.მიღება" icon="pi pi-plus" onClick={() => this.onInventorIncome()}/>
             <Button label="ზედ.მიღება" icon="pi pi-plus"/>
-            <Button label="რედაქტირება" icon="pi pi-pencil" onClick={()=>this.setState(State('inventor.selected.dialog',true,this.state))}/>
+            <Button label="რედაქტირება" icon="pi pi-pencil" onClick={()=>this.edit()}/>
           </div>
           <div className="buttonBox">
             <Button label="ინვენტარის გაცემა" icon="pi pi-arrow-up" className="p-button-danger" onClick={() => this.onInventorOutcome()}/>
@@ -825,7 +826,7 @@ export default class Warehouse extends Component {
                             placeholder="ბარკოდი"
                             optionLabel="name"
                           />
-                          <InputText type="text" placeholder="შტრ. კოდი"
+                          <InputText type="number" placeholder="შტრ. კოდი"
                                      style={{textIndent: '0px', width: '78px', fontSize: '12px'}}
                                      value={this.state.inventor.income.detail.barCode}
                                      onChange={(e) => this.setState(State("inventor.income.detail.barCode", e.target.value, this.state))}/>
@@ -1024,7 +1025,7 @@ export default class Warehouse extends Component {
                         placeholder="ბარკოდი"
                         optionLabel="name"
                       />
-                      <InputText type="text" placeholder="შტრ. კოდი"
+                      <InputText type="number" placeholder="შტრ. კოდი"
                                  style={{textIndent: '0px', width: '78px', fontSize: '12px'}}
                                  value={this.state.inventor.selected.barCode}
                                  onChange={(e) => this.setState(State("inventor.selected.barCode", e.target.value, this.state))}/>
@@ -1105,6 +1106,297 @@ export default class Warehouse extends Component {
                   onSelectFile={(file) => this.setState(State('inventor.selected.file', file.files[0], this.state))}/>
               </div>
             </div>
+          }
+        </Modal>
+
+        <Modal
+          header="ინვენტარის რედაქტირება დეტალები"
+          visible={this.state.inventor.selected.dialog}
+          onHide={() => {   this.resetInventor();this.gridApi.deselectAll();}}
+          style={{width: '1200px'}}
+          footer={
+            (<div>
+              {this.state.inventor.selected.expand ?
+                <Button label="დამახსოვრება" icon="pi pi-check" onClick={this.onSaveEditDetail}/> :
+                <Button label="ჩაშლა" icon="pi pi-check" onClick={this.onInventorEditExpand}/>
+              }
+              <Button label="გაუქმება" icon="pi pi-times" className="p-button-secondary"
+                      onClick={() =>{  this.resetInventor();this.gridApi.deselectAll();}}/>
+            </div>)
+          }>
+          {
+            this.state.inventor.selected.expand ? (
+              <div className="incomeAddedTable" style={{maxHeight: '300px', overflowY: 'scroll'}}>
+                <table>
+                  <thead>
+                  <tr>
+                    <th>დასახელება</th>
+                    <th>მარკა</th>
+                    <th>მოდელი</th>
+                    <th>ფასი</th>
+                    <th>განზ.ერთ</th>
+                    {
+                      (( this.state.inventor.selected.itemGroup.isStrict === 1)
+                        ||
+                        ( this.state.inventor.selected.itemGroup.isCar === 1)
+                        ||
+                        ( this.state.inventor.selected.itemGroup.spend === 1))?
+                        <div/>:
+                        <th>შტრიხკოდი</th>
+                    }
+                    {
+                      ( this.state.inventor.selected.itemGroup.isCar === 1)?
+                        <React.Fragment>
+                          <th>სახელმწიფო ნომერი</th>
+                          <th>წელი</th>
+                          <th>Vin კოდი</th>
+                        </React.Fragment>:
+                        <th>ქარხნული ნომერი</th>
+                    }
+                    {
+                      ( this.state.inventor.selected.itemGroup.isStrict === 1)?
+                        <React.Fragment>
+                          <td>-დან</td>
+                          <td>-მდე</td>
+                          <th>რაოდენობა</th>
+                        </React.Fragment>:
+                        <th>რაოდენობა</th>
+                    }
+                    <th>ჯგუფი</th>
+                    <th>ტიპი</th>
+                    <th>სტატუსი</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {
+                    _.map(this.state.inventor.selected.list, (value, index) => {
+                      const  itemGroup =this.state.inventor.selected.itemGroup;
+                      return (
+                        <tr key={index}>
+                          <td>{this.state.inventor.selected.item.name}</td>
+                          <td>{this.state.inventor.selected.maker.name}</td>
+                          <td>{this.state.inventor.selected.model.name}</td>
+                          <td>{this.state.inventor.selected.price}</td>
+                          <td>{this.state.inventor.selected.measureUnit.name}</td>
+                          {
+                            (itemGroup.isCar === 1 || itemGroup.isStrict === 1 || itemGroup.spend  === 1)?
+                              <div/>
+                              :
+                              <td>
+                                {value.barCodeName}
+                                <input type="text" value={value.barCode}
+                                       onChange={event => this.setState(State('inventor.selected.list.' + index + '.barCode', event.target.value, this.state))}/>
+                              </td>
+                          }
+                          {
+                            ( this.state.inventor.selected.itemGroup.isCar === 1)?
+                              <React.Fragment>
+                                <td><input type="text" value={value.car.number} onChange={event => this.setState(State('inventor.selected.list.'+index+'.car.number', event.target.value, this.state),()=>console.log(index,this.state.inventor.selected.list))}/>  </td>
+                                <td><input type="text" value={value.car.year} onChange={event => this.setState(State('inventor.selected.list.'+index+'.car.year', event.target.value, this.state),()=>console.log(index,this.state.inventor.selected.list))}/> </td>
+                                <td><input type="text" value={value.car.vin} onChange={event => this.setState(State('inventor.selected.list.'+index+'.car.vin', event.target.value, this.state),()=>console.log(index,this.state.inventor.selected.list))}/> </td>
+                              </React.Fragment>:
+                              <td>{this.state.inventor.selected.factoryNumber}</td>
+                          }
+                          {
+                            ( this.state.inventor.selected.itemGroup.isStrict === 1)?
+                              <React.Fragment>
+                                <td>{this.state.inventor.selected.numbers.from}</td>
+                                <td>{this.state.inventor.selected.numbers.to}</td>
+                                <td>{Math.round(this.state.inventor.selected.numbers.to*1 - this.state.inventor.selected.numbers.from*1)}</td>
+                              </React.Fragment>:
+                              <td>{value.amount}</td>
+                          }
+                          <td>{this.state.inventor.selected.itemGroup.name}</td>
+                          <td>{this.state.inventor.selected.type.name}</td>
+                          <td>{this.state.inventor.selected.status.name}</td>
+                        </tr>
+                      )
+                    })
+                  }
+                  </tbody>
+                </table>
+              </div>) : (
+              <>
+                <div className="incomeModal p-grid">
+                  <div className="fullwidth p-col-2">
+                    <label>დასახელება</label>
+                    <AutoComplete
+                      class={this.state.inventor.income.errors.item ? 'bRed' : ''}
+                      placeholder="დასახელება"
+                      field="name"
+                      suggestions={this.state.inventor.itemSuggestions}
+                      onComplete={this.suggestItem}
+                      onSelect={(e) => this.setState(State('inventor.selected.item', e, this.state), () => this.parseInventorDetailData(this.state.inventor.selected.item))}
+                      onChange={(e) =>
+                        this.setState(State('inventor.selected.item.name', e, this.state))}
+                      value={this.state.inventor.selected.item}
+                    />
+                  </div>
+                  <div className="fullwidth p-col-2">
+                    <label>მარკა</label>
+                    <AutoComplete
+                      placeholder="მარკა"selected          field="name"
+                      class={this.state.inventor.income.errors.maker ? 'bRed' : ''}
+                      suggestions={this.state.inventor.makerSuggestions}
+                      onComplete={this.suggestMaker}
+                      onSelect={(e) => this.setState(State('inventor.selected.maker', e, this.state))}
+                      onChange={(e) => this.setState(State('inventor.selected.maker.name', e, this.state))}
+                      value={this.state.inventor.selected.maker}
+                    />
+                  </div>
+                  <div className="fullwidth p-col-2">
+                    <label>მოდელი</label>
+                    <AutoComplete
+                      placeholder="მოდელი"
+                      field="name"
+                      class={this.state.inventor.income.errors.model ? 'bRed' : ''}
+                      disabled={_.isUndefined(this.state.inventor.selected.maker) || (_.isNull(this.state.inventor.selected.maker.id) && _.isEmpty(this.state.inventor.selected.maker.name))}
+                      suggestions={this.state.inventor.modelSuggestions}
+                      onComplete={this.suggestModel}
+                      onSelect={(e) => this.setState(State('inventor.selected.model', e, this.state))}
+                      onChange={(e) => this.setState(State('inventor.selected.model.name', e, this.state))}
+                      value={this.state.inventor.selected.model}
+                    />
+                  </div>
+                  {
+                    (this.state.inventor.selected.itemGroup.isStrict === 1) ?
+                      '':
+                      <div className="fullwidth p-col-2">
+                        <label>რაოდენობა</label>
+                        <InputText type="text" placeholder="დასახელება"
+                                   className={this.state.inventor.income.errors.count ? 'bRed' : ''}
+                                   value={this.state.inventor.selected.count}
+                                   onChange={(e) => this.setState(State("inventor.selected.count", e.target.value, this.state))}/>
+                      </div>
+                  }
+                  <div className="fullwidth p-col-2">
+                    <label>ერთეულის ფასი</label>
+                    <InputText type="text" placeholder="დასახელება" value={this.state.inventor.selected.price}
+                               onChange={(e) => this.setState(State("inventor.selected.price", e.target.value, this.state))}/>
+                  </div>
+                  <div className="fullwidth p-col-2">
+                    <label>სულ ფასი:</label>
+                    <div
+                      style={{lineHeight: '30px'}}>{Math.round(parseInt(this.state.inventor.selected.price) * parseInt(this.state.inventor.selected.count))}</div>
+                  </div>
+                  {
+                    (this.state.inventor.selected.itemGroup.spend === 1 || this.state.inventor.selected.itemGroup.isStrict === 1 || this.state.inventor.selected.itemGroup.isCar === 1) ? (
+                        (this.state.inventor.selected.itemGroup.isStrict === 1) ?
+                          (
+                            <React.Fragment>
+                              <div className="fullwidth p-col-2">
+                                <label>დან</label>
+                                <InputText type="text" placeholder="დან"
+                                           value={this.state.inventor.selected.numbers.from}
+                                           onChange={(e) => this.setState(State("inventor.selected.numbers.from", e.target.value, this.state))}/>
+                              </div>
+                              <div className="fullwidth p-col-2">
+                                <label>მდე</label>
+                                <InputText type="text" placeholder="მდე" value={this.state.inventor.selected.numbers.to}
+                                           onChange={(e) => this.setState(State("inventor.selected.numbers.to", e.target.value, this.state))}/>
+                              </div>
+                            </React.Fragment>
+                          )
+                          :
+                          (<div/>)
+                      ) :
+                      (
+                        <div
+                          className={`fullwidth barcode p-col-2 ${this.state.inventor.income.errors.barCodeType ? 'bRed' : ''} `}>
+                          <label>შტრიხკოდი</label>
+                          <Dropdown
+                            value={this.state.inventor.selected.barCodeType}
+                            options={_.map(this.state.inventor.barCodes,value=> {  return {id: value.id, name: value.name} })}
+                            onChange={(e) => this.setState(State("inventor.selected.barCodeType", {
+                              id: e.value.id,
+                              name: e.value.name
+                            }, this.state), () => this.lastbarCode(this.state.inventor.selected.barCodeType))}
+                            placeholder="ბარკოდი"
+                            optionLabel="name"
+                          />
+                          <InputText type="number" placeholder="შტრ. კოდი"
+                                     style={{textIndent: '0px', width: '78px', fontSize: '12px'}}
+                                     value={this.state.inventor.selected.barCode}
+                                     onChange={(e) => this.setState(State("inventor.selected.barCode", e.target.value, this.state))}/>
+                        </div>
+                      )
+                  }
+
+                  <div className="fullwidth p-col-2">
+                    <label>{(this.state.inventor.selected.itemGroup.isCar === 1) ? 'Vin კოდი' : 'ქარხნული ნომერი'}:</label>
+                    <InputText type="text" value={this.state.inventor.selected.factoryNumber}
+                               onChange={(e) => this.setState(State("inventor.selected.factoryNumber", e.target.value, this.state))}/>
+                  </div>
+                  {
+                    (this.state.inventor.selected.itemGroup.isCar === 1) ?
+                      (
+                        <React.Fragment>
+                          <div className="fullwidth p-col-2">
+                            <label> სახელმწიფო ნომერი</label>
+                            <InputText type="text" value={this.state.inventor.selected.car.number}
+                                       onChange={(e) => this.setState(State("inventor.selected.car.number", e.target.value, this.state))}/>
+                          </div>
+                          <div className="fullwidth p-col-2">
+                            <label>გამოშვების წელი</label>
+                            <InputText type="text" value={this.state.inventor.selected.car.year}
+                                       onChange={(e) => this.setState(State("inventor.selected.car.year", e.target.value, this.state))}/>
+                          </div>
+                        </React.Fragment>
+                      ) : <div/>
+                  }
+                  <div className="fullwidth p-col-2">
+                    <label>განზომილების ერთეული</label>
+                    <Dropdown style={{width: '100%'}} value={this.state.inventor.selected.measureUnit}
+                              options={this.state.inventor.measureUnitList}
+                              class={this.state.inventor.income.errors.measureUnit ? 'bRed' : ''}
+                              onChange={(e) => this.setState(State("inventor.selected.measureUnit", {
+                                id: e.value.id,
+                                name: e.value.name
+                              }, this.state))} placeholder="განზომილების ერთეული" optionLabel="name"/>
+                  </div>
+                  <div className={`fullwidth p-col-2`}>
+                    <label>საქონლის ჯგუფი</label>
+                    <div className="p-inputgroup">
+                      <InputText placeholder="საქონლის ჯგუფი"
+                                 className={this.state.inventor.income.errors.itemGroup ? 'bRed' : ''}
+                                 value={this.state.inventor.selected.itemGroup.name} disabled />
+                      <Button icon="pi pi-align-justify" className="p-button-info" style={{left: '-10px'}}
+                              onClick={() => this.setState(State('inventor.itemGroup.dialog', true, this.state))}/>
+                    </div>
+                  </div>
+                  <div className="fullwidth p-col-2">
+                    <label>ინვენტარის ტიპი</label>
+                    <Dropdown value={this.state.inventor.selected.type}
+                              className={this.state.inventor.income.errors.type ? 'bRed' : ''}
+                              options={this.state.inventor.itemTypes}
+                              onChange={(e) => this.setState(State("inventor.selected.type", {
+                                id: e.value.id,
+                                name: e.value.name
+                              }, this.state))} placeholder="ინვენტარის ტიპი" optionLabel="name"/>
+                  </div>
+                  <div className="fullwidth p-col-2">
+                    <label>ინვენტარის სტატუსი</label>
+                    <Dropdown value={this.state.inventor.selected.status}
+                              className={this.state.inventor.income.errors.status ? 'bRed' : ''}
+                              options={this.state.inventor.itemStatus}
+                              onChange={(e) => this.setState(State("inventor.selected.status", {
+                                id: e.value.id,
+                                name: e.value.name
+                              }, this.state))} placeholder="ინვენტარის სტატუსი" optionLabel="name"/>
+                  </div>
+                  <div className="fullwidth p-col-12">
+                    <label>კომენტარი</label>
+                    <InputTextarea rows={1} value={this.state.inventor.selected.comment}
+                                   onChange={e => this.setState(State('inventor.selected.comment', e.target.value, this.state))}/>
+
+                  </div>
+                  <div className="fullwidth p-col-12">
+                    <FileUploader
+                      onSelectFile={(file) => this.setState(State('inventor.selected.file', file.files[0], this.state))}/>
+                  </div>
+                </div>
+              </>
+            )
           }
         </Modal>
 
@@ -1592,7 +1884,6 @@ export default class Warehouse extends Component {
 
     http.post("/api/secured/Item/Stock/Transfer",formData).then(result => {
       if (result.status === 200) {
-        console.log(this.state);
         this.removeCartItem();
         this.resetModalParam('outcome');
         this.onReady(this.eventData);
@@ -1707,7 +1998,6 @@ export default class Warehouse extends Component {
   };
 
   resetModalParam(modal){
-    console.log('modal',this.state);
     this.setState(State('inventor.'+modal+'.dialog',false,this.state));
     this.setState(State('inventor.'+modal+'.expand',false,this.state));
 
@@ -1880,7 +2170,7 @@ export default class Warehouse extends Component {
       price: false,
       barCodeType: false,
     }, this.state));
-    const validate = await Validator(['itemGroup','item', 'maker', 'type', 'status', 'count','measureUnit'], this.state.inventor.income.detail,'name');
+    const validate = await Validator(['itemGroup','item', 'type', 'status', 'count','measureUnit'], this.state.inventor.income.detail,'name');
     if(_.size(validate)>0){
       _.forEach(validate, val => {
         this.setState(State('inventor.income.errors.' + val, true, this.state));
@@ -1895,9 +2185,69 @@ export default class Warehouse extends Component {
       this.setState(State('inventor.income.tempAddon', result.data, this.state),()=>console.log(this.state));
     })
   };
+
+  onInventorEditExpand=async ()=>{
+    this.setState(State('inventor.income.errors', {
+      item: false,
+      maker: false,
+      measureUnit: false,
+      type: false,
+      status: false,
+      count: false,
+      price: false,
+      barCodeType: false,
+    }, this.state));
+    const validate = await Validator(['itemGroup','item', 'type', 'status', 'count','measureUnit'], this.state.inventor.selected,'name');
+    if(_.size(validate)>0){
+      _.forEach(validate, val => {
+        this.setState(State('inventor.income.errors.' + val, true, this.state));
+      });
+      return;
+    }
+    this.getEditFreeCodes();
+    /*this.getAddon('type=Stock/Income&subType=last').then(result => {
+      this.setState(State('inventor.selected.addon', result.data, this.state),()=>console.log(this.state));
+    })
+    this.getAddon('type=Stock/Income&subType=').then(result => {
+      this.setState(State('inventor.selected.tempAddon', result.data, this.state),()=>console.log(this.state));
+    })*/
+  }
+
+
   getAddon = (params) => {
     return http.get("/api/secured/Item/Addon?"+params);
   };
+
+  getEditFreeCodes = () => {
+    let formData = new FormData();
+    if(!_.isNull(this.state.inventor.selected.file)){
+      formData.append('file', this.state.inventor.selected.file);
+    }
+    const barcode = (this.state.inventor.selected.barCodeType.id) ? this.state.inventor.selected.barCodeType.id : '';
+    http.post("/api/secured/List/BarCode/Get/Updated/FreeCodes?barCodeType=" + barcode
+      +"&start="+this.state.inventor.selected.barCode
+      + "&count=" + this.state.inventor.selected.count
+      +"&itemGroup="+this.state.inventor.selected.itemGroup.id
+      +"&itemId="+this.state.inventor.selected.id,formData)
+      .then(result => {
+        if(result.status === 200){
+          this.setState(State('inventor.selected.expand', true, this.state));
+          this.setState(State("inventor.selected.list", _.map(result.data, value => {
+            return {
+              "car": { number: this.state.inventor.selected.car.number, year: this.state.inventor.selected.car.year, vin:this.state.inventor.selected.factoryNumber  },
+              "barCodeName": value.barCodeItem.value,
+              "barCode": value.barCodeItem.barCodeVisualValue,
+              "serialNumber": this.state.inventor.selected.factoryNumber,
+              "amount": value.amount
+            }
+          }), this.state));
+        }else{
+          this.error(result.error)
+        }
+      })
+      .catch()
+  };
+
   getFreeCodes = () => {
     this.setState(State('inventor.income.detail.expand', true, this.state));
     let formData = new FormData();
@@ -1924,7 +2274,7 @@ export default class Warehouse extends Component {
   };
   lastbarCode=(type)=> {
     console.log(type);
-    type['id'] = _.isUndefined(type.id)? '': type.id;
+    type['id'] = (_.isUndefined(type.id) || _.isNull(type.id) )? '': type.id;
     http.get("/api/secured/List/BarCode/Get/LastCode?barCodeType="+type.id)
       .then(result => {
         this.setState(State('inventor.income.detail.lastbarCode', result.data, this.state));
@@ -1957,7 +2307,7 @@ export default class Warehouse extends Component {
     http.post('/api/secured/Item/PreInsert/Add',formData).then(result => {
       if(result.status===200){
         data.push(this.state.inventor.income.detail);
-
+        this.onGridReady(this.eventData);
         this.setState(State("inventor.income.data", data, this.state),
           () =>{
             this.setState(State('inventor.income.detail.dialog', false, this.state),
@@ -1967,6 +2317,41 @@ export default class Warehouse extends Component {
     })
 
 
+  }
+
+  onSaveEditDetail=()=>{
+    let data= [];
+    this.setState(State('inventor.itemSuggestions', [], this.state));
+    this.setState(State('inventor.makerSuggestions', [], this.state));
+    this.setState(State('inventor.modelSuggestions', [], this.state));
+    let formData= new FormData();
+
+    formData.append('data', JSON.stringify({
+      name: this.state.inventor.selected.item.name,
+      list: this.state.inventor.selected.list,
+      selectedMaker: this.state.inventor.selected.maker,
+      selectedModel: this.state.inventor.selected.model,
+      amount: this.state.inventor.selected.count,
+      price: this.state.inventor.selected.price,
+      barCodeType: (this.state.inventor.selected.barCodeType.id)? this.state.inventor.selected.barCodeType.id: "",
+      barCode: this.state.inventor.selected.barCode,
+      factoryNumber: this.state.inventor.selected.factoryNumber,
+      measureUnit: this.state.inventor.selected.measureUnit.id,
+      itemGroup: this.state.inventor.selected.itemGroup.id,
+      selectedItemType: this.state.inventor.selected.type,
+      status: this.state.inventor.selected.status.id
+    }));
+    http.post('/api/secured/Item/Update?id='+this.state.inventor.selected.id,formData).then(result => {
+      if(result.status===200){
+        this.onGridReady(this.eventData);
+        data.push(this.state.inventor.selected);
+        this.setState(State("inventor.selected.data", data, this.state),
+          () =>{
+            this.setState(State('inventor.selected.dialog', false, this.state),
+              () => { this.resetInventor();this.gridApi.deselectAll() ;})
+          });
+      }
+    })
   }
   parseInventorDetailData = (data) => {
     this.setState(State('inventor.income.detail.maker', (data.maker) ? data.maker : {id: null, name: ""}, this.state));
@@ -1988,6 +2373,9 @@ export default class Warehouse extends Component {
     this.setState(State('inventor.income.detail.price', data.price, this.state));
     this.setState(State('inventor.income.detail.count', data.inStock, this.state));
     this.setState(State('inventor.income.detail.factoryNumber', data.factoryNumber, this.state));
+
+    console.log(data,this.state.inventor.income.detail);
+    return;
     this.lastbarCode(this.state.inventor.income.detail.barCodeType);
   };
   resetInventor=()=>{
@@ -2197,6 +2585,7 @@ export default class Warehouse extends Component {
       files:[],
       lastbarCode: {value: '', name: '', length: '', id: '', barCodeVisualValue: "", startPoint: "", endPoint: ""},
       list: [],
+      data: [],
       car: {
         number:"",
         year:""
@@ -2252,43 +2641,50 @@ export default class Warehouse extends Component {
         alert('დაფიქსირდა შეცდომა: '+reason.text)
       })
   }
-  onSelectionChanged=()=>{
-    const selectedRows = this.gridApi.getSelectedRows()[0];
-    this.setState(State('inventor.selected',
-      {
-        id:selectedRows.id,
-        file: null,
-        expand:false,
-        dialog: false,
-        itemGroup: selectedRows.itemGroup,
-        item: {name:selectedRows.name || '', id: selectedRows.id || ''},
-        maker: selectedRows.maker,
-        model: selectedRows.model,
-        measureUnit: {name: selectedRows.measureUnit.name || '', id: selectedRows.measureUnit.id || ''},
-        type: selectedRows.itemType,
-        status: selectedRows.itemStatus,
-        count: selectedRows.count,
-        price: selectedRows.price,
-        barCodeType: {name: '', id: null},
-        barCode:selectedRows.barcode,
-        factoryNumber:selectedRows.factoryNumber,
-        files:[],
-        lastbarCode:selectedRows.barCodeType,
-        list: [],
-        comment:selectedRows.comment,
-        car: {
-          number:selectedRows.govNumber ,
-          year:selectedRows.pYear,
-          vin:selectedRows.vin
-        },
-        numbers:{
-          from:selectedRows.fromN ,
-          to: selectedRows.toN
-        }
-      }
-      ,this.state))
+  onSelectionChanged = () => {
 
-  }
+    const selectedRows = this.gridApi.getSelectedRows()[0];
+    if(selectedRows){
+      this.setState(State('inventor.selected',
+        {
+          id: selectedRows.id,
+          file: null,
+          expand: false,
+          amount:selectedRows.amount,
+          dialog: false,
+          itemGroup: selectedRows.itemGroup,
+          item: {name: selectedRows.name || '', id: selectedRows.id || ''},
+          maker: selectedRows.maker||{id:'',name:''},
+          model: selectedRows.model||{id:'',name:''},
+          measureUnit: {name: selectedRows.measureUnit.name || '', id: selectedRows.measureUnit.id || ''},
+          type: selectedRows.itemType,
+          status: selectedRows.itemStatus,
+          count: selectedRows.count,
+          price: selectedRows.price,
+          barCodeType: (selectedRows.barCodeType) ? {
+            name: selectedRows.barCodeType.name || '',
+            id: selectedRows.barCodeType.id || ''
+          } : {id: '', name: ''},
+          barCode: '',
+          factoryNumber: selectedRows.factoryNumber,
+          files: [],
+          lastbarCode: selectedRows.barCodeType,
+          list: [],
+          comment: selectedRows.comment,
+          car: {
+            number: selectedRows.govNumber,
+            year: selectedRows.pYear,
+            vin: selectedRows.factoryNumber
+          },
+          numbers: {
+            from: selectedRows.fromN,
+            to: selectedRows.toN
+          }
+        }
+        , this.state))
+    }
+
+  };
 
   onUpdate=()=>{
     const data = {
@@ -2299,8 +2695,8 @@ export default class Warehouse extends Component {
       note: this.state.inventor.selected.comment,
       name: this.state.inventor.selected.item.name,
       list: this.state.inventor.selected.list,
-      selectedMaker: this.state.inventor.selected.maker,
-      selectedModel: this.state.inventor.selected.model,
+      selectedMaker: this.state.inventor.selected.maker? {id:this.state.inventor.selected.maker.id , name: this.state.inventor.selected.maker.name}:{id:'',name:''},
+      selectedModel: this.state.inventor.selected.model?{id:this.state.inventor.selected.model.id , name: this.state.inventor.selected.model.name }:{id:'',name:''},
       amount: this.state.inventor.selected.count,
       price: this.state.inventor.selected.price,
       barCodeType: this.state.inventor.selected.barCodeType.id,
@@ -2320,6 +2716,23 @@ export default class Warehouse extends Component {
   };
 
 
+  edit=()=> {
+    if(this.state.inventor.selected.id){
+      http.post("/api/secured/Item/select_update?id="+this.state.inventor.selected.id)
+        .then(response=>{
+          if(response.status === 200){
+            this.setState(State('inventor.selected.amount', response.data.amount,this.state));
+            this.setState(State('inventor.selected.count', response.data.amount,this.state));
+            this.setState(State('inventor.selected.dialog', true,this.state));
 
+          }else{
+            this.error(response.error)
+          }
+        })
+        .catch(reason => this.error(reason.error))
 
+    }
+
+    //this.setState(State('inventor.selected.dialog',true,this.state))
+  }
 }
