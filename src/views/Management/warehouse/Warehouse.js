@@ -60,6 +60,15 @@ export default class Warehouse extends Component {
             suppressMenu: false
           },
           {
+            headerName: 'ID',
+            field: 'id',
+            width: 60,
+            hide:true,
+            //cellRenderer: 'loadingCellRenderer',
+            sortable: false,
+            suppressMenu: false
+          },
+          {
             headerName: '',
             field: 'cartId',
             width: 50,
@@ -328,6 +337,8 @@ export default class Warehouse extends Component {
           requestPerson: "",
           stockMan: "",
           section: "",
+          room: "",
+          person: "",
           comment: "",
           files:[],
         },
@@ -548,7 +559,7 @@ export default class Warehouse extends Component {
           </div>
           <div className="buttonBox">
             <Button label="ინვ.მიღება" icon="pi pi-plus" onClick={() => this.onInventorIncome()}/>
-            <Button label="ძედ.მიღება" icon="pi pi-plus"/>
+            <Button label="ზედ.მიღება" icon="pi pi-plus"/>
             <Button label="რედაქტირება" icon="pi pi-pencil" onClick={()=>this.setState(State('inventor.selected.dialog',true,this.state))}/>
           </div>
           <div className="buttonBox">
@@ -1272,7 +1283,7 @@ export default class Warehouse extends Component {
                     <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.outcameTab0ActiveOverhead()}/>
                   </React.Fragment>
               }
-              <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.resetModalParam('outcame')}/>
+              <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.resetModalParam('outcome')}/>
             </div>
               :
               // პიროვნება ტაბის  ღილაკები
@@ -1290,7 +1301,7 @@ export default class Warehouse extends Component {
                       <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.outcameTab1ActiveOverhead()}/>
                     </React.Fragment>
                 }
-                <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.resetModalParam('outcame')}/>
+                <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.resetModalParam('outcome')}/>
               </div>
           }>
           {
@@ -1354,7 +1365,7 @@ export default class Warehouse extends Component {
                         field="fullname"
                         suggestions={this.state.inventor.personality}
                         onComplete={this.Person}
-                        onSelect={(e)=>this.setState(State('inventor.outcome.person',e,this.state))}
+                        onSelect={(e)=>this.setState(State('inventor.outcome.person',e,this.state),()=>this.personRoom(e.id))}
                         onChange={(e) => this.setState(State('inventor.outcome.person',e,this.state))}
                         value={this.state.inventor.outcome.person}
                       />
@@ -1365,7 +1376,7 @@ export default class Warehouse extends Component {
                     </div>
                     <div className="fullwidth p-col-4">
                       <label>სექცია</label>
-                      <Dropdown value={this.state.inventor.outcome.section} options={this.state.inventor.sectionList} onChange={(e) => this.setState(State( "inventor.outcome.section",{ id: e.value.id, name: e.value.name},this.state), this.inverseWarehouseManagement(e.value.id))} optionLabel="name" placeholder="სექცია" style={{width:'100%'}} />
+                      <Dropdown value={this.state.inventor.outcome.room} options={this.state.inventor.roomList} onChange={(e) => this.setState(State( "inventor.outcome.room",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="სექცია" style={{width:'100%'}} />
                     </div>
                     <div className="fullwidth p-col-4">
                       <label>ტრანსპორტირების პასხ. პირი</label>
@@ -1529,6 +1540,8 @@ export default class Warehouse extends Component {
         requestPerson: "",
         stockMan: "",
         section: "",
+        person: "",
+        room: "",
         comment: "",
         files:[],
       };
@@ -1545,7 +1558,7 @@ export default class Warehouse extends Component {
   onInventorOutcome=()=> {
     console.log(this.state);
     this.setState(State('inventor.outcome.dialog', true, this.state));
-    this.setState(State('inventor.outcome.expend', false, this.state));
+    this.setState(State('inventor.outcome.expand', false, this.state));
     this.getCode('last');
   };
 
@@ -1561,6 +1574,7 @@ export default class Warehouse extends Component {
     formData.append('addon', this.state.inventor.newCode);
     formData.append('trDate',moment(this.state.inventor.outcome.date).format('DD-MM-YYYY'));
 
+    formData.append('fromStock', this.state.tab);
     formData.append('carrierPerson', this.state.inventor.outcome.transPerson.id); // ტრანსპორტ. პასხ. პირი:
     formData.append('toWhomSection', this.state.inventor.outcome.propertyManagement.id); // ქონების მართვა
     formData.append('requestPerson', this.state.inventor.outcome.requestPerson.id); // მომთხოვნი პიროვნება
@@ -1575,8 +1589,9 @@ export default class Warehouse extends Component {
       }
     })));
 
-    http.post("/api/secured/Item/Section/Transfer",formData).then(result => {
+    http.post("/api/secured/Item/Stock/Transfer",formData).then(result => {
       if (result.status === 200) {
+        console.log(this.state);
         this.removeCartItem();
         this.resetModalParam('outcome');
         this.onReady(this.eventData);
@@ -1596,9 +1611,12 @@ export default class Warehouse extends Component {
     formData.append('addon', this.state.inventor.newCode);
     formData.append('trDate',moment(this.state.inventor.outcome.date).format('DD-MM-YYYY'));
 
+    formData.append('fromStock', this.state.tab);
+    formData.append('roomId', this.state.inventor.outcome.room.id);
     formData.append('carrierPerson', this.state.inventor.outcome.transPerson.id); // ტრანსპორტ. პასხ. პირი:
     formData.append('toWhomSection', this.state.inventor.outcome.propertyManagement.id); // ქონების მართვა
     formData.append('requestPerson', this.state.inventor.outcome.requestPerson.id); // მომთხოვნი პიროვნება
+    formData.append('receiverPerson', this.state.inventor.outcome.person.id); // მიმღები პიროვნება (პიროვნება)
 
     formData.append('files', this.state.inventor.outcome.files);
     formData.append('list', JSON.stringify(_.map(this.state.cart["tab"+this.state.tab], value => {
@@ -1610,7 +1628,7 @@ export default class Warehouse extends Component {
       }
     })));
 
-    http.post("/api/secured/Item/Section/Transfer",formData).then(result => {
+    http.post("/api/secured/Item/Stock/Transfer",formData).then(result => {
       if (result.status === 200) {
         this.removeCartItem();
         this.resetModalParam('outcome');
@@ -1677,8 +1695,18 @@ export default class Warehouse extends Component {
       }
     })
   };
+  personRoom =(id)=>{
+    http.get("/api/secured/Item/Building/Rooms?receiverPerson=" + id).then(result => {
+      if (result.status === 200) {
+        this.setState(State('inventor.roomList',_.map(result.data,(value)=>{
+          return {id:value.id,name:value.name}
+        }), this.state));
+      }
+    });
+  };
 
   resetModalParam(modal){
+    console.log('modal',this.state);
     this.setState(State('inventor.'+modal+'.dialog',false,this.state));
     this.setState(State('inventor.'+modal+'.expand',false,this.state));
 
@@ -1698,11 +1726,13 @@ export default class Warehouse extends Component {
       this.setState(State('inventor.'+modal+'.propertyManagement','',this.state));
       this.setState(State('inventor.'+modal+'.section','',this.state));
     }
-    if(modal === 'outcame') {
+    if(modal === 'outcome') {
       this.setState(State('inventor.'+modal+'.transPerson','',this.state));
       this.setState(State('inventor.'+modal+'.propertyManagement','',this.state));
+      this.setState(State('inventor.'+modal+'.requestPerson','',this.state));
     }
   }
+
   removeCartItem(modal) {
     let formData = new FormData();
     formData.append('globalKey', this.state.tab);
