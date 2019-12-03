@@ -9,6 +9,7 @@ import {InputTextarea} from "primereact/inputtextarea";
 import {InputText} from "primereact/inputtext";
 import {Dropdown} from 'primereact/dropdown';
 import {State} from "../../../utils";
+import {Calendar} from "../DatePicker";
 
 export const Search = (props) => {
   console.log(props);
@@ -28,7 +29,7 @@ export const Search = (props) => {
             <label>მოდელი:</label>
             <InputText type="text"  value={props.data.model} onChange={(e)=>props.onChange(e.target.value,'model')} />
           </div>
-          <div className="p-col-3">
+          <div className="p-col-3" style={{paddingRight:'20px'}}>
             <label>განზ. ერთეული:</label>
             <Dropdown
               options={props.measureUnits}
@@ -57,7 +58,7 @@ export const Search = (props) => {
             <label>მიმწოდებელი:</label>
             <InputText type="text" value={props.data.supplier} onChange={(e)=>props.onChange(e.target.value,'supplier')}/>
           </div>
-          <div className="p-col-3" style={{maxWidth:'280px'}}>
+          <div className="p-col-3" style={{maxWidth:'280px',paddingRight:'20px'}}>
             <label>ფასი: დან-მდე</label>
             <div className="flex-box">
               <InputText type="text"  value={props.data.priceFrom} onChange={(e)=>props.onChange(e.target.value,'priceFrom')}/>

@@ -1412,7 +1412,7 @@ export default class Warehouse extends Component {
                   <React.Fragment>
                     {
                       (!_.isEmpty(this.state.inventor.income.addon.Right)) ?
-                        <span style={{ position: 'absolute', left: '10px',fontSize:'16px'}}>
+                        <span style={{ position: 'absolute', left: '10px',fontSize:'16px', fontFamily: 'lbet-st'}}>
                               ბოლო კოდი : {this.state.inventor.income.addon.Right}
                         </span>
                         :
@@ -1433,7 +1433,7 @@ export default class Warehouse extends Component {
         >
           {
             this.state.inventor.income.showDetails ?
-              <div>
+              <div className="expand_mode">
                 <div style={{width:'100%', textAlign: 'center'}}>
                   <h3>
                     საწყობის შემოსავლის ელ. ზედდებული № {this.state.inventor.income.tempAddon.Left} - <input type="text" style={{ border: '0px' }} value={this.state.inventor.income.tempAddon.Right} onChange={e=>this.setState(State('inventor.income.tempAddon.Right',e.target.value,this.state))}/>
@@ -1449,6 +1449,7 @@ export default class Warehouse extends Component {
                       <th>მოდელი</th>
                       <th>რაოდენობა</th>
                       <th>ფასი</th>
+                      <th>სულ ფასი</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -1462,6 +1463,7 @@ export default class Warehouse extends Component {
                             <td>{value.model.name}</td>
                             <td>{value.count}</td>
                             <td>{value.price}</td>
+                            <td>{Math.round(parseInt(value.price) * parseInt(value.count))}</td>
                           </tr>
                         )
                       })
@@ -1495,7 +1497,7 @@ export default class Warehouse extends Component {
                     <InputText type="text" value={this.state.inventor.income.invoice}  onChange={e=>this.setState(State('inventor.income.invoice', e.target.value, this.state))}/>
                   </div>
                   <div className="fullwidth p-col-3">
-                    <label>ინსპექტირების დასკვნის ნომერი</label>
+                    <label>მიღება ჩაბარების აქტი</label>
                     <InputText type="text" value={this.state.inventor.income.inspectionNumber}  onChange={e=>this.setState(State('inventor.income.inspectionNumber', e.target.value, this.state))}/>
                   </div>
                   <div className="fullwidth p-col-12">
@@ -1706,7 +1708,7 @@ export default class Warehouse extends Component {
         </Modal>
         <Modal
           header="ინვენტარის მოძრაობა სექციებს შორის" visible={this.state.inventor.transfer.dialog}
-          onHide={() => this.setState(State('inventor.transfer.dialog', false, this.state))}
+          onHide={() => this.resetModalParam('transfer')}
           style={{width: '900px'}}
           footer = {
             <div className="dialog_footer">

@@ -155,6 +155,16 @@
     }
   }
   .p-dialog-footer {
+    button {
+      font-family: lbet-mt,sans-serif!important;
+      font-size: 13px;
+    }
+    span.last_code {
+      min-width: 200px;
+      text-align: left;
+      font-family: lbet-st,sans-serif!important;
+    }
+
     .dialog_footer {
       display: flex;
       align-items: center;

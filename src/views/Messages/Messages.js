@@ -24,31 +24,58 @@ import './messages.css';
 
 import * as moment from "moment";
 import {State} from "../../utils";
+import http from "../../api/http";
 
 
 class Messages extends Component{
   constructor(props){
     super(props);
     this.state = {
-      massage: {
-
-      },
-      tab: 31,
       paginator: {
         first: 0,
         rows: 0,
         first2: 0,
         rows2: 0
-      }
+      },
+      params: {
+        page: 1,
+        start: 0,
+        limit: 30,
+        approved: 0
+      },
+      selectedParams: {
+        page: 1,
+        start: 0,
+        limit: 30,
+        id: 0
+      },
+      types: {
+        'WI': 'ს.შ',
+        'WW': 'ს.შ',
+        'WS': 'ს.შ',
+        'PS': 'ქ.გ',
+        'PP': 'ქ.გ',
+        'PW': 'ქ.გ',
+        'SW': 'თ.გ',
+        'SI': 'თ.შ',
+        'PI': 'ქ.შ'
+      },
+      massage: {
 
+      },
+      tab: 31,
+      msgList: [],
+      data: [],
     };
     this.onPageChange = this.onPageChange.bind(this);
     this.onPageChange2 = this.onPageChange2.bind(this);
+
+    this.loadMessages();
   }
   render() {
     return  (
       <React.Fragment>
-        {/*<div className="actionButton">
+        {<div className="actionButton">
           <div className="buttonBox">
             <Button label="მისაღები" className={this.state.tab === 31?'':'p-button-secondary'} onClick={()=>this.tabClick(31)} />
             <Button label="მიღებული"   className={this.state.tab === 32?'':'p-button-secondary'} onClick={()=>this.tabClick(32)} />
@@ -57,8 +84,8 @@ class Messages extends Component{
           </div>
           <div className="buttonBox"></div>
           <div className="buttonBox"></div>
-        </div>*/}
-        {/*<section>
+        </div>}
+        {<section>
           <div className="menu">
             <div className="subdiv">
               <table>
@@ -75,34 +102,14 @@ class Messages extends Component{
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>2</td>
-                  <td>3</td>
-                  <td>4</td>
-                  <td>4</td>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>2</td>
-                  <td>3</td>
-                  <td>4</td>
-                  <td>4</td>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>2</td>
-                  <td>3</td>
-                  <td>4</td>
-                  <td>4</td>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>2</td>
-                  <td>3</td>
-                  <td>4</td>
-                  <td>4</td>
-                </tr>
+              {
+                _.map(this.state.msgList,(value,index)=>{
+                  const data = JSON.parse(value);
+                  return (
+                    ''
+                  )
+                })
+              }
               </tbody>
             </table>
             </div>
@@ -157,7 +164,7 @@ class Messages extends Component{
 
             <Paginator first={this.state.paginator.first} rows={this.state.paginator.rows} totalRecords={120}  onPageChange={this.onPageChange}></Paginator>
           </div>
-        </section>*/}
+        </section>}
         <div style={{height: '100vh', width: '100vw'}}>
           <iframe src="http://rsnew.xcoder.ge/" frameBorder="0" style={{width: '100%', height: '100%'}}/>
         </div>
@@ -165,6 +172,20 @@ class Messages extends Component{
     )
   }
 
+  loadMessages=()=> {
+    let formData = new FormData();
+    formData.append('approved', 0);
+    formData.append('page', 1);
+    formData.append('start', 0);
+    formData.append('limit', 30);
+
+    http.post("/api/secured/Item/Inbox/Select",formData).then(result => {
+      if (result.status === 200) {
+        console.log('ddddd',result);
+        //this.setState(State('msgList',result.data,this.state));
+      }
+    });
+  };
 
   tabClick(tabID) {
     this.setState(State('tab',tabID,this.state));
