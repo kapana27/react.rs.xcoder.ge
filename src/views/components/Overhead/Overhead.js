@@ -5,7 +5,6 @@ import {InputText} from "primereact/inputtext";
 import {State} from "../../../utils";
 import PropTypes from "prop-types";
 export const Overhead = (props) => {
-  console.log(props)
   return <React.Fragment>
     <h3>{props.title} <InputText value={props.newCode} onChange = {props.onChange} placeholder={props.newCode} type="text"/></h3>
     <table style={{width:'100%'}}>

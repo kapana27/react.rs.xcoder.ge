@@ -3,6 +3,7 @@ import {InputText} from 'primereact/inputtext';
 import PropTypes from 'prop-types';
 import {Modal} from "../Modal";
 import './AutoComplete.css';
+import {Button} from "primereact/button";
 
 export const AutoComplete = (props) => {
   const [loader, setLoader]= useState(false);
@@ -50,6 +51,7 @@ export const AutoComplete = (props) => {
           value={(typeof props.value === "string")? props.value: props.value[props.field]}
           onChange={(e)=>change(e)}
         />
+        <Button icon="pi pi-plus" onClick={()=>props.onAdd()}/>
         <i className="p-autocomplete-loader pi pi-spinner pi-spin" style={{display: `${loader? 'block':'none'}`}}/>
       </div>
 
@@ -64,11 +66,13 @@ AutoComplete.propTypes = {
   suggestions: PropTypes.array,
   onChange:PropTypes.func,
   onSelect: PropTypes.func,
-  onComplete: PropTypes.func
+  onComplete: PropTypes.func,
+  addIcon: PropTypes.bool
 };
 AutoComplete.defaultProps = {
   value:'',
-  suggestions: []
+  suggestions: [],
+  addIcon: false
 };
 
 const style = {

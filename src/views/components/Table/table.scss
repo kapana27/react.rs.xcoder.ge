@@ -1,0 +1,27 @@
+.rs-table-container{
+  height: 100%;
+  .rs-table{
+    position: relative;
+    width: 100%;
+    height: calc(100% - 20px);
+    overflow-y: scroll;
+    table{
+      width: 100%;
+      position: relative;
+
+
+    }
+    .p-paginator{
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+    }
+    .selected{
+      background: #007ad9;
+      color:white;
+    }
+  }
+
+}
+
+
