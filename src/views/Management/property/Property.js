@@ -311,6 +311,67 @@ export default class Property extends Component {
     };
     this.loadInventorData();
   }
+
+  getContextMenuItems=(params)=>{
+    return  [
+      'copy', 'copyWithHeaders', 'paste', 'separator',
+      {
+        name: 'ექსელში ექსპორტი .xlsx',
+        action: function () {
+          //window.open(params.context.thisComponent.prod + '/api/secured/Item/Stock/Export' + localStorage.getItem('filter')+"&list="+params.context.thisComponent.cartItemsData.map(v=>v.id).join(","), '_blank');
+        }
+      },
+      'separator',
+      {
+        name: 'განპიროვნება',
+        action: function () {
+
+          params.context.thisComponent.tmpData = params['node']['data'];
+          params.context.thisComponent.onDisposition();
+        }
+      },
+      {
+        name: 'ინვ.შებრუნება',
+        action: function () {
+          /*if (!params['node']['data']['inCart']) {
+            params.context.thisComponent.cart({data: params['node']['data'], contextMenu: true});
+          }*/
+          params.context.thisComponent.onOutcome();
+        }
+      },
+      {
+        name: 'ინვენტარის მოძრაობა შენობებს შორის',
+        action: function () {
+          /*if (!params['node']['data']['inCart']) {
+            params.context.thisComponent.cart({data: params['node']['data'], contextMenu: true});
+          }*/
+          params.context.thisComponent.onMoveAB();
+        }
+      },
+      'separator',
+      {
+        name: 'მონიშნულის გაუქმება',
+        action: function () {
+          console.log(params.context.thisComponent)
+        }
+      },
+      'separator',
+
+      {
+        name: 'კალათაში ჩაყრილი ნივთები',
+        action: function () {
+          params.context.thisComponent.cartDialog();
+        }
+      },
+      {
+        name: 'კალათის გასუფთავება',
+        action: function () {
+          params.context.thisComponent.removeCartItem();
+        }
+      }
+    ]
+  }
+
   componentDidMount() {
   }
   onReady = (params) => {
@@ -399,7 +460,7 @@ export default class Property extends Component {
   };
 
   error=(error='დაფიქსირდა შეცდომა')=>{
-    this.setState(State('errorDialog',{dialog:true, text: error},this.state));
+    this.setState(State('errorDialog',{modal:true, text: error},this.state));
   };
 
   render() {
@@ -470,6 +531,8 @@ export default class Property extends Component {
             onGridReady={this.onReady}
             rowClassRules={this.state.grid.rowClassRules}
             onCellClicked={this.onClickedCell}
+            getContextMenuItems={this.getContextMenuItems}
+
           />
         </div>
 

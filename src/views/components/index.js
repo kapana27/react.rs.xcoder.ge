@@ -8,7 +8,8 @@ import {TreeTableGroup} from './TreeTable/TreeTable';
 import {Search} from "./Search";
 import {Overhead} from "./Overhead/Overhead";
 import {ErrorModal} from "./ErrorModal";
-
+import {Table } from  './Table/Table';
+import {Confirm} from './Confirm/Confirm'
 export {
   CardCellRenderer,
   Modal,
@@ -20,5 +21,7 @@ export {
   TreeTableGroup,
   Overhead,
   ErrorModal,
+  Table,
+  Confirm
 }
 

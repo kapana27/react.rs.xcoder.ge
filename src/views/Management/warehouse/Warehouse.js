@@ -38,8 +38,6 @@ export default class Warehouse extends Component {
     this.nameRef = React.createRef();
     this.modelRef= React.createRef();
     this.makerRef =React.createRef();
-
-
     this.state = {
       grid: {
         components: {
@@ -471,9 +469,72 @@ export default class Warehouse extends Component {
       errorDialog: {
         modal: false,
         text: ''
+      },
+      supplier: {
+        dialog: true,
+        value:""
       }
     };
     this.loadConstructor();
+  }
+  getContextMenuItems=(params)=>{
+    return  [
+      'copy', 'copyWithHeaders', 'paste', 'separator',
+      {
+        name: 'ექსელში ექსპორტი .xlsx',
+        action: function () {
+          //window.open(params.context.thisComponent.prod + '/api/secured/Item/Stock/Export' + localStorage.getItem('filter')+"&list="+params.context.thisComponent.cartItemsData.map(v=>v.id).join(","), '_blank');
+        }
+      },
+      'separator',
+      {
+        name: 'რედაქტირება',
+        action: function () {
+
+          params.context.thisComponent.tmpData = params['node']['data'];
+          params.context.thisComponent.edit();
+        }
+      },
+      {
+        name: 'ინვენტარის გაცემა',
+        action: function () {
+          if (!params['node']['data']['inCart']) {
+            params.context.thisComponent.cart({data: params['node']['data'], contextMenu: true});
+          }
+          params.context.thisComponent.inventoryToBuildingDialog();
+        }
+      },
+      {
+        name: 'ინვენტარის მოძრაობა სექციებს შორის',
+        action: function () {
+          /*if (!params['node']['data']['inCart']) {
+            params.context.thisComponent.cart({data: params['node']['data'], contextMenu: true});
+          }*/
+          params.context.thisComponent.onTransfer();
+        }
+      },
+      'separator',
+      {
+        name: 'მონიშნულის გაუქმება',
+        action: function () {
+          console.log(params.context.thisComponent)
+        }
+      },
+      'separator',
+
+      {
+        name: 'კალათაში ჩაყრილი ნივთები',
+        action: function () {
+          params.context.thisComponent.cartDialog();
+        }
+      },
+      {
+        name: 'კალათის გასუფთავება',
+        action: function () {
+          params.context.thisComponent.removeCartItem();
+        }
+      }
+    ]
   }
   componentDidMount() {
     document.addEventListener('mousedown', this.handleClickOutside);
@@ -481,7 +542,6 @@ export default class Warehouse extends Component {
   componentWillUnmount() {
     document.removeEventListener('mousedown', this.handleClickOutside);
   }
-
   handleClickOutside = () => {
     setTimeout(() => {
       this.setState(State('inventor.itemSuggestions', [], this.state));
@@ -534,7 +594,6 @@ export default class Warehouse extends Component {
                 }
                 v['barcode'] = (v['spend'] === 1) ? '' : (v['barcode'].toString() === '0') ? '' : v['barcode'];
               }
-
               v['count'] = 1;
               v['cartId'] = v['id'];
               v['inCart'] = (cartItems.indexOf(v['id'].toString()) > -1);
@@ -601,17 +660,13 @@ export default class Warehouse extends Component {
       this.onGridReady(params)
     })
   };
-
   error=(error='დაფიქსირდა შეცდომა')=>{
     this.setState(State('errorDialog',{dialog:true, text: error},this.state));
   };
-
   render() {
     return (
       <React.Fragment>
-
         {this.state.errorDialog.modal? <ErrorModal text={this.state.errorDialog.text} onClick={()=>this.setState(State('errorDialog',{modal: false, text: ''},this.state))}/> : ''}
-
         <div className="actionButton">
           <div className="buttonBox" style={{width: '150px'}}>
             <Button label="A" icon="pi pi-home" className={this.state.tab === 11?'':'p-button-secondary'} onClick={()=>this.tabClick(11)}/>
@@ -631,7 +686,7 @@ export default class Warehouse extends Component {
                         onClick={()=>this.setState(State('inventor.search.show',true,this.state))}/>:''
             }
             <div className="cart_count">
-              <i className="fa fa-cart-plus fa-lg " onClick={()=>this.setState(State('cart.dialog',true,this.state))}/>
+              <i className="fa fa-cart-plus fa-lg " onClick={()=>this.cartDialog()}/>
               <span>{_.size(this.state.cart['tab'+this.state.tab])}</span>
             </div>
           </div>
@@ -666,6 +721,7 @@ export default class Warehouse extends Component {
             rowDeselection={true}
             animateRows={true}
             debug={false}
+            getContextMenuItems={this.getContextMenuItems}
             gridOptions={this.state.grid.gridOptions}
             rowClassRules={this.state.grid.rowClassRules}
             onSelectionChanged={this.onSelectionChanged.bind(this)}
@@ -1156,7 +1212,6 @@ export default class Warehouse extends Component {
             )
           }
         </Modal>
-
         <Modal
           header="ინვენტარის რედაქტირება"
           visible={this.state.inventor.selected.dialog}
@@ -1644,7 +1699,6 @@ export default class Warehouse extends Component {
             )
           }
         </Modal>
-
         <Modal
           header="ინვენტარის მიღება"
           visible={this.state.inventor.income.dialog}
@@ -1694,7 +1748,6 @@ export default class Warehouse extends Component {
                       <th>მოდელი</th>
                       <th>რაოდენობა</th>
                       <th>ფასი</th>
-                      <th>სულ ფასი</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -1708,7 +1761,6 @@ export default class Warehouse extends Component {
                             <td>{value.model.name}</td>
                             <td>{value.count}</td>
                             <td>{value.price}</td>
-                            <td>{Math.round(parseInt(value.price) * parseInt(value.count))}</td>
                           </tr>
                         )
                       })
@@ -1729,12 +1781,14 @@ export default class Warehouse extends Component {
                     <label>მიმწოდებელი</label>
                     <AutoComplete
                       field="name"
-                      class={this.state.inventor.income.errors.supplier ? 'bRed' : ''}
+                      class={this.state.inventor.income.errors.supplier ? 'bRed width-85' : 'width-85'}
                       suggestions={this.state.inventor.supplierSuggestions}
                       onComplete={this.suggestSupplier}
                       onSelect={(e) => this.setState(State('inventor.income.supplier', e, this.state))}
                       onChange={(e) => this.setState(State('inventor.income.supplier.name', e, this.state))}
                       value={this.state.inventor.income.supplier}
+                      addIcon={true}
+                      onAdd={()=>this.setState(State('supplier.dialog',true,this.state))}
                     />
                   </div>
                   <div className="fullwidth p-col-3">
@@ -2048,6 +2102,31 @@ export default class Warehouse extends Component {
                     () =>{ let group = this.state.inventor.income.detail.itemGroup; this.setState(State('inventor.income.detail.barCodeType', (group.isCar ===1 || group.isStrict ===1 || group.spend ===1 )? {id:'', name:""}: this.state.inventor.income.detail.barCodeType, this.state ),()=>console.log(this.state.inventor.income.detail.itemGroup)); } )) }  /> : ''
           }
         </Modal>
+        <Modal
+          header="მიმწოდებელის დამატება"
+          visible={this.state.supplier.dialog}
+          onHide={() => this.setState(State('supplier.dialog', false, this.state))}
+          style={{width: '500px'}}
+          footer = {
+            <div className="dialog_footer">
+              <Button label="დამატება" className="p-button-info" onClick={()=>{
+                  http.post("/api/secured/Supplier/Insert?type=-1&number=-1&name="+this.state.supplier.value)
+                    .then(result => {
+                        if(result.status ===200) {
+                          this.setState(State('supplier.dialog', false, this.state))
+                        }else{
+                          this.error(result.error)
+                        }
+                    })
+                    .catch(reason => this.error(reason.error))
+              }}/>
+              <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.setState(State('supplier.dialog', false, this.state))}/>
+            </div>
+          }
+        >
+          <label> მიმწოდებელი</label>
+          <InputText style={{width: '100%'}} value={this.state.supplier.value} onChange={(e) => this.setState(State('supplier.value',e.target.value,this.state))} />
+        </Modal>
       </React.Fragment>
     );
   }
@@ -2066,7 +2145,6 @@ export default class Warehouse extends Component {
       }
     });
   }
-
   // <editor-fold defaultstate="collapsed" desc="ინვენტარის გაცემა">
   inventorOutcomeTabChange=(e)=>{
     if(this.state.inventor.outcome.tab !== e.index){
@@ -2226,7 +2304,6 @@ export default class Warehouse extends Component {
       }
     });
   }
-
   inverseWarehouseManagement = (id) => {
     http.get("/api/secured/Staff/Filter/ByStock?stockId=" + id).then(result => {
       if (result.status === 200) {
@@ -2236,7 +2313,6 @@ export default class Warehouse extends Component {
       }
     });
   };
-
   Person=(event)=>{
     this.setState(State('inventor.personality', [], this.state));
     http.get("/api/secured/Staff/Filter/ByName/V2?name=" + event).then(result => {
@@ -2283,15 +2359,13 @@ export default class Warehouse extends Component {
       this.setState(State('inventor.'+modal+'.tab',0,this.state));
     }
   }
-
   removeCartItem(modal) {
     let formData = new FormData();
     formData.append('globalKey', this.state.tab);
-
     http.post("/api/secured/internal/session/clear",formData).then(result => {
       if (result.status === 200) {
         this.setState(State('cart.tab11',[],this.state));
-        //this.onReady(this.eventData);
+       this.onReady(this.eventData);
       }
     });
   }
@@ -2470,12 +2544,9 @@ export default class Warehouse extends Component {
       this.setState(State('inventor.selected.tempAddon', result.data, this.state),()=>console.log(this.state));
     })*/
   }
-
-
   getAddon = (params) => {
     return http.get("/api/secured/Item/Addon?"+params);
   };
-
   getEditFreeCodes = () => {
     let formData = new FormData();
     if(!_.isNull(this.state.inventor.selected.file)){
@@ -2505,7 +2576,6 @@ export default class Warehouse extends Component {
       })
       .catch()
   };
-
   getFreeCodes = () => {
     this.setState(State('inventor.income.detail.expand', true, this.state));
     let formData = new FormData();
@@ -2972,8 +3042,6 @@ export default class Warehouse extends Component {
       .then(result => console.log(result))
       .catch(reason => console.log(reason))
   };
-
-
   edit=()=> {
     if(this.state.inventor.selected.id){
       http.post("/api/secured/Item/select_update?id="+this.state.inventor.selected.id)
@@ -2993,4 +3061,10 @@ export default class Warehouse extends Component {
 
     //this.setState(State('inventor.selected.dialog',true,this.state))
   }
+
+  cartDialog=()=> {
+    this.setState(State('cart.dialog',true,this.state))
+  }
+
+
 }
