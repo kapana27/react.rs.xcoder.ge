@@ -12,6 +12,7 @@ export const Calendar = (props) => {
       dropdownMode="select"
       showMonthDropdown
       showYearDropdown
+     //isClearable
     />
   )
 };

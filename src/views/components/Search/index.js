@@ -69,7 +69,7 @@ export const Search = (props) => {
             <label>შტრიხკოდი: დან-მდე</label>
             <div className="flex-box">
               <Dropdown
-                placeholder="ბარკოდი"
+                placeholder="შტრიხკოდი"
                 optionLabel="name"
                 style={{width:'76px', minWidth:'76px'}}
                 onChange={(e)=>props.onChange(e.target.value, 'barCodeType')}
@@ -81,7 +81,7 @@ export const Search = (props) => {
             </div>
           </div>
 
-          <div  style={{minWidth:'350px',maxWidth:'100%', paddingRight:'20px', paddingTop:'21px',flex:'1'}}>
+          <div  style={{minWidth:'350px',maxWidth:'100%', paddingRight:'20px', paddingTop:'12px',flex:'1'}}>
             <div style={{float:'right'}}>
               <Button className="p-button-warning" label="ძებნა" icon="pi pi-search" onClick={props.onFilter} />
               <Button className="p-button-danger" label="გასუფთავება" icon="pi pi-times" style={{marginLeft:'10px'}} />

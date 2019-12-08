@@ -21,6 +21,7 @@ import {InputText} from 'primereact/inputtext';
 import {InputTextarea} from 'primereact/inputtextarea';
 import {Dropdown} from 'primereact/dropdown';
 import {TabView,TabPanel} from 'primereact/tabview';
+import {Checkbox} from 'primereact/checkbox';
 import _ from 'lodash';
 import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
@@ -353,6 +354,64 @@ export default class Warehouse extends Component {
           section: "",
           files:[],
         },
+        overhead: {
+          dialog: false,
+          expand: false,
+
+          qr: "",
+
+          checked1: false,
+          checked2: false,
+          checked3: false,
+          checked4: false,
+          checked5: false,
+          checked6: false,
+
+          createDate: {
+            checked:false,
+            date1: new Date(),
+            date2: new Date(),
+          },
+          transDate: {
+            checked:false,
+            date1: new Date(),
+            date2: new Date(),
+          },
+          deliveryDate: {
+            checked:false,
+            date1: new Date(),
+            date2: new Date(),
+          },
+          closeDate: {
+            checked:false,
+            date1: new Date(),
+            date2: new Date(),
+          },
+          comment: {
+            checked:false,
+            text: "",
+          },
+          driver: {
+            checked:false,
+            text: "",
+          },
+          car: {
+            checked:false,
+            text: "",
+          },
+          supplier: {
+            checked:false,
+            text: "",
+          },
+          zednadebi: {
+            checked:false,
+            text: "",
+          },
+          zeddebuli: {
+            checked:false,
+            text: "",
+          }
+        },
         search: {
           show: false,
           dialog: false,
@@ -560,7 +619,7 @@ export default class Warehouse extends Component {
           </div>
           <div className="buttonBox">
             <Button label="ინვ.მიღება" icon="pi pi-plus" onClick={() => this.onInventorIncome()}/>
-            <Button label="ზედ.მიღება" icon="pi pi-plus"/>
+            <Button label="ზედ.მიღება" icon="pi pi-plus" onClick={() => this.onOverheadIncome()}/>
             <Button label="რედაქტირება" icon="pi pi-pencil" onClick={()=>this.edit()}/>
           </div>
           <div className="buttonBox">
@@ -614,6 +673,192 @@ export default class Warehouse extends Component {
             onCellClicked={this.onClickedCell}
           />
         </div>
+
+        <Modal
+          header="ზედნადებით მიღება" visible={this.state.inventor.overhead.dialog}
+          onHide={() => this.resetModalParam('overhead')}
+          style={{width: '1200px'}}
+          footer = {
+            <div className="dialog_footer">
+              <div className="left_side">
+                <div style={{display:'inline-block',fontFamily: 'lbet-mt',fontSize: '13px',width: '250px'}}><span>ბოლო შტრიხკოდი: </span><span> {this.state.inventor.overhead.qr}</span></div>
+                <Button label="დოკუმენტები" className="ui-button-raised"/>
+              </div>
+              {
+                (!this.state.inventor.overhead.expand)?
+                  <Button label="ჩაშლა" className="ui-button-raised" onClick={()=>this.transferGenerateOverhead()} />
+                  :
+                  <React.Fragment>
+                    <span className="last_code">ბოლო კოდი - {this.state.inventor.lastCode} </span>
+                    <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.transferActiveOverhead()}/>
+                  </React.Fragment>
+              }
+              <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.resetModalParam('overhead')}/>
+            </div>
+          }>
+          {
+            (this.state.inventor.transfer.expand)?
+              <div className="expand_mode">
+                <Overhead title="საწყობიდან გასავლის ელ. ზედდებული ს.გ - " carts={this.state.cart} tab={this.state.tab}  newCode={this.state.inventor.newCode} onChange={e=>this.setState(State('property.newCode',e.target.value,this.state))}/>
+              </div>
+              :
+              <div className="p-grid overhead_modal">
+                <div className="p-col-10">
+                  <div className="p-grid">
+                  <div className="fullwidth p-col-6">
+
+                    <div className="p-grid">
+                      <div className="p-col-5">
+                        <Checkbox inputId="cb7" value="შექმნის თარიღი" onChange={(e) => this.setState(State('inventor.overhead.createDate.checked', e.checked, this.state))} checked={this.state.inventor.overhead.createDate.checked}></Checkbox>
+                        <label htmlFor="cb7" className="p-checkbox-label">შექმნის თარიღი</label>
+                      </div>
+                      {this.state.inventor.overhead.createDate.checked?
+                        <div className="p-col-7">
+                          <Calendar date={this.state.inventor.overhead.createDate.date1} onDateChange={props=>this.setState(State('inventor.overhead.createDate.date1',props,this.state)) } />
+                          <Calendar date={this.state.inventor.overhead.createDate.date2} onDateChange={props=>this.setState(State('inventor.overhead.createDate.date2',props,this.state)) } />
+                        </div>:''}
+                    </div>
+                    <div className="p-grid">
+                      <div className="p-col-5">
+                        <Checkbox inputId="cb8" value="ტრანსპ. თარიღი" onChange={(e) => this.setState(State('inventor.overhead.transDate.checked', e.checked, this.state))} checked={this.state.inventor.overhead.transDate.checked}></Checkbox>
+                        <label htmlFor="cb8" className="p-checkbox-label">ტრანსპ. თარიღი</label>
+                      </div>
+                      {this.state.inventor.overhead.transDate.checked?
+                        <div className="p-col-7">
+                          <Calendar date={this.state.inventor.overhead.transDate.date1} onDateChange={props=>this.setState(State('inventor.overhead.transDate.date1',props,this.state)) } />
+                          <Calendar date={this.state.inventor.overhead.transDate.date2} onDateChange={props=>this.setState(State('inventor.overhead.transDate.date2',props,this.state)) } />
+                        </div>:''}
+                    </div>
+                    <div className="p-grid">
+                      <div className="p-col-5">
+                        <Checkbox inputId="cb9" value="მიტანის თარიღი" onChange={(e) => this.setState(State('inventor.overhead.deliveryDate.checked', e.checked, this.state))} checked={this.state.inventor.overhead.deliveryDate.checked}></Checkbox>
+                        <label htmlFor="cb9" className="p-checkbox-label">მიტანის თარიღი</label>
+                      </div>
+                      {this.state.inventor.overhead.deliveryDate.checked?
+                        <div className="p-col-7">
+                          <Calendar date={this.state.inventor.overhead.deliveryDate.date1} onDateChange={props=>this.setState(State('inventor.overhead.deliveryDate.date1',props,this.state)) } />
+                          <Calendar date={this.state.inventor.overhead.deliveryDate.date2} onDateChange={props=>this.setState(State('inventor.overhead.deliveryDate.date2',props,this.state)) } />
+                        </div>:''}
+                    </div>
+                    <div className="p-grid">
+                      <div className="p-col-5">
+                        <Checkbox inputId="cb10" value="დახურვის თარიღი" onChange={(e) => this.setState(State('inventor.overhead.closeDate.checked', e.checked, this.state))} checked={this.state.inventor.overhead.closeDate.checked}></Checkbox>
+                        <label htmlFor="cb10" className="p-checkbox-label">დახურვის თარიღი</label>
+                      </div>
+                      {this.state.inventor.overhead.closeDate.checked?
+                        <div className="p-col-7">
+                          <Calendar date={this.state.inventor.overhead.closeDate.date1} onDateChange={props=>this.setState(State('inventor.overhead.closeDate.date1',props,this.state)) } />
+                          <Calendar date={this.state.inventor.overhead.closeDate.date2} onDateChange={props=>this.setState(State('inventor.overhead.closeDate.date2',props,this.state)) } />
+                        </div>:''}
+                    </div>
+                    <div className="p-grid">
+                      <div className="p-col-5">
+                        <Checkbox inputId="cb11" value="კომენტარი" onChange={(e) => this.setState(State('inventor.overhead.comment.checked', e.checked, this.state))} checked={this.state.inventor.overhead.comment.checked}></Checkbox>
+                        <label htmlFor="cb11" className="p-checkbox-label">კომენტარი</label>
+                      </div>
+                      {this.state.inventor.overhead.comment.checked?
+                        <div className="p-col-7">
+                          <InputTextarea rows={1} value={this.state.inventor.overhead.comment.text} onChange={e => this.setState(State('inventor.selected.comment.text', e.target.value, this.state))}/>
+                        </div>:''}
+                    </div>
+
+                  </div>
+                  <div className="fullwidth p-col-6">
+
+                    <div className="p-grid">
+                      <div className="p-col-5">
+                        <Checkbox inputId="cb12" value="მძღოლის პირადი #" onChange={(e) => this.setState(State('inventor.overhead.driver.checked', e.checked, this.state))} checked={this.state.inventor.overhead.driver.checked}></Checkbox>
+                        <label htmlFor="cb12" className="p-checkbox-label">მძღოლის პირადი #</label>
+                      </div>
+                      {this.state.inventor.overhead.driver.checked?
+                        <div className="p-col-7">
+                          <InputText value={this.state.inventor.overhead.driver.text} onChange={(e) => this.setState(State('inventor.overhead.driver.text', e.target.value, this.state))} />
+                        </div>:''}
+                    </div>
+
+                    <div className="p-grid">
+                      <div className="p-col-5">
+                        <Checkbox inputId="cb13" value="მანქანის #" onChange={(e) => this.setState(State('inventor.overhead.car.checked', e.checked, this.state))} checked={this.state.inventor.overhead.car.checked}></Checkbox>
+                        <label htmlFor="cb13" className="p-checkbox-label">მანქანის #</label>
+                      </div>
+                      {this.state.inventor.overhead.car.checked?
+                        <div className="p-col-7">
+                          <InputText value={this.state.inventor.overhead.car.text} onChange={(e) => this.setState(State('inventor.overhead.car.text', e.target.value, this.state))} />
+                        </div>:''}
+                    </div>
+
+                    <div className="p-grid">
+                      <div className="p-col-5">
+                        <Checkbox inputId="cb14" value="მიმწ-ის საიდ.კოდი" onChange={(e) => this.setState(State('inventor.overhead.supplier.checked', e.checked, this.state))} checked={this.state.inventor.overhead.supplier.checked}></Checkbox>
+                        <label htmlFor="cb14" className="p-checkbox-label">მიმწ-ის საიდ.კოდი</label>
+                      </div>
+                      {this.state.inventor.overhead.supplier.checked?
+                        <div className="p-col-7">
+                          <InputText value={this.state.inventor.overhead.supplier.text} onChange={(e) => this.setState(State('inventor.overhead.supplier.text', e.target.value, this.state))} />
+                        </div>:''}
+                    </div>
+
+                    <div className="p-grid">
+                      <div className="p-col-5">
+                        <Checkbox inputId="cb15" value="ზედნადების #" onChange={(e) => this.setState(State('inventor.overhead.zednadebi.checked', e.checked, this.state))} checked={this.state.inventor.overhead.zednadebi.checked}></Checkbox>
+                        <label htmlFor="cb15" className="p-checkbox-label">ზედნადების #</label>
+                      </div>
+                      {this.state.inventor.overhead.zednadebi.checked?
+                        <div className="p-col-7">
+                          <InputText value={this.state.inventor.overhead.zednadebi.text} onChange={(e) => this.setState(State('inventor.overhead.zednadebi.text', e.target.value, this.state))} />
+                        </div>:''}
+                    </div>
+
+                    <div className="p-grid">
+                      <div className="p-col-5">
+                        <Checkbox inputId="cb16" value="ზედდებულის თანხა" onChange={(e) => this.setState(State('inventor.overhead.zeddebuli.checked', e.checked, this.state))} checked={this.state.inventor.overhead.zeddebuli.checked}></Checkbox>
+                        <label htmlFor="cb16" className="p-checkbox-label">ზედდებულის თანხა</label>
+                      </div>
+                      {this.state.inventor.overhead.zeddebuli.checked?
+                        <div className="p-col-7">
+                          <InputText value={this.state.inventor.overhead.zeddebuli.text} onChange={(e) => this.setState(State('inventor.overhead.zeddebuli.text', e.target.value, this.state))} />
+                        </div>:''}
+                    </div>
+
+                  </div>
+                  </div>
+                </div>
+
+
+
+                <div className="p-col-2">
+                  <h6>ზედნადების ტიპები</h6>
+                  <div className="p-col-12">
+                    <Checkbox inputId="cb1" value="შიდა გადაზიდვა" onChange={(e) => this.setState(State('inventor.overhead.checked1', e.checked, this.state))} checked={this.state.inventor.overhead.checked1}></Checkbox>
+                    <label htmlFor="cb1" className="p-checkbox-label">შიდა გადაზიდვა</label>
+                  </div>
+                  <div className="p-col-12">
+                    <Checkbox inputId="cb2" value="ტრანსპორტირებით" onChange={(e) => this.setState(State('inventor.overhead.checked2', e.checked, this.state))} checked={this.state.inventor.overhead.checked2}></Checkbox>
+                    <label htmlFor="cb2" className="p-checkbox-label">ტრანსპორტირებით</label>
+                  </div>
+                  <div className="p-col-12">
+                    <Checkbox inputId="cb3" value="ტრანსპ.ს გარეშე" onChange={(e) => this.setState(State('inventor.overhead.checked3', e.checked, this.state))} checked={this.state.inventor.overhead.checked3}></Checkbox>
+                    <label htmlFor="cb3" className="p-checkbox-label">ტრანსპ.ს გარეშე</label>
+                  </div>
+                  <div className="p-col-12">
+                    <Checkbox inputId="cb4" value="დისტრიბუცია" onChange={(e) => this.setState(State('inventor.overhead.checked4', e.checked, this.state))} checked={this.state.inventor.overhead.checked4}></Checkbox>
+                    <label htmlFor="cb4" className="p-checkbox-label">დისტრიბუცია</label>
+                  </div>
+                  <div className="p-col-12">
+                    <Checkbox inputId="cb5" value="უკან დაბრუნება" onChange={(e) => this.setState(State('inventor.overhead.checked5', e.checked, this.state))} checked={this.state.inventor.overhead.checked5}></Checkbox>
+                    <label htmlFor="cb5" className="p-checkbox-label">უკან დაბრუნება</label>
+                  </div>
+                  <div className="p-col-12">
+                    <Checkbox inputId="cb6" value="ქვეზედნადები" onChange={(e) => this.setState(State('inventor.overhead.checked6', e.checked, this.state))} checked={this.state.inventor.overhead.checked6}></Checkbox>
+                    <label htmlFor="cb6" className="p-checkbox-label">ქვეზედნადები</label>
+                  </div>
+                </div>
+
+
+              </div>
+          }
+        </Modal>
+
         <Modal
           header="ინვენტარის მიღება დეტალები"
           visible={this.state.inventor.income.detail.dialog}
@@ -1930,6 +2175,17 @@ export default class Warehouse extends Component {
       }
     });
   };
+  // </editor-fold>
+
+
+  // <editor-fold defaultstate="collapsed" desc="ზედნადებით მიღება">
+  onOverheadIncome=()=> {
+    this.setState(State('inventor.overhead.dialog', true, this.state));
+    //this.setState(State('inventor.outcome.expand', false, this.state));
+    this.getCode('last');
+  };
+
+
   // </editor-fold>
 
 

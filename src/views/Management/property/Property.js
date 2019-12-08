@@ -478,7 +478,7 @@ export default class Property extends Component {
         <Modal
           header="განპიროვნება"
           visible={this.state.property.disposition.dialog}
-          onHide={()=>this.setState(State('property.disposition.dialog',false,this.state))} style={{width:'900px'}}
+          onHide={()=>this.resetModalParam('disposition')} style={{width:'900px'}}
           footer = {
            <div className="dialog_footer">
              <div className="left_side">
@@ -539,7 +539,7 @@ export default class Property extends Component {
         </Modal>
 
         <Modal
-          header="ინვენტარის საწყობში დაბრუნება" visible={this.state.property.outcome.dialog} onHide={()=>this.setState(State('property.outcome.dialog',false,this.state))} style={{width:'900px'}}
+          header="ინვენტარის საწყობში დაბრუნება" visible={this.state.property.outcome.dialog} onHide={()=>this.resetModalParam('outcome')} style={{width:'900px'}}
           footer = {
             <div className="dialog_footer">
               <div className="left_side">
@@ -603,7 +603,7 @@ export default class Property extends Component {
         </Modal>
 
         <Modal
-          header="ინვენტარის მოძრაობა შენობებს შორის" visible={this.state.property.movAB.dialog} onHide={()=>this.setState(State('property.movAB.dialog',false,this.state))} style={{width:'900px'}}
+          header="ინვენტარის მოძრაობა შენობებს შორის" visible={this.state.property.movAB.dialog} onHide={()=>this.resetModalParam('movAB')} style={{width:'900px'}}
           footer = {
             <div className="dialog_footer">
               <div className="left_side">
@@ -673,7 +673,7 @@ export default class Property extends Component {
         </Modal>
 
         <Modal
-          header="ინვენტარის საწყობში დაბრუნება" visible={this.state.property.inverse.dialog} onHide={()=>this.setState(State('property.inverse.dialog',false,this.state))} style={{width:'900px'}}
+          header="ინვენტარის საწყობში დაბრუნება" visible={this.state.property.inverse.dialog} onHide={()=>this.resetModalParam('inverse')} style={{width:'900px'}}
           footer = {
             <div className="dialog_footer">
               <div className="left_side">
