@@ -1,9 +1,16 @@
-import React from 'react';
+import React,{useState, useEffect} from 'react';
 import _ from 'lodash';
 import {Button} from 'primereact/button';
 
 import PropTypes from "prop-types";
 export const Cart = (props) => {
+
+    let [data, setData]=useState(props.data);
+
+    useEffect(()=>{
+      setData(props.data);
+    },[props.data])
+
     return <React.Fragment>
         <table style={style.table}>
           <thead>
@@ -17,14 +24,14 @@ export const Cart = (props) => {
           </thead>
           <tbody>
           {
-            _.map(props.data,(value,index)=>{
-              const data = JSON.parse(value);
+            _.map(data,(value,index)=>{
+              const d = JSON.parse(value);
               return (
                 <tr style={style.tr} key={index}>
-                    <td style={style.td}>{data.name}</td>
-                    <td style={style.td}>{data.barcode}</td>
-                    <td style={style.td}><input type="text" value={data.inStock} onChange={(e)=>console.log(e)}/> </td>
-                    <td style={style.td}>{data.amount}</td>
+                    <td style={style.td}>{d.name}</td>
+                    <td style={style.td}>{d.barcode}</td>
+                    <td style={style.td}><input type="number" value={d.inStock} onChange={(e)=>props.onChangeStock({index:index,inStock:e.target.value})}/> </td>
+                    <td style={style.td}>{d.amount}</td>
                     <td style={style.td}><Button label="დოკუმენტები (0)" icon="pi pi-file" /></td>
                 </tr>
               )
@@ -47,8 +54,10 @@ const style = {
   }
 };
 Cart.propTypes = {
-  data: PropTypes.any
+  data: PropTypes.any,
+  onChangeStock: PropTypes.func
 };
 Cart.defaultProps = {
-  data:[]
+  data:[],
+  onChangeStock: ()=>console.log("change stock")
 };

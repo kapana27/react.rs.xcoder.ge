@@ -29,15 +29,17 @@ class Messages extends Component{
         rows2: 0
       },
       types:{
-        'WI': 'ს.შ',
-        'WW': 'ს.შ',
-        'WS': 'ს.შ',
-        'PS': 'ქ.გ',
-        'PP': 'ქ.გ',
-        'PW': 'ქ.გ',
-        'SW': 'თ.გ',
-        'SI': 'თ.შ',
-        'PI': 'ქ.შ'
+        abbreviation:{
+          'WI': 'ს.შ',
+          'WW': 'ს.შ',
+          'WS': 'ს.შ',
+          'PS': 'ქ.გ',
+          'PP': 'ქ.გ',
+          'PW': 'ქ.გ',
+          'SW': 'თ.გ',
+          'SI': 'თ.შ',
+          'PI': 'ქ.შ'
+        }
       },
       selected: {},
       confirm: false,

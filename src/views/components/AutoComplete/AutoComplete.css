@@ -1,15 +1,11 @@
 .autocomplete-container {
-  /* Track */
-}
-.autocomplete-container::-webkit-scrollbar {
-  width: 0px;
-}
-.autocomplete-container::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px grey;
-}
+  /* Track */ }
+  .autocomplete-container::-webkit-scrollbar {
+    width: 0px; }
+  .autocomplete-container::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey; }
 
 .width-85 {
-  width: 85% !important;
-}
+  width: 85% !important; }
 
 /*# sourceMappingURL=AutoComplete.css.map */

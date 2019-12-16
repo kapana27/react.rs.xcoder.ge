@@ -51,7 +51,7 @@ export const AutoComplete = (props) => {
           value={(typeof props.value === "string")? props.value: props.value[props.field]}
           onChange={(e)=>change(e)}
         />
-        <Button icon="pi pi-plus" onClick={()=>props.onAdd()}/>
+        {props.addIcon? <Button icon="pi pi-plus" onClick={()=>props.onAdd()}/> : ''}
         <i className="p-autocomplete-loader pi pi-spinner pi-spin" style={{display: `${loader? 'block':'none'}`}}/>
       </div>
 
