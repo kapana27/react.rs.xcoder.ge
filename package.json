@@ -54,7 +54,7 @@
     "react-scripts": "^3.2.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set PORT=4011 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:cov": "npm test -- --coverage --watchAll=false",

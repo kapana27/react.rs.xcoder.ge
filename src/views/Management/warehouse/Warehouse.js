@@ -255,6 +255,8 @@ export default class Warehouse extends Component {
             file: null,
             expand:false,
             dialog: false,
+            overhead: true,
+            edit: false,
             itemGroup: {name: '', id: null, isStrict:0, spend:0, isCar:0},
             item: {name: '', id: null},
             maker: {name: '', id: null},
@@ -301,6 +303,8 @@ export default class Warehouse extends Component {
           file: null,
           expand:false,
           dialog: false,
+          overhead:false,
+          edit: false,
           itemGroup: {name: '', id: null, isStrict:0, spend:0, isCar:0},
           item: {name: '', id: null},
           maker: {name: '', id: null},
@@ -746,7 +750,6 @@ export default class Warehouse extends Component {
           footer = {
             <div className="dialog_footer">
               <div className="left_side">
-
               </div>
               {
                 (!this.state.inventor.overhead.expand)?
@@ -761,7 +764,11 @@ export default class Warehouse extends Component {
           }>
           {
             (this.state.inventor.overhead.expand)?
-             <OverheadModalTable data={this.state.inventor.overhead.buyerWaybillsEx} onChangeData={e=>this.setState(State('inventor.income',e,this.state))} />
+             <OverheadModalTable data={this.state.inventor.overhead.buyerWaybillsEx} onChangeData={(e,supplier)=>{
+               console.log(supplier)
+               this.setState(State('inventor.income', e, this.state),
+                 ()=>this.setState(State('supplier', supplier, this.state),()=> console.log(this.state)));
+             }} />
               :
               <div className="p-grid overhead_modal">
                 <div className="p-col-10">
@@ -884,17 +891,14 @@ export default class Warehouse extends Component {
                   </div>
                   </div>
                 </div>
-
-
-
                 <div className="p-col-2">
                   <h6>ზედნადების ტიპები</h6>
                   <div className="p-col-12">
-                    <Checkbox inputId="cb1" value="შიდა გადაზიდვა" onChange={(e) => this.setState(State('inventor.overhead.checked1', e.checked, this.state))} checked={this.state.inventor.overhead.checked1}></Checkbox>
+                    <Checkbox inputId="cb1" value="შიდა გადაზიდვა" onChange={(e) => this.setState(State('inventor.overhead.checked1', e.checked, this.state))} checked={this.state.inventor.overhead.checked1}/>
                     <label htmlFor="cb1" className="p-checkbox-label">შიდა გადაზიდვა</label>
                   </div>
                   <div className="p-col-12">
-                    <Checkbox inputId="cb2" value="ტრანსპორტირებით" onChange={(e) => this.setState(State('inventor.overhead.checked2', e.checked, this.state))} checked={this.state.inventor.overhead.checked2}></Checkbox>
+                    <Checkbox inputId="cb2" value="ტრანსპორტირებით" onChange={(e) => this.setState(State('inventor.overhead.checked2', e.checked, this.state))} checked={this.state.inventor.overhead.checked2}/>
                     <label htmlFor="cb2" className="p-checkbox-label">ტრანსპორტირებით</label>
                   </div>
                   <div className="p-col-12">
@@ -914,12 +918,9 @@ export default class Warehouse extends Component {
                     <label htmlFor="cb6" className="p-checkbox-label">ქვეზედნადები</label>
                   </div>
                 </div>
-
-
               </div>
           }
         </Modal>
-
         <Modal
           header="ინვენტარის მიღება დეტალები"
           visible={this.state.inventor.income.detail.dialog}
@@ -1413,7 +1414,6 @@ export default class Warehouse extends Component {
             </div>
           }
         </Modal>
-
         <Modal
           header="ინვენტარის რედაქტირება დეტალები"
           visible={this.state.inventor.selected.dialog}
@@ -1707,7 +1707,7 @@ export default class Warehouse extends Component {
         <Modal
           header="ინვენტარის მიღება"
           visible={this.state.inventor.income.dialog}
-          onHide={() => this.setState(State('inventor.income.dialog', false, this.state))}
+          onHide={() => this.setState(State('inventor.income.dialog', false, this.state),()=>this.resetIncome())}
           style={{width: '1200px'}}
           footer={
             <div>
@@ -1721,7 +1721,6 @@ export default class Warehouse extends Component {
                         </span>
                         :
                         <span/>
-
                     }
                     <Button label="ზედდებულის გააქტიურება" icon="pi pi-check"
                             onClick={() => this.onSaveInventor()}/>
@@ -1832,6 +1831,7 @@ export default class Warehouse extends Component {
                       <th>ინვენტარის სტატუსი</th>
                       <th>ფასი</th>
                       <th>სულ ფასი</th>
+                      <th> </th>
                     </tr>
                     </thead>
                     <tbody>
@@ -1850,6 +1850,11 @@ export default class Warehouse extends Component {
                             <td>{value.status.name}</td>
                             <td>{value.price}</td>
                             <td>{Math.round(parseInt(value.price) * parseInt(value.count))}</td>
+                            <td><i className="fa fa-edit" onClick={()=>this.setState(State('inventor.income.detail',value,this.state),()=>{
+                              this.setState(State('inventor.income.detail.expand', false, this.state));
+                              this.setState(State('inventor.income.detail.edit', true, this.state),
+                                () => this.setState(State('inventor.income.detail.dialog', true, this.state)));
+                            })}/></td>
                           </tr>
                         )
                       })
@@ -2164,11 +2169,10 @@ export default class Warehouse extends Component {
       </React.Fragment>
     );
   }
-
   showSupplierDialog(){
     this.setState(State('supplier.dialog', true, this.state));
-    this.setState(State('supplier.value', '', this.state));
-    this.setState(State('supplier.number', '', this.state));
+    //this.setState(State('supplier.value', '', this.state));
+    //this.setState(State('supplier.number', '', this.state));
     this.setState(State('supplier.dropdown', {id:null, name:''}, this.state));
   }
   tabClick(tabID) {
@@ -2367,7 +2371,6 @@ export default class Warehouse extends Component {
       }
     });
   };
-
   resetModalParam(modal){
     this.setState(State('inventor.'+modal+'.dialog',false,this.state));
     this.setState(State('inventor.'+modal+'.expand',false,this.state));
@@ -2466,7 +2469,6 @@ export default class Warehouse extends Component {
       }
     });
   }
-
   transferActiveOverhead() {
     let formData = new FormData();
 
@@ -2496,7 +2498,6 @@ export default class Warehouse extends Component {
       }
     });
   }
-
   transferGenerateOverhead() {
     this.getCode('new');
 
@@ -2558,7 +2559,6 @@ export default class Warehouse extends Component {
       }
     });
   };
-
   onTransfer = (event) => {
     this.setState(State('inventor.transfer.dialog',true,this.state));
     this.setState(State('inventor.transfer.expend',false,this.state));
@@ -2676,7 +2676,6 @@ export default class Warehouse extends Component {
       this.setState(State('inventor.income.tempAddon', result.data, this.state),()=>console.log(this.state));
     })
   };
-
   onInventorEditExpand=async ()=>{
     this.setState(State('inventor.income.errors', {
       item: false,
@@ -2770,6 +2769,7 @@ export default class Warehouse extends Component {
   }
   onSaveDetail=()=>{
     let data= this.state.inventor.income.data;
+
     this.setState(State('inventor.itemSuggestions', [], this.state));
     this.setState(State('inventor.makerSuggestions', [], this.state));
     this.setState(State('inventor.modelSuggestions', [], this.state));
@@ -2793,7 +2793,9 @@ export default class Warehouse extends Component {
     }));
     http.post('/api/secured/Item/PreInsert/Add',formData).then(result => {
       if(result.status===200){
-        data.push(this.state.inventor.income.detail);
+        if(!this.state.inventor.income.detail.edit){
+          data.push(this.state.inventor.income.detail);
+        }
         this.onGridReady(this.eventData);
         this.setState(State("inventor.income.data", data, this.state),
           () =>{
@@ -2805,7 +2807,6 @@ export default class Warehouse extends Component {
 
 
   }
-
   onSaveEditDetail=()=>{
     let data= [];
     this.setState(State('inventor.itemSuggestions', [], this.state));
@@ -2869,7 +2870,6 @@ export default class Warehouse extends Component {
     this.setState(State('inventor',
       {
         income: {
-          id:'',
           dialog: false,
           showDetails: false,
           date: new Date(),
@@ -2883,6 +2883,8 @@ export default class Warehouse extends Component {
             file: null,
             expand:false,
             dialog: false,
+            overhead: true,
+            edit: false,
             itemGroup: {name: '', id: null, isStrict:0, spend:0, isCar:0},
             item: {name: '', id: null},
             maker: {name: '', id: null},
@@ -2925,9 +2927,11 @@ export default class Warehouse extends Component {
           data: []
         },
         selected:  {
+          id:'',
           file: null,
           expand:false,
           dialog: false,
+          edit: false,
           itemGroup: {name: '', id: null, isStrict:0, spend:0, isCar:0},
           item: {name: '', id: null},
           maker: {name: '', id: null},
@@ -2943,6 +2947,7 @@ export default class Warehouse extends Component {
           files:[],
           lastbarCode: {value: '', name: '', length: '', id: '', barCodeVisualValue: "", startPoint: "", endPoint: ""},
           list: [],
+          data: [],
           comment:'',
           car: {
             number:"",
@@ -2955,7 +2960,19 @@ export default class Warehouse extends Component {
           }
         },
         outcome: {
-          dialog: false
+          dialog: false,
+          expand:false,
+          date: new Date(),
+          tab: 0,
+          transPerson: "",
+          propertyManagement: "",
+          requestPerson: "",
+          stockMan: "",
+          section: "",
+          room: "",
+          person: "",
+          comment: "",
+          files:[],
         },
         transfer: {
           date: new Date(),
@@ -2971,9 +2988,10 @@ export default class Warehouse extends Component {
           dialog: false,
           expand: false,
           qr: "",
-          checked1: false,
-          checked2: false,
-          checked3: false,
+
+          checked1: true,
+          checked2: true,
+          checked3: true,
           checked4: false,
           checked5: false,
           checked6: false,
@@ -3021,7 +3039,8 @@ export default class Warehouse extends Component {
           zeddebuli: {
             checked:false,
             text: "",
-          }
+          },
+          buyerWaybillsEx:[]
         },
         search: {
           show: false,
@@ -3072,28 +3091,6 @@ export default class Warehouse extends Component {
         requestPersonList: [],
         lastCode: "",
         newCode: "",
-        tab: 11,
-        cart: {
-          tab11: [],
-          tab12: [],
-          dialog: false
-        },
-        errorDialog: {
-          modal: false,
-          text: ''
-        },
-        supplierList: [
-          {id: '1', name: 'შპს'},
-          {id: '2', name: 'ინდმეწარმე'},
-          {id: '3', name: 'ფიზიკური პირი'},
-          {id: '4', name: 'სააქციო საზოგადოება'}
-        ],
-        supplier: {
-          dialog: false,
-          value: "",
-          number: "",
-          dropdown:{id:null, name:''},
-        }
       }
       , this.state)
     );
@@ -3115,6 +3112,66 @@ export default class Warehouse extends Component {
       ,this.state)
     )
   }
+  resetIncome=()=>{
+    this.setState(State('inventor.income',
+      {
+        dialog: false,
+        showDetails: false,
+        date: new Date(),
+        supplier: {id:null,name:''},
+        comment:"",
+        addon: {Left: '', Right: ''},
+        tempAddon: {Left: '', Right: ''},
+        invoice: '',
+        inspectionNumber:'',
+        detail: {
+          file: null,
+          expand:false,
+          dialog: false,
+          overhead: true,
+          edit: false,
+          itemGroup: {name: '', id: null, isStrict:0, spend:0, isCar:0},
+          item: {name: '', id: null},
+          maker: {name: '', id: null},
+          model: {name: '', id: null},
+          measureUnit: {name: '', id: null},
+          type: {name: '', id: null},
+          status: {name: '', id: null},
+          count: 1,
+          price: 0,
+          barCodeType: {name: '', id: null},
+          barCode: '',
+          factoryNumber:'',
+          files:[],
+          lastbarCode: {value: '', name: '', length: '', id: '', barCodeVisualValue: "", startPoint: "", endPoint: ""},
+          list: [],
+          comment:'',
+          car: {
+            number:"",
+            year:"",
+            vin:""
+          },
+          numbers:{
+            from:"",
+            to: ""
+          }
+        },
+        errors: {
+          supplier:false,
+          item: false,
+          maker: false,
+          measureUnit:false,
+          type: false,
+          status: false,
+          count: false,
+          price: false,
+          barCodeType: false,
+          model: false,
+          itemGroup: false
+        },
+        data: []
+      },this.state))
+  }
   generateInventor = async () => {
     const validate = Validator(['supplier'], this.state.inventor.income,'id');
     console.log(validate)
@@ -3131,10 +3188,11 @@ export default class Warehouse extends Component {
   };
   resetDetail=()=> {
     this.setState(State('inventor.income.detail',{
-      comment: "",
       file: null,
       expand:false,
       dialog: false,
+      overhead: true,
+      edit: false,
       itemGroup: {name: '', id: null, isStrict:0, spend:0, isCar:0},
       item: {name: '', id: null},
       maker: {name: '', id: null},
@@ -3150,10 +3208,11 @@ export default class Warehouse extends Component {
       files:[],
       lastbarCode: {value: '', name: '', length: '', id: '', barCodeVisualValue: "", startPoint: "", endPoint: ""},
       list: [],
-      data: [],
+      comment:'',
       car: {
         number:"",
-        year:""
+        year:"",
+        vin:""
       },
       numbers:{
         from:"",
@@ -3215,6 +3274,7 @@ export default class Warehouse extends Component {
           id: selectedRows.id,
           file: null,
           expand: false,
+          overhead:false,
           amount:selectedRows.amount,
           dialog: false,
           itemGroup: selectedRows.itemGroup,
@@ -3250,7 +3310,6 @@ export default class Warehouse extends Component {
     }
 
   };
-
   onUpdate=()=>{
     const data = {
       govNumber: this.state.inventor.selected.car.number,
@@ -3298,10 +3357,7 @@ export default class Warehouse extends Component {
 
     //this.setState(State('inventor.selected.dialog',true,this.state))
   }
-
   cartDialog=()=> {
     this.setState(State('cart.dialog',true,this.state))
   }
-
-
 }

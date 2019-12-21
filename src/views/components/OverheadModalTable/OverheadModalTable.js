@@ -24,6 +24,12 @@ export default class OverheadModalTable extends Component{
 
     //console.log(this.props)
     this.state = {
+      supplier: {
+        dialog: false,
+        value: "",
+        number: "",
+        dropdown: {id: null, name: ''},
+      },
       goodList: [],
       inventor: {
         income: {
@@ -92,7 +98,6 @@ export default class OverheadModalTable extends Component{
         list: []
 
       },
-
       types: {
         vatType: {
           '0': 'ჩვეულებრივი',
@@ -152,53 +157,76 @@ export default class OverheadModalTable extends Component{
   };
 
 
+  loadGoodList = (e) => {
 
+    http.post("/api/secured/Supplier/Filter?query=" + e.sellerTin, {})
+      .then(result1 => {
+          if(result1['status']===200 && result1['data']){
+            this.setState(State('inventor.income.supplier', {
+              id: result1['data'][0]['id'],
+              name: result1['data'][0]['generatedName']
+            },this.state),()=> this.setData(e));
+          }else{
+            this.setState(State('inventor.income.supplier', {
+              id: null,
+              name: ''
+            },this.state));
+            this.setState(State('supplier.number', e.sellerTin, this.state));
+            this.setState(State('supplier.value', e.sellerName, this.state),()=> this.setData(e));
 
-  loadGoodList=(e)=>{
+          }
+      });
+
+  };
+
+  setData = (e) => {
     http.post("/api/secured/Rs/getWaybill?id=" + e.id)
       .then(result => this.setState(State('goodList', result.data.goodsList.goods, this.state), () => {
-          this.setState(State('inventor.income.data',_.map(result.data.goodsList.goods,(value,key)=>{
-            return {
-              file: null,
-              expand: false,
-              dialog: false,
-              itemGroup: {name: '', id: null, isStrict: 0, spend: 0, isCar: 0},
-              item: {name: value['wname'], id: null},
-              maker: {name: '', id: null},
-              model: {name: '', id: null},
-              measureUnit: {name: '', id: null},
-              type: {name: '', id: null},
-              status: {name: '', id: null},
-              count: value['quantity'],
-              price: value['price'],
-              barCodeType: {name: '', id: null},
-              barCode: '',
-              factoryNumber: '',
-              files: [],
-              lastbarCode: {
-                value: '',
-                name: '',
-                length: '',
-                id: '',
-                barCodeVisualValue: "",
-                startPoint: "",
-                endPoint: ""
-              },
-              list: [],
-              comment: '',
-              car: {
-                number: "",
-                year: "",
-                vin: ""
-              },
-              numbers: {
-                from: "",
-                to: ""
-              }
+        this.setState(State('inventor.income.data', _.map(result.data.goodsList.goods, (value, key) => {
+          return {
+            file: null,
+            expand: false,
+            dialog: false,
+            overhead: true,
+            itemGroup: {name: '', id: null, isStrict: 0, spend: 0, isCar: 0},
+            item: {name: value['wname'], id: null},
+            maker: {name: '', id: null},
+            model: {name: '', id: null},
+            measureUnit: {name: '', id: null},
+            type: {name: '', id: null},
+            status: {name: '', id: null},
+            count: value['quantity'],
+            price: value['price'],
+            barCodeType: {name: '', id: null},
+            barCode: '',
+            factoryNumber: '',
+            files: [],
+            lastbarCode: {
+              value: '',
+              name: '',
+              length: '',
+              id: '',
+              barCodeVisualValue: "",
+              startPoint: "",
+              endPoint: ""
+            },
+            list: [],
+            comment: '',
+            car: {
+              number: "",
+              year: "",
+              vin: ""
+            },
+            numbers: {
+              from: "",
+              to: ""
             }
-          }),this.state),()=>this.props.onChangeData(this.state.inventor.income))
+          };
+
+        }), this.state), () => this.props.onChangeData(this.state.inventor.income, this.state.supplier))
       }));
-  }
+  };
+
 
   render() {
     return  (
