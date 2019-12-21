@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import http from  '../../../api/http';
+import http, {PREFIX} from '../../../api/http';
 import {Config} from "../../../config/Config";
 import {CardCellRenderer, Modal, Calendar, AutoComplete, FileUploader, Cart, Search, Overhead, ErrorModal} from '../../components'
 import { AgGridReact } from 'ag-grid-react';
@@ -318,7 +318,8 @@ export default class Property extends Component {
       {
         name: 'ექსელში ექსპორტი .xlsx',
         action: function () {
-          //window.open(params.context.thisComponent.prod + '/api/secured/Item/Stock/Export' + localStorage.getItem('filter')+"&list="+params.context.thisComponent.cartItemsData.map(v=>v.id).join(","), '_blank');
+          window.open( PREFIX+'/api/secured/Item/Stock/Export?filter=' +encodeURIComponent(localStorage.getItem('filter'))+"&list="+_.map(params.context.thisComponent.state.cart['tab' + params.context.thisComponent.state.tab],(value,index)=>index).join(","), '_blank');
+
         }
       },
       'separator',
@@ -409,7 +410,7 @@ export default class Property extends Component {
             }
           }
         }
-
+        localStorage.setItem("filter",JSON.stringify(parameters))
         http.get(Config.management.warehouse.get.items+"?stockId=11&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
           .then(response => {
             params.successCallback(response['data'].map((v, k) => {
