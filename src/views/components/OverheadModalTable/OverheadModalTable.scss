@@ -272,6 +272,9 @@ section {
           font-weight: 500;
           font-size: 11px;
           line-height: 12px;
+          font-family: 'lbet-nus-bold',sans-serif;
+
+          &:nth-child(4) {min-width: 85px;}
         }
 
       }
@@ -282,7 +285,7 @@ section {
           padding: .5em;
           background-color: inherit;
           border: 1px solid #c8c8c8;
-          white-space: nowrap;
+          //white-space: nowrap;
           line-height: 16px;
           font-size: 13px;
         }

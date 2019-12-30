@@ -1085,18 +1085,18 @@ export default class Warehouse extends Component {
                         <InputText type="text" placeholder="დასახელება"
                                    className={this.state.inventor.income.errors.count ? 'bRed' : ''}
                                    value={this.state.inventor.income.detail.count}
-                                   onChange={(e) => this.setState(State("inventor.income.detail.count", e.target.value, this.state))}/>
+                                   onChange={(e) => this.setState(State("inventor.income.detail.count", e.target.value.replace(',','.'), this.state))}/>
                       </div>
                   }
                   <div className="fullwidth p-col-2">
                     <label>ერთეულის ფასი</label>
                     <InputText type="text" placeholder="დასახელება" value={this.state.inventor.income.detail.price}
-                               onChange={(e) => this.setState(State("inventor.income.detail.price", e.target.value, this.state))}/>
+                               onChange={(e) => this.setState(State("inventor.income.detail.price", e.target.value.replace(',','.'), this.state))}/>
                   </div>
                   <div className="fullwidth p-col-2">
                     <label>სულ ფასი:</label>
                     <div
-                      style={{lineHeight: '30px'}}>{Math.round(parseInt(this.state.inventor.income.detail.price) * parseInt(this.state.inventor.income.detail.count))}</div>
+                      style={{lineHeight: '30px'}}>{(parseFloat(this.state.inventor.income.detail.price) * parseFloat(this.state.inventor.income.detail.count)).toFixed(2)}</div>
                   </div>
                   {
                     (this.state.inventor.income.detail.itemGroup.spend === 1 || this.state.inventor.income.detail.itemGroup.isStrict === 1 || this.state.inventor.income.detail.itemGroup.isCar === 1) ? (
@@ -1293,8 +1293,9 @@ export default class Warehouse extends Component {
               </div>
               <div className="fullwidth p-col-2">
                 <label>სულ ფასი:</label>
+
                 <div
-                  style={{lineHeight: '30px'}}>{Math.round(parseInt(this.state.inventor.selected.price) * parseInt(this.state.inventor.selected.count))}</div>
+                  style={{lineHeight: '30px'}}>{(this.state.inventor.selected.price * this.state.inventor.selected.count).toFixed(2)}</div>
               </div>
               {
                 (this.state.inventor.selected.itemGroup.spend === 1 || this.state.inventor.selected.itemGroup.isStrict === 1 || this.state.inventor.selected.itemGroup.isCar === 1) ? (
