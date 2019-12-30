@@ -22,6 +22,7 @@ import 'primeflex/primeflex.css';
 import './property.css';
 import {State,putInCart,clearCartItem,removeCartItem,getCartItems} from '../../../utils';
 import * as moment from "moment";
+import CustomDateComponent from "../../components/CustomDateComponent/CustomDateComponent";
 export default class Property extends Component {
   constructor(props){
     super(props);
@@ -210,6 +211,7 @@ export default class Property extends Component {
         maxConcurrentDatasourceRequests: 2,
         infiniteInitialRowCount: 1,
         maxBlocksInCache: 2,
+        frameworkComponents: { agDateInput: CustomDateComponent },
 
         gridOptions: {
           context: {
@@ -533,6 +535,7 @@ export default class Property extends Component {
             rowClassRules={this.state.grid.rowClassRules}
             onCellClicked={this.onClickedCell}
             getContextMenuItems={this.getContextMenuItems}
+            frameworkComponents={this.state.grid.frameworkComponents}
 
           />
         </div>

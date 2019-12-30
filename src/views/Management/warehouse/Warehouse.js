@@ -30,8 +30,8 @@ import 'primeflex/primeflex.css';
 import {State,putInCart,clearCartItem,removeCartItem,getCartItems} from '../../../utils';
 import {Validator} from "../../../utils/validator";
 import * as moment from 'moment';
-import KeyHandler, { KEYDOWN } from 'react-key-handler';
 import OverheadModalTable from "../../components/OverheadModalTable/OverheadModalTable";
+import CustomDateComponent from "../../components/CustomDateComponent/CustomDateComponent";
 
 export default class Warehouse extends Component {
   constructor(props){
@@ -237,8 +237,9 @@ export default class Warehouse extends Component {
           context: {
             thisComponent: this,
           },
-          rowSelection: 'single'
-        }
+          rowSelection: 'single',
+        },
+        frameworkComponents: { agDateInput: CustomDateComponent }
       },
       inventor: {
         income: {
@@ -740,6 +741,7 @@ export default class Warehouse extends Component {
             onSelectionChanged={this.onSelectionChanged.bind(this)}
             onGridReady={this.onReady}
             onCellClicked={this.onClickedCell}
+            frameworkComponents={this.state.grid.frameworkComponents}
           />
         </div>
 

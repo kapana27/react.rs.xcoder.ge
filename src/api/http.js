@@ -1,5 +1,5 @@
 import axios from 'axios';
-export const PREFIX = '/rs';
+export const PREFIX = '';
 axios.create({
   baseURL: '/',
 });
