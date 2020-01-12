@@ -330,7 +330,7 @@ export default class Property extends Component {
       {
         name: 'ექსელში ექსპორტი .xlsx',
         action: function () {
-          window.open( PREFIX+'/api/secured/Item/Stock/Export?stockId='+params.context.thisComponent.state.tab+'&filter=' +encodeURIComponent(localStorage.getItem('filter'))+"&list="+_.map(params.context.thisComponent.state.cart['tab' + params.context.thisComponent.state.tab],(value,index)=>index).join(","), '_blank');
+          window.open( PREFIX+'/api/secured/Item/'+((params.context.thisComponent.state.tab===21)?'Section/Out/Export':'Section/In/Export')+'?filter=' +encodeURIComponent(localStorage.getItem('filter'))+"&list="+_.map(params.context.thisComponent.state.cart['tab' + params.context.thisComponent.state.tab],(value,index)=>index).join(","), '_blank');
 
         }
       },
