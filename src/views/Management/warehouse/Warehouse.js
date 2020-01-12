@@ -2047,12 +2047,15 @@ export default class Warehouse extends Component {
                 </TabPanel>
               </TabView>
               <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
-
-                data={this.state.cart['tab' + this.state.tab]} onChangeStock={e=>{
-                   let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
-                   data.inStock = e.inStock;
-                 this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
-              }
+                data={this.state.cart['tab' + this.state.tab]}
+                onChangeAmount={e=>{
+                  let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
+                  if(e.count>data.amount){
+                    e.count=data.amount;
+                  }
+                  data.count = e.count;
+                  this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
+                }
               }/>
               </>
           }
@@ -2144,7 +2147,18 @@ export default class Warehouse extends Component {
           onHide={() => this.setState(State('cart.dialog', false, this.state))}
           style={{width: '800px'}}
         >
-          <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)} data={this.state.cart['tab' + this.state.tab]}  />
+          <Cart
+            onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
+            data={this.state.cart['tab' + this.state.tab]}
+            onChangeAmount={e=>{
+              let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
+              if(e.count>data.amount){
+                e.count=data.amount;
+              }
+              data.count = e.count;
+              this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
+            }}
+          />
         </Modal>
         <Modal
           className="itemGroup"

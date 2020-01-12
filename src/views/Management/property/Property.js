@@ -638,7 +638,18 @@ export default class Property extends Component {
                   <InputTextarea value={this.state.property.disposition.comment} onChange = {(e)=>this.setState(State('property.disposition.comment',e.target.value,this.state))} rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
                 </div>
 
-                <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)} data={this.state.cart['tab'+this.state.tab]}/>
+                <Cart
+                  onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
+                  data={this.state.cart['tab'+this.state.tab]}
+                  onChangeAmount={e=>{
+                    let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
+                    if(e.count>data.amount){
+                      e.count=data.amount;
+                    }
+                    data.count = e.count;
+                    this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
+                  }}
+                />
 
               </div>
           }
@@ -702,7 +713,18 @@ export default class Property extends Component {
                   <label>კომენტარი</label>
                   <InputTextarea value={this.state.property.outcome.comment} onChange = {(e)=>this.setState(State('property.outcome.comment',e.target.value,this.state))} rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
                 </div>
-                <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)} data={this.state.cart['tab'+this.state.tab]}/>
+                <Cart
+                  onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
+                  data={this.state.cart['tab'+this.state.tab]}
+                  onChangeAmount={e=>{
+                    let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
+                    if(e.count>data.amount){
+                      e.count=data.amount;
+                    }
+                    data.count = e.count;
+                    this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
+                  }}
+                />
               </div>
 
           }
@@ -773,7 +795,18 @@ export default class Property extends Component {
                   <label>კომენტარი</label>
                   <InputTextarea value={this.state.property.movAB.comment} onChange = {(e)=>this.setState(State('property.movAB.comment',e.target.value,this.state))} rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
                 </div>
-                <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)} data={this.state.cart['tab'+this.state.tab]}/>
+                <Cart
+                  onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
+                  data={this.state.cart['tab'+this.state.tab]}
+                  onChangeAmount={e=>{
+                    let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
+                    if(e.count>data.amount){
+                      e.count=data.amount;
+                    }
+                    data.count = e.count;
+                    this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
+                  }}
+                />
               </div>
           }
         </Modal>
@@ -836,13 +869,35 @@ export default class Property extends Component {
                   <label>კომენტარი</label>
                   <InputTextarea value={this.state.property.inverse.comment} onChange={(e)=>this.setState(State('property.inverse.comment',e.target.value,this.state))} rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
                 </div>
-                <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)} data={this.state.cart['tab'+this.state.tab]}/>
+                <Cart
+                  onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
+                  data={this.state.cart['tab'+this.state.tab]}
+                  onChangeAmount={e=>{
+                    let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
+                    if(e.count>data.amount){
+                      e.count=data.amount;
+                    }
+                    data.count = e.count;
+                    this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
+                  }}
+                />
               </div>
           }
         </Modal>
 
         <Modal header="კალათა" visible={this.state.cart.dialog} onHide={()=>this.setState(State('cart.dialog',false,this.state))} style={{width:'800px'}} >
-          <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)} data={this.state.cart['tab'+this.state.tab]}/>
+          <Cart
+            onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
+            data={this.state.cart['tab'+this.state.tab]}
+            onChangeAmount={e=>{
+              let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
+              if(e.count>data.amount){
+                e.count=data.amount;
+              }
+              data.count = e.count;
+              this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
+            }}
+          />
         </Modal>
 
       </React.Fragment>
