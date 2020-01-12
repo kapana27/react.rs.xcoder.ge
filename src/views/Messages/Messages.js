@@ -58,7 +58,7 @@ class Messages extends Component{
        .then(result => {
          if(result.status === 200){
            this.setState(State('selected', {}, this.state));
-           this.setState(State('update',true,this.state))
+           this.setState(State('update',true,this.state),()=>this.setState(State('update',false,this.state)))
          }
        })
        .catch(reason => console.log(reason))
