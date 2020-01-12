@@ -282,7 +282,9 @@ export default class Property extends Component {
             supplier:"",
             invoice:"",
             invoiceAddon:"",
-            inspectionNumber:""
+            inspectionNumber:"",
+            dateFrom:'',
+            dateTo:''
           }
         },
         // პიროვნებების მასივი
@@ -413,11 +415,39 @@ export default class Property extends Component {
           for (const f in filterData) {
             const name = (f.split('.').length > 0) ? f.split('.')[0] : f;
             if (filterData[f] != '' && filterData[f] != undefined && filterData[f] !== null) {
-              parameters.push({
-                property: name,
-                value: filterData[f],
-                operator: 'like'
-              });
+              if(['dateFrom','dateTo'].indexOf(f)>-1){
+                parameters.push({
+                  property: 'tr_date',
+                  value: moment(filterData[f]).format("DD/MM/YYYY"),
+                  operator: f=='dateFrom'?'gt':'lt'
+                });
+              }else if( ['priceFrom','priceTo'].indexOf(f)>-1){
+                parameters.push({
+                  property: 'price',
+                  value: (_.isObject(filterData[f]))? filterData[f]['id']:filterData[f],
+                  operator: f=='priceFrom'?'gt':'lt'
+                });
+              }else if(['barcodeFrom','barcodeTo'].indexOf(f)>-1){
+                parameters.push({
+                  property: 'barcode',
+                  value: (_.isObject(filterData[f]))? filterData[f]['id']:filterData[f],
+                  operator: f=='barcodeFrom'?'gt':'lt'
+                });
+              }
+              else if(['barCodeType'].indexOf(f)>-1){
+                parameters.push({
+                  property: 'barcode_type',
+                  value: (_.isObject(filterData[f]))? filterData[f]['id']:filterData[f],
+                  operator: 'eq'
+                });
+              }
+              else{
+                parameters.push({
+                  property: name,
+                  value: (_.isObject(filterData[f]))? filterData[f]['id']:filterData[f],
+                  operator: 'like'
+                });
+              }
             }
           }
         }
