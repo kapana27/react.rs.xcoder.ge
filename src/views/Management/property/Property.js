@@ -389,6 +389,7 @@ export default class Property extends Component {
     const filterData = this.state.property.search.data;
     const selectedTabId = this.selectedTabId;
     const cartItems = _.map(this.state.cart['tab'+this.state.tab],( (value,index)=>index));
+    const tab = this.state.tab;
     const datasource = {
       getRows(params) {
         const parameters = [];
@@ -413,7 +414,7 @@ export default class Property extends Component {
           }
         }
         localStorage.setItem("filter",JSON.stringify(parameters))
-        http.get(Config.management.warehouse.get.items+"?stockId=11&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
+        http.get(Config.management.property.get.items+"?stockId="+tab+"&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
           .then(response => {
             params.successCallback(response['data'].map((v, k) => {
               v['rowId'] = (params['request']['startRow'] + 1 + k );

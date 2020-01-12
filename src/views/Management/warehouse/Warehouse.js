@@ -2084,7 +2084,15 @@ export default class Warehouse extends Component {
                   <label>კომენტარი</label>
                   <InputTextarea rows={4} placeholder="შენიშვნა" style={{width: '100%', minHeight: '100px'}}/>
                 </div>
-                <Cart data={this.state.cart['tab'+this.state.tab]}/>
+                <Cart data={this.state.cart['tab' + this.state.tab]} onChangeAmount={e=>{
+                  let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
+                  if(e.count>data.amount){
+                    e.count=data.amount;
+                  }
+                  data.count = e.count;
+                  this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
+                }
+                }/>
               </div>
           }
         </Modal>
@@ -2313,9 +2321,6 @@ export default class Warehouse extends Component {
 
   // </editor-fold>
   warehouseManagement = (id) => {
-
-
-
     http.get("/api/secured/Staff/Filter/ByStock?stockId=" + id).then(result => {
       if (result.status === 200) {
         this.setState(State('inventor.stockManList',_.map(result.data,(value)=> {
@@ -3274,6 +3279,7 @@ export default class Warehouse extends Component {
         if(result.status ===200) {
           alert("შეინახა წარმატებით");
           this.setState(State('inventor.income.dialog', false, this.state))
+          this.onGridReady(this.eventData)
         }else{
           alert('დაფიქსირდა შეცდომა')
         }

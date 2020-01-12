@@ -17,7 +17,7 @@ export const Cart = (props) => {
             <tr>
               <th>დასახელება</th>
               <th>შტრიხკოდი</th>
-              <th>რაოდენობა</th>
+              <th>სულ რაოდენობა</th>
               <th>რაოდენობა</th>
               <th></th>
             </tr>
@@ -30,8 +30,8 @@ export const Cart = (props) => {
                 <tr style={style.tr} key={index}>
                     <td style={style.td}>{d.name}</td>
                     <td style={style.td}>{d.barcode}</td>
-                    <td style={style.td}><input type="number" value={d.inStock} onChange={(e)=>props.onChangeStock({index:index,inStock:e.target.value})}/> </td>
-                    <td style={style.td}>{d.amount}</td>
+                    <td style={style.td}>{d.amount} </td>
+                    <td style={style.td}><input type="number" value={d.count} onChange={(e)=>props.onChangeAmount({index:index,count:e.target.value})}/> </td>
                     <td style={style.td}><Button label="დოკუმენტები (0)" icon="pi pi-file" /></td>
                 </tr>
               )
@@ -55,9 +55,9 @@ const style = {
 };
 Cart.propTypes = {
   data: PropTypes.any,
-  onChangeStock: PropTypes.func
+  onChangeAmount: PropTypes.func
 };
 Cart.defaultProps = {
   data:[],
-  onChangeStock: ()=>console.log("change stock")
+  onChangeAmount: ()=>console.log("change stock")
 };
