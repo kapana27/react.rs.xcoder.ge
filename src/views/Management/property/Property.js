@@ -400,15 +400,18 @@ export default class Property extends Component {
     const selectedTabId = this.selectedTabId;
     const cartItems = _.map(this.state.cart['tab'+this.state.tab],( (value,index)=>index));
     const tab = this.state.tab;
+    if(filter){
+      this.gridApi.setFilterModel(null);
+    }
     const datasource = {
       getRows(params) {
         const parameters = [];
         for (const f in params['request']['filterModel']) {
           const name = (f.split('.').length > 0) ? f.split('.')[0] : f;
           parameters.push({
-            property: name,
-            value: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' ) ? params['request']['filterModel'][f]['dateFrom'] : params['request']['filterModel'][f]['filter'],
-            operator: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' ) ? '=' : 'like'
+            property: name==='trDate'? 'tr_date': name,
+            value: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' ) ? moment(params['request']['filterModel'][f]['dateFrom']).format("DD/MM/YYYY") : params['request']['filterModel'][f]['filter'],
+            operator: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' ) ? 'eq' : 'like'
           });
         }
         if (filter) {

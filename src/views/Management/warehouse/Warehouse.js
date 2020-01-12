@@ -573,23 +573,19 @@ export default class Warehouse extends Component {
     this.eventData = params;
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
+    const filterApi=params.api;
     const filterData = this.state.inventor.search.data;
     const selectedTabId = this.selectedTabId;
     const cartItems = _.map(this.state.cart['tab'+this.state.tab],( (value,index)=>index));
     let tabID = this.state.tab;
+    if(filter){
+      this.gridApi.setFilterModel(null);
+    }
     const datasource = {
       getRows(params) {
         const parameters = [];
-        for (const f in params['request']['filterModel']) {
-          const name = (f.split('.').length > 0) ? f.split('.')[0] : f;
-          parameters.push({
-            property: name,
-            value: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' ) ? params['request']['filterModel'][f]['dateFrom'] : params['request']['filterModel'][f]['filter'],
-            operator: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' ) ? '=' : 'like'
-          });
-        }
+
         if (filter) {
-          console.log(filterData)
           for (const f in filterData) {
             const name = (f.split('.').length > 0) ? f.split('.')[0] : f;
             if (filterData[f] !== '' && filterData[f] !== undefined && filterData[f] !== null) {
@@ -628,6 +624,14 @@ export default class Warehouse extends Component {
              }
             }
           }
+        }
+        for (const f in params['request']['filterModel']) {
+          const name = (f.split('.').length > 0) ? f.split('.')[0] : f;
+          parameters.push({
+            property: name==='trDate'? 'tr_date': name,
+            value: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' ) ? moment(params['request']['filterModel'][f]['dateFrom']).format("DD/MM/YYYY") : params['request']['filterModel'][f]['filter'],
+            operator: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' ) ? 'eq' : 'like'
+          });
         }
         localStorage.setItem("filter",JSON.stringify(parameters))
         http.get(Config.management.warehouse.get.items+"?stockId="+tabID+"&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
