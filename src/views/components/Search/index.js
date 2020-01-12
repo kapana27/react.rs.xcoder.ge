@@ -20,6 +20,9 @@ export const Search = (props) => {
           <div className="p-col-3">
             <label>დასახელება:</label>
             <InputText type="text" value={props.data.name} onChange={(e)=>props.onChange(e.target.value,'name')} />
+          </div><div className="p-col-3">
+            <label>დასახელება:</label>
+            <InputText type="text" value={props.data.name} onChange={(e)=>props.onChange(e.target.value,'name')} />
           </div>
           <div className="p-col-3">
             <label>მარკა:</label>
@@ -63,6 +66,13 @@ export const Search = (props) => {
             <div className="flex-box">
               <InputText type="text"  value={props.data.priceFrom} onChange={(e)=>props.onChange(e.target.value,'priceFrom')}/>
               <InputText type="text" value={props.data.priceTo}  onChange={(e)=>props.onChange(e.target.value,'priceTo')}/>
+            </div>
+          </div>
+          <div className="p-col-3" style={{maxWidth:'331px',paddingRight:'20px'}}>
+            <label>თარიღი: დან-მდე</label>
+            <div className="flex-box">
+              <Calendar date={props.data.dateFrom} onDateChange={date =>props.onChange(date,'dateFrom') }/>
+              <Calendar date={props.data.dateTo} onDateChange={date => props.onChange(date,'dateTo')}/>
             </div>
           </div>
           <div className="p-col-3">

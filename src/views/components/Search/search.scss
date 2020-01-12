@@ -20,7 +20,7 @@
     //padding: 0.2em 0.5em;
     padding: 0.1em 0.1em;
     .p-inputtext {
-      padding: 0.1em 0.43em;
+      padding: 0.24em 0.43em;;
       margin: 0 !important;
       font-size: 12px;
     }
@@ -29,15 +29,20 @@
     display: flex;
 
     &.date {
-      input {
-        width: 100%;
-      }
-    }
+         input {
+           width: 100%;
+         }
+       }
     input {
       flex: 1 1 auto;
       width: 1%;
     }
-
+  .react-datepicker-wrapper{
+    input{
+      width: 150px;
+      text-indent: 25px !important;
+    }
+  }
   }
 
 

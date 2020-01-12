@@ -10,8 +10,7 @@ export const Cart = (props) => {
       setData(props.data)
   },[props.data])
 
-  console.log(data)
-  console.log(props)
+
   return <React.Fragment>
     <table style={style.table}>
       <thead>

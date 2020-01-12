@@ -20,7 +20,7 @@
   padding: 0.1em 0.1em;
 }
 .search .p-col-3 .p-inputtext {
-  padding: 0.1em 0.43em;
+  padding: 0.24em 0.43em;
   margin: 0 !important;
   font-size: 12px;
 }
@@ -33,6 +33,10 @@
 .search .flex-box input {
   flex: 1 1 auto;
   width: 1%;
+}
+.search .flex-box .react-datepicker-wrapper input {
+  width: 150px;
+  text-indent: 25px !important;
 }
 
 /*# sourceMappingURL=search.css.map */
