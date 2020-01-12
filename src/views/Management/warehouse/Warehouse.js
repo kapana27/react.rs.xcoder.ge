@@ -500,7 +500,7 @@ export default class Warehouse extends Component {
         name: 'ექსელში ექსპორტი .xlsx',
         action: function () {
           //window.open(params.context.thisComponent.prod + '/api/secured/Item/Stock/Export' + localStorage.getItem('filter')+"&list="+params.context.thisComponent.state.cart['tab' + params.context.thisComponent.state.tab].map(v=>v.id).join(","), '_blank');
-          window.open( PREFIX+'/api/secured/Item/Stock/Export?filter=' +encodeURIComponent(localStorage.getItem('filter'))+"&list="+_.map(params.context.thisComponent.state.cart['tab' + params.context.thisComponent.state.tab],(value,index)=>index).join(","), '_blank');
+          window.open( PREFIX+'/api/secured/Item/Stock/Export?stockId='+params.context.thisComponent.state.tab+'&filter=' +encodeURIComponent(localStorage.getItem('filter'))+"&list="+_.map(params.context.thisComponent.state.cart['tab' + params.context.thisComponent.state.tab],(value,index)=>index).join(","), '_blank');
 
         }
       },
@@ -2310,7 +2310,7 @@ export default class Warehouse extends Component {
       let val =  JSON.parse(value);
       return {
         itemId: val.id,
-        amount: val.amount,
+        amount: val.count,
         list:""
       }
     })));
@@ -2551,7 +2551,7 @@ export default class Warehouse extends Component {
       let val =  JSON.parse(value);
       return {
         itemId: val.id,
-        amount: val.amount,
+        amount: val.count,
         list:""
       }
     })));
