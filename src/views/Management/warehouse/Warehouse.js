@@ -574,6 +574,7 @@ export default class Warehouse extends Component {
     const filterData = this.state.inventor.search.data;
     const selectedTabId = this.selectedTabId;
     const cartItems = _.map(this.state.cart['tab'+this.state.tab],( (value,index)=>index));
+    let tabID = this.state.tab;
     const datasource = {
       getRows(params) {
         const parameters = [];
@@ -598,7 +599,7 @@ export default class Warehouse extends Component {
           }
         }
         localStorage.setItem("filter",JSON.stringify(parameters))
-        http.get(Config.management.warehouse.get.items+"?stockId=11&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
+        http.get(Config.management.warehouse.get.items+"?stockId="+tabID+"&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
           .then(response => {
             params.successCallback(response['data'].map((v, k) => {
               v['rowId'] = (params['request']['startRow'] + 1 + k );
@@ -2035,7 +2036,7 @@ export default class Warehouse extends Component {
               </div>
               {
                 (!this.state.inventor.transfer.expand)?
-                  <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.transferGenerateOverhead()} />
+                  <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.transferGenerateOverheadAB()} />
                   :
                   <React.Fragment>
                     <span className="last_code">ბოლო კოდი - {this.state.inventor.lastCode} </span>
@@ -2064,7 +2065,7 @@ export default class Warehouse extends Component {
                     </div>
                     <div className="fullwidth p-col-6">
                       <label>ქონების მართვა</label>
-                      <Dropdown value={this.state.inventor.transfer.propertyManagement}  onMouseDown={(e)=>this.propertyManagement()} options={this.state.inventor.propertyManagementList} onChange={(e) => this.setState(State("inventor.transfer.propertyManagement",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="" style={{width:'100%'}} />
+                      <Dropdown value={this.state.inventor.transfer.propertyManagement}  options={this.state.inventor.stockManList} onChange={(e) => this.setState(State("inventor.transfer.propertyManagement",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="" style={{width:'100%'}} />
                     </div>
                     <div className="fullwidth p-col-6">
                       <label>ტრანსპორტირების პასხ. პირი</label>
@@ -2312,6 +2313,9 @@ export default class Warehouse extends Component {
 
   // </editor-fold>
   warehouseManagement = (id) => {
+
+
+
     http.get("/api/secured/Staff/Filter/ByStock?stockId=" + id).then(result => {
       if (result.status === 200) {
         this.setState(State('inventor.stockManList',_.map(result.data,(value)=> {
@@ -2472,7 +2476,8 @@ export default class Warehouse extends Component {
       }
     });
   }
-  transferActiveOverhead() {
+
+  transferActiveOverhead=()=> {
     let formData = new FormData();
 
     formData.append('note', this.state.inventor.transfer.comment);
@@ -2481,7 +2486,7 @@ export default class Warehouse extends Component {
 
     formData.append('carrierPerson', this.state.inventor.transfer.transPerson.id); // ტრანსპორტ. პასხ. პირი:
     formData.append('toWhomStock', this.state.inventor.transfer.propertyManagement.id); // ქონების მართვა
-    formData.append('fromStock', this.state.inventor.transfer.section.id);
+    formData.append('fromStock', this.state.tab);
 
     formData.append('files', this.state.inventor.transfer.files);
     formData.append('list', JSON.stringify(_.map(this.state.cart["tab"+this.state.tab], value => {
@@ -2501,6 +2506,15 @@ export default class Warehouse extends Component {
       }
     });
   }
+
+  transferGenerateOverheadAB() {
+    this.getCode('new');
+
+    //this.setState(State('inventor.transfer.dialog',true,this.state));
+    this.setState(State('inventor.transfer.expand',true,this.state));
+    //this.getCode('last');
+  }
+
   transferGenerateOverhead() {
     this.getCode('new');
 
