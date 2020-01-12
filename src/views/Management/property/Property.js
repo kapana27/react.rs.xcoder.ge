@@ -313,7 +313,15 @@ export default class Property extends Component {
     };
     this.loadInventorData();
   }
-
+  removeItemFromCart=(tab,key)=>{
+    removeCartItem({"globalKey":tab, "key": key,"value":"key"})
+      .then(result => {
+        this.getCartItems().then(()=>{
+          this.onGridReady(this.eventData)
+        })
+      })
+      .then()
+  }
   getContextMenuItems=(params)=>{
     return  [
       'copy', 'copyWithHeaders', 'paste', 'separator',
@@ -414,7 +422,7 @@ export default class Property extends Component {
           }
         }
         localStorage.setItem("filter",JSON.stringify(parameters))
-        http.get(Config.management.property.get.items+"?stockId="+tab+"&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
+        http.get(Config.management.property.get.items+"?stockId=11&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
           .then(response => {
             params.successCallback(response['data'].map((v, k) => {
               v['rowId'] = (params['request']['startRow'] + 1 + k );
@@ -600,7 +608,7 @@ export default class Property extends Component {
                   <InputTextarea value={this.state.property.disposition.comment} onChange = {(e)=>this.setState(State('property.disposition.comment',e.target.value,this.state))} rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
                 </div>
 
-                <Cart data={this.state.cart['tab'+this.state.tab]}/>
+                <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)} data={this.state.cart['tab'+this.state.tab]}/>
 
               </div>
           }
@@ -664,7 +672,7 @@ export default class Property extends Component {
                   <label>კომენტარი</label>
                   <InputTextarea value={this.state.property.outcome.comment} onChange = {(e)=>this.setState(State('property.outcome.comment',e.target.value,this.state))} rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
                 </div>
-                <Cart data={this.state.cart['tab'+this.state.tab]}/>
+                <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)} data={this.state.cart['tab'+this.state.tab]}/>
               </div>
 
           }
@@ -735,7 +743,7 @@ export default class Property extends Component {
                   <label>კომენტარი</label>
                   <InputTextarea value={this.state.property.movAB.comment} onChange = {(e)=>this.setState(State('property.movAB.comment',e.target.value,this.state))} rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
                 </div>
-                <Cart data={this.state.cart['tab'+this.state.tab]}/>
+                <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)} data={this.state.cart['tab'+this.state.tab]}/>
               </div>
           }
         </Modal>
@@ -798,13 +806,13 @@ export default class Property extends Component {
                   <label>კომენტარი</label>
                   <InputTextarea value={this.state.property.inverse.comment} onChange={(e)=>this.setState(State('property.inverse.comment',e.target.value,this.state))} rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
                 </div>
-                <Cart data={this.state.cart['tab'+this.state.tab]}/>
+                <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)} data={this.state.cart['tab'+this.state.tab]}/>
               </div>
           }
         </Modal>
 
         <Modal header="კალათა" visible={this.state.cart.dialog} onHide={()=>this.setState(State('cart.dialog',false,this.state))} style={{width:'800px'}} >
-          <Cart data={this.state.cart['tab'+this.state.tab]}/>
+          <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)} data={this.state.cart['tab'+this.state.tab]}/>
         </Modal>
 
       </React.Fragment>
@@ -829,6 +837,7 @@ export default class Property extends Component {
   }
 
   onClickedCell = (params) => {
+
     if(params.colDef.field==="cartId"){
       if(!params.data.inCart){
         putInCart({"globalKey":this.state.tab, "key": params.data.id,"value":JSON.stringify(params.data)})

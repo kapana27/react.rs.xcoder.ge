@@ -46,7 +46,7 @@ export default class Warehouse extends Component {
             if (params.value !== undefined) {
               return params.value;
             } else {
-              return '<img src="https://raw.githubusercontent.com/ag-grid/ag-grid/master/packages/ag-grid-docs/src/images/loading.gif">';
+              return '<img src="https://raw.githubusercontent.com/ag-grid/ag-grid/master/packages/ag-grid-docs/src/images/loading.gif"/>';
             }
           },
         },
@@ -2015,7 +2015,9 @@ export default class Warehouse extends Component {
                   </div>
                 </TabPanel>
               </TabView>
-              <Cart data={this.state.cart['tab' + this.state.tab]} onChangeStock={e=>{
+              <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
+
+                data={this.state.cart['tab' + this.state.tab]} onChangeStock={e=>{
                    let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
                    data.inStock = e.inStock;
                  this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
@@ -2084,7 +2086,7 @@ export default class Warehouse extends Component {
                   <label>კომენტარი</label>
                   <InputTextarea rows={4} placeholder="შენიშვნა" style={{width: '100%', minHeight: '100px'}}/>
                 </div>
-                <Cart data={this.state.cart['tab' + this.state.tab]} onChangeAmount={e=>{
+                <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)} data={this.state.cart['tab' + this.state.tab]} onChangeAmount={e=>{
                   let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
                   if(e.count>data.amount){
                     e.count=data.amount;
@@ -2111,7 +2113,7 @@ export default class Warehouse extends Component {
           onHide={() => this.setState(State('cart.dialog', false, this.state))}
           style={{width: '800px'}}
         >
-          <Cart data={this.state.cart['tab' + this.state.tab]}/>
+          <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)} data={this.state.cart['tab' + this.state.tab]}  />
         </Modal>
         <Modal
           className="itemGroup"
@@ -2482,6 +2484,8 @@ export default class Warehouse extends Component {
     });
   }
 
+
+
   transferActiveOverhead=()=> {
     let formData = new FormData();
 
@@ -2661,6 +2665,18 @@ export default class Warehouse extends Component {
       }
     }
   };
+
+  removeItemFromCart = (tab, key) => {
+    removeCartItem({"globalKey": tab, "key": key, "value": "key"})
+      .then(result => {
+
+        this.getCartItems().then(()=>{
+          this.onGridReady(this.eventData)
+        })
+      })
+      .then()
+  };
+
   loadConstructor = async () => {
     this.getStockData();
     this.loadInventorData();

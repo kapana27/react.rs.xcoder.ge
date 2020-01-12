@@ -3,43 +3,49 @@ import _ from 'lodash';
 import {Button} from 'primereact/button';
 
 import PropTypes from "prop-types";
+import {removeCartItem} from "../../../utils";
 export const Cart = (props) => {
+  let [data, setData]=useState(props.data);
+  useEffect(()=>{
+      setData(props.data)
+  },[props.data])
 
-    let [data, setData]=useState(props.data);
-
-    useEffect(()=>{
-      setData(props.data);
-    },[props.data])
-
-    return <React.Fragment>
-        <table style={style.table}>
-          <thead>
-            <tr>
-              <th>დასახელება</th>
-              <th>შტრიხკოდი</th>
-              <th>სულ რაოდენობა</th>
-              <th>რაოდენობა</th>
-              <th></th>
+  console.log(data)
+  console.log(props)
+  return <React.Fragment>
+    <table style={style.table}>
+      <thead>
+      <tr>
+        <th>დასახელება</th>
+        <th>შტრიხკოდი</th>
+        <th>სულ რაოდენობა</th>
+        <th>რაოდენობა</th>
+        <th></th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      {
+        _.map(data,(value,index)=>{
+          console.log(value)
+          const d = JSON.parse(value);
+          return (
+            <tr style={style.tr} key={index}>
+              <td style={style.td}>{d.name}</td>
+              <td style={style.td}>{d.barcode}</td>
+              <td style={style.td}>{d.amount} </td>
+              <td style={style.td}><input type="number" value={d.count} onChange={(e)=>props.onChangeAmount({index:index,count:e.target.value})}/> </td>
+              <td style={style.td}><Button label="დოკუმენტები (0)" icon="pi pi-file" /></td>
+              <td style={style.td}><i className="fa fa-close" onClick={()=>props.onRemoveItem(index)}/> </td>
             </tr>
-          </thead>
-          <tbody>
-          {
-            _.map(data,(value,index)=>{
-              const d = JSON.parse(value);
-              return (
-                <tr style={style.tr} key={index}>
-                    <td style={style.td}>{d.name}</td>
-                    <td style={style.td}>{d.barcode}</td>
-                    <td style={style.td}>{d.amount} </td>
-                    <td style={style.td}><input type="number" value={d.count} onChange={(e)=>props.onChangeAmount({index:index,count:e.target.value})}/> </td>
-                    <td style={style.td}><Button label="დოკუმენტები (0)" icon="pi pi-file" /></td>
-                </tr>
-              )
-            })
-          }
-          </tbody>
-        </table>
-    </React.Fragment>
+          )
+        })
+      }
+      </tbody>
+    </table>
+
+
+  </React.Fragment>
 };
 const style = {
   table: {
