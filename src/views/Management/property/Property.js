@@ -37,157 +37,358 @@ export default class Property extends Component {
             }
           },
         },
-        columnDefs: [
-          {
-            headerName: '#',
-            field: 'rowId',
-            width: 50,
-            //cellRenderer: 'loadingCellRenderer',
-            sortable: false,
-            suppressMenu: false
-          },
-          {
-            headerName: '',
-            field: 'cartId',
-            width: 50,
-            valueGetter: 'cartId',
-            cellRenderer: CardCellRenderer,
-            sortable: false,
-            suppressMenu: false,
+        columnDefs: {
+          21:[
+            {
+              headerName: '#',
+              field: 'rowId',
+              width: 50,
+              //cellRenderer: 'loadingCellRenderer',
+              sortable: false,
+              suppressMenu: false
+            },
+            {
+              headerName: '',
+              field: 'cartId',
+              width: 50,
+              valueGetter: 'cartId',
+              cellRenderer: CardCellRenderer,
+              sortable: false,
+              suppressMenu: false,
 
-          },
-          {
-            headerName: 'თარიღი',
-            field: 'trDate',
-            width: 150,
-            suppressMenu: false,
-            filter: 'agDateColumnFilter'
-          },
-          {
-            headerName: 'დასახელება',
-            field: 'name',
-            width: 150,
-            suppressMenu: false,
-            filter: 'agTextColumnFilter',
-            cellEditor: 'customInput',
-          },
-          {
-            headerName: 'მარკა',
-            field: 'maker.name',
-            width: 150,
-            suppressMenu: true,
-            filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
-          },
-          {
-            headerName: 'მოდელი',
-            field: 'model.name',
-            width: 150,
-            suppressMenu: true,
-            filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
-          },
-          {
-            headerName: 'ფასი',
-            field: 'price',
-            width: 90,
-            filter: 'agNumberColumnFilter',
-            filterParams: {
-              filterOptions: ['equals', 'lessThan', 'greaterThan'],
-              suppressAndOrCondition: true
+            },
+            {
+              headerName: 'თარიღი',
+              field: 'trDate',
+              width: 150,
+              suppressMenu: false,
+              filter: 'agDateColumnFilter'
+            },
+            {
+              headerName: 'დასახელება',
+              field: 'name',
+              width: 150,
+              suppressMenu: false,
+              filter: 'agTextColumnFilter',
+              cellEditor: 'customInput',
+            },
+            {
+              headerName: 'მარკა',
+              field: 'maker.name',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'მოდელი',
+              field: 'model.name',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'ფასი',
+              field: 'price',
+              width: 90,
+              filter: 'agNumberColumnFilter',
+              filterParams: {
+                filterOptions: ['equals', 'lessThan', 'greaterThan'],
+                suppressAndOrCondition: true
+              }
+            },
+            {
+              headerName: 'რაოდენობა',
+              field: 'amount',
+              width: 90,
+              filter: 'agNumberColumnFilter',
+              filterParams: {
+                filterOptions: ['equals', 'lessThan', 'greaterThan'],
+                suppressAndOrCondition: true
+              }
+            },
+            {
+              headerName: 'განზ, ერთეული',
+              field: 'measureUnit.name',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'შტრიხკოდი',
+              field: 'fullBarcode',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'ქარხ.#',
+              field: 'factoryNumber',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'ჯგუფი',
+              field: 'itemGroup.name',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'ტიპი',
+              field: 'itemType.name',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'სტატუსი',
+              field: 'itemStatus.name',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'მიმწოდებელი',
+              field: 'supplier.name',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'ზედნადები',
+              field: 'invoice',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'ზედდებული',
+              field: 'invoiceAddon',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'ინსპ',
+              field: 'inspectionNumber',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
             }
-          },
-          {
-            headerName: 'რაოდენობა',
-            field: 'amount',
-            width: 90,
-            filter: 'agNumberColumnFilter',
-            filterParams: {
-              filterOptions: ['equals', 'lessThan', 'greaterThan'],
-              suppressAndOrCondition: true
+          ],
+          22:[
+            {
+              headerName: '#',
+              field: 'rowId',
+              width: 50,
+              //cellRenderer: 'loadingCellRenderer',
+              sortable: false,
+              suppressMenu: false
+            },
+            {
+              headerName: '',
+              field: 'cartId',
+              width: 50,
+              valueGetter: 'cartId',
+              cellRenderer: CardCellRenderer,
+              sortable: false,
+              suppressMenu: false,
+
+            },
+            {
+              headerName: 'თარიღი',
+              field: 'trDate',
+              width: 150,
+              suppressMenu: false,
+              filter: 'agDateColumnFilter'
+            },
+            {
+              headerName: 'თანამშრომელი',
+              field: 'staff.fullname',
+              sortable: false,
+              suppressMenu: false,
+              filter: 'agTextColumnFilter',
+              filterParams: {
+                filterOptions: ['equals'],
+                suppressAndOrCondition: true
+              }
+            },
+            {
+              headerName: 'ქალაქი',
+              field: 'section.city.name',
+              sortable: false,
+              suppressMenu: false,
+              filter: 'agTextColumnFilter',
+              filterParams: {
+                filterOptions: ['equals'],
+                suppressAndOrCondition: true
+              }
+            },
+            {
+              headerName: 'შენობა',
+              field: 'section.building.name',
+              sortable: false,
+              suppressMenu: false,
+            },
+            {
+              headerName: 'დეპარტამენტი',
+              field: 'section.department.name',
+              sortable: false,
+              suppressMenu: false
+            },
+            {
+              headerName: 'სამმართველო',
+              field: 'section.division.name',
+              sortable: false,
+              suppressMenu: false
+            },
+            {
+              headerName: 'სექცია',
+              field: 'section.section.name',
+              sortable: false,
+              suppressMenu: false
+            },
+            {
+              headerName: 'დასახელება',
+              field: 'name',
+              width: 150,
+              suppressMenu: false,
+              filter: 'agTextColumnFilter',
+              cellEditor: 'customInput',
+            },
+            {
+              headerName: 'მარკა',
+              field: 'maker.name',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'მოდელი',
+              field: 'model.name',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'ფასი',
+              field: 'price',
+              width: 90,
+              filter: 'agNumberColumnFilter',
+              filterParams: {
+                filterOptions: ['equals', 'lessThan', 'greaterThan'],
+                suppressAndOrCondition: true
+              }
+            },
+            {
+              headerName: 'რაოდენობა',
+              field: 'amount',
+              width: 90,
+              filter: 'agNumberColumnFilter',
+              filterParams: {
+                filterOptions: ['equals', 'lessThan', 'greaterThan'],
+                suppressAndOrCondition: true
+              }
+            },
+            {
+              headerName: 'განზ, ერთეული',
+              field: 'measureUnit.name',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'შტრიხკოდი',
+              field: 'fullBarcode',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'ქარხ.#',
+              field: 'factoryNumber',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'ჯგუფი',
+              field: 'itemGroup.name',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'ტიპი',
+              field: 'itemType.name',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'სტატუსი',
+              field: 'itemStatus.name',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'მიმწოდებელი',
+              field: 'supplier.name',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'ზედნადები',
+              field: 'invoice',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'ზედდებული',
+              field: 'invoiceAddon',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
+            },
+            {
+              headerName: 'ინსპ',
+              field: 'inspectionNumber',
+              width: 150,
+              suppressMenu: true,
+              filter: 'agTextColumnFilter',
+              filterParams: { defaultOption: 'startsWith' }
             }
-          },
-          {
-            headerName: 'განზ, ერთეული',
-            field: 'measureUnit.name',
-            width: 150,
-            suppressMenu: true,
-            filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
-          },
-          {
-            headerName: 'შტრიხკოდი',
-            field: 'fullBarcode',
-            width: 150,
-            suppressMenu: true,
-            filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
-          },
-          {
-            headerName: 'ქარხ.#',
-            field: 'factoryNumber',
-            width: 150,
-            suppressMenu: true,
-            filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
-          },
-          {
-            headerName: 'ჯგუფი',
-            field: 'itemGroup.name',
-            width: 150,
-            suppressMenu: true,
-            filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
-          },
-          {
-            headerName: 'ტიპი',
-            field: 'itemType.name',
-            width: 150,
-            suppressMenu: true,
-            filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
-          },
-          {
-            headerName: 'სტატუსი',
-            field: 'itemStatus.name',
-            width: 150,
-            suppressMenu: true,
-            filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
-          },
-          {
-            headerName: 'მიმწოდებელი',
-            field: 'supplier.name',
-            width: 150,
-            suppressMenu: true,
-            filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
-          },
-          {
-            headerName: 'ზედნადები',
-            field: 'invoice',
-            width: 150,
-            suppressMenu: true,
-            filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
-          },
-          {
-            headerName: 'ზედდებული',
-            field: 'invoiceAddon',
-            width: 150,
-            suppressMenu: true,
-            filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
-          },
-          {
-            headerName: 'ინსპ',
-            field: 'inspectionNumber',
-            width: 150,
-            suppressMenu: true,
-            filter: 'agTextColumnFilter',
-            filterParams: { defaultOption: 'startsWith' }
-          }
-        ],
+          ]
+
+        },
+
         defaultColDef: {
           sortable: true,
           resizable: true
@@ -400,6 +601,7 @@ export default class Property extends Component {
     const selectedTabId = this.selectedTabId;
     const cartItems = _.map(this.state.cart['tab'+this.state.tab],( (value,index)=>index));
     const tab = this.state.tab;
+    const error =  this.error;
     if(filter){
       this.gridApi.setFilterModel(null);
     }
@@ -455,22 +657,30 @@ export default class Property extends Component {
           }
         }
         localStorage.setItem("filter",JSON.stringify(parameters))
-        http.get(Config.management.property.get.items+"?stockId=11&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
+        http.get(Config.management.property.get[tab]+"?stockId="+tab+"&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
           .then(response => {
-            params.successCallback(response['data'].map((v, k) => {
-              v['rowId'] = (params['request']['startRow'] + 1 + k );
-              if(v.barCodeType){
-                if (v['barcode'].toString().length <= v['barCodeType']['length']) {
-                  v.barcode = v['barCodeType']['value'] + new Array(v['barCodeType']['length'] - (v['barcode'].toString().length - 1)).join('0').slice((v['barCodeType']['length'] - (v['barcode'].toString().length - 1) || 2) * -1) + v['barcode'];
+            if (response.status === 200) {
+              params.successCallback(response['data'].map((v, k) => {
+                v['rowId'] = (params['request']['startRow'] + 1 + k );
+                if(v.barCodeType){
+                  if (v['barcode'].toString().length <= v['barCodeType']['length']) {
+                    v.barcode = v['barCodeType']['value'] + new Array(v['barCodeType']['length'] - (v['barcode'].toString().length - 1)).join('0').slice((v['barCodeType']['length'] - (v['barcode'].toString().length - 1) || 2) * -1) + v['barcode'];
+                  }
+                  v['barcode'] = (v['spend'] === 1) ? '' : (v['barcode'].toString() === '0') ? '' : v['barcode'];
                 }
-                v['barcode'] = (v['spend'] === 1) ? '' : (v['barcode'].toString() === '0') ? '' : v['barcode'];
-              }
 
-              v['count'] = 1;
-              v['cartId'] = v['id'];
-              v['inCart'] = (cartItems.indexOf(v['id'].toString()) > -1);
-              return v;
-            }), response['totalCount']);
+                v['count'] = 1;
+                v['cartId'] = v['id'];
+                v['inCart'] = (cartItems.indexOf(v['id'].toString()) > -1);
+                console.log(2)
+                return v;
+              }), response['totalCount']);
+              if(response.error){
+                error(response.error)
+              }
+            }else{
+              error(response.error)
+            }
           })
           .catch(error => {
             params.failCallback();
@@ -480,21 +690,28 @@ export default class Property extends Component {
     params.api.setServerSideDatasource(datasource);
   }
   onInventorIncome() {
-    http.get(Config.management.warehouse.get.insertStart).then(()=>{
-      this.loadInventorData();
-      this.setState(State('inventor.income.dialog', true, this.state));
-    }).catch(()=>{
-      this.setState(State('inventor.income.dialog', false, this.state));
-    })
+    http.get(Config.management.warehouse.get.insertStart)
+      .then(result => {
+        if (result.status === 200) {
+          this.loadInventorData();
+          this.setState(State('inventor.income.dialog', true, this.state));
+        }else{
+          this.error(result.error)
+        }
+      }).catch(()=>{
+        this.setState(State('inventor.income.dialog', false, this.state));
+      })
   }
   loadInventorData = () => {
-    http.get("/api/secured/List/BarCode/Select").then(result => {
-      if (result.status === 200) {
-        this.setState(State('property.barCodes', result.data, this.state));
-      }else{
-        this.error(result.error)
-      }
-    }).catch(result =>  this.error(result.error));
+    http.get("/api/secured/List/BarCode/Select")
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('property.barCodes', result.data, this.state));
+        }else{
+          this.error(result.error)
+        }
+      })
+      .catch(result =>  this.error(result.error));
     http.get("/api/secured/MeasureUnit/List").then(result => {
       if (result.status === 200) {
         this.setState(State('property.measureUnitList', result.data, this.state));
@@ -504,7 +721,7 @@ export default class Property extends Component {
     }).catch(result =>  this.error(result.error));
   };
 
-  error=(error='დაფიქსირდა შეცდომა')=>{
+  error = (error='დაფიქსირდა შეცდომა') => {
     this.setState(State('errorDialog',{modal:true, text: error},this.state));
   };
 
@@ -538,7 +755,7 @@ export default class Property extends Component {
               <Button label="ძებნა" icon="pi pi-search" style={{minWidth:'115px'}}  onClick={()=>this.setState(State('property.search.show',true,this.state))}/>:''
             }
             <div className="cart_count">
-              <i className="fa fa-cart-plus fa-lg " onClick={()=>this.setState(State('cart.dialog',true,this.state))}/>
+              <i className="fa fa-cart-plus fa-lg " onClick={()=>this.cartDialog()}/>
               <span>{_.size(this.state.cart['tab'+this.state.tab])}</span>
             </div>
           </div>
@@ -555,13 +772,32 @@ export default class Property extends Component {
             }}
             onFilter={()=>this.onGridReady(this.eventData,true)}
             onClick={()=>this.setState(State('property.search.show',false,this.state))}
+            onClear={()=>this.setState(State('property.search.data',{
+              name:"",
+              maker:"",
+              model:"",
+              price:"",
+              amount:"",
+              measureUnit:"",
+              barcode:"",
+              factoryNumber:"",
+              itemGroup:"",
+              itemType:"",
+              itemStatus:"",
+              supplier:"",
+              invoice:"",
+              invoiceAddon:"",
+              inspectionNumber:"",
+              dateFrom:'',
+              dateTo:''
+            },this.state))}
           />:''}
 
         <div id="myGrid" className="ag-theme-balham" >
           <AgGridReact
             pivotPanelShow={true}
             floatingFilter={true}
-            columnDefs={this.state.grid.columnDefs}
+            columnDefs={this.state.grid.columnDefs[this.state.tab]}
             defaultColDef={this.state.grid.defaultColDef}
             rowModelType={this.state.grid.rowModelType}
             cacheBlockSize={this.state.grid.cacheBlockSize}
@@ -648,6 +884,8 @@ export default class Property extends Component {
                     let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
                     if(e.count>data.amount){
                       e.count=data.amount;
+                    }else if(e.count < 1){
+                      e.count = 1;
                     }
                     data.count = e.count;
                     this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
@@ -723,6 +961,8 @@ export default class Property extends Component {
                     let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
                     if(e.count>data.amount){
                       e.count=data.amount;
+                    }else if(e.count < 1){
+                      e.count = 1;
                     }
                     data.count = e.count;
                     this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
@@ -805,6 +1045,8 @@ export default class Property extends Component {
                     let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
                     if(e.count>data.amount){
                       e.count=data.amount;
+                    }else if(e.count < 1){
+                      e.count = 1;
                     }
                     data.count = e.count;
                     this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
@@ -879,6 +1121,8 @@ export default class Property extends Component {
                     let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
                     if(e.count>data.amount){
                       e.count=data.amount;
+                    }else if(e.count < 1){
+                      e.count = 1;
                     }
                     data.count = e.count;
                     this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
@@ -896,6 +1140,8 @@ export default class Property extends Component {
               let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
               if(e.count>data.amount){
                 e.count=data.amount;
+              }else if(e.count < 1){
+                e.count = 1;
               }
               data.count = e.count;
               this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
@@ -1016,34 +1262,46 @@ export default class Property extends Component {
   removeCartItem(modal) {
     let formData = new FormData();
     formData.append('globalKey', this.state.tab);
-
-    http.post("/api/secured/internal/session/clear",formData).then(result => {
-      if (result.status === 200) {
-        this.setState(State('cart.tab11',[],this.state));
-        //this.onReady(this.eventData);
-      }
-    });
+    http.post("/api/secured/internal/session/clear",formData)
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('cart.tab'+[this.state.tab],[],this.state));
+          this.onReady(this.eventData);
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   }
 
   transPersonList(e){
-    http.get("/api/secured/Staff/Filter/ByName/V2?name="+e).then(result => {
-      if (result.status === 200) {
-        this.setState(State('property.transPersonList',_.map(result.data,(value)=>{
-          return {id:value.id, name:value.fullname, fullName: value.fullname}
-        }), this.state));
-      }
-    });
+    http.get("/api/secured/Staff/Filter/ByName/V2?name="+e)
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('property.transPersonList',_.map(result.data,(value)=>{
+            return {id:value.id, name:value.fullname, fullName: value.fullname}
+          }), this.state));
+        }
+        else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   }
 
   // მომთხოვნი პიროვნება
   requestPersonList(e) {
-    http.get("/api/secured/Staff/Filter/ByName/V2?name="+e).then(result => {
-      if (result.status === 200) {
-        this.setState(State('property.requestPersonList', _.map(result.data,(value) =>{
-          return {id:value.id, name:value.fullname, fullName: value.fullname}
-        }), this.state));
-      }
-    });
+    http.get("/api/secured/Staff/Filter/ByName/V2?name="+e)
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('property.requestPersonList', _.map(result.data,(value) =>{
+            return {id:value.id, name:value.fullname, fullName: value.fullname}
+          }), this.state));
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   }
 
   // <editor-fold defaultstate="collapsed" desc="განპიროვნება მოდალი">
@@ -1061,18 +1319,22 @@ export default class Property extends Component {
       let val =  JSON.parse(value);
       return {
         itemId: val.id,
-        amount: val.count,
+        amount: val.amount,
         list:""
       }
     })));
 
-    http.post("/api/secured/Item/Person/Transfer",formData).then(result => {
-      if (result.status === 200) {
-        this.removeCartItem();
-        this.resetModalParam('disposition');
-        this.onReady(this.eventData);
-      }
-    });
+    http.post("/api/secured/Item/Person/Transfer",formData)
+      .then(result => {
+        if (result.status === 200) {
+          this.removeCartItem();
+          this.resetModalParam('disposition');
+          this.onReady(this.eventData);
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   }
 
   dispositionGenerateOverhead() {
@@ -1089,22 +1351,30 @@ export default class Property extends Component {
   };
 
   dispositionPersonRoom = (id) => {
-    http.get("/api/secured/Item/Building/Rooms?receiverPerson=" + id).then(result => {
-      if (result.status === 200) {
-        this.setState(State('property.roomList',_.map(result.data,(value)=>{
-          return {id:value.id,name:value.name}
-        }), this.state));
-      }
-    });
+    http.get("/api/secured/Item/Building/Rooms?receiverPerson=" + id)
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('property.roomList',_.map(result.data,(value)=>{
+            return {id:value.id,name:value.name}
+          }), this.state));
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   };
 
   dispositionPerson=(event)=>{
     this.setState(State('property.personality', [], this.state));
-    http.get("/api/secured/Staff/Filter/ByName/V2?name=" + event).then(result => {
-      if (result.status === 200) {
-        this.setState(State('property.personality', result.data, this.state));
-      }
-    })
+    http.get("/api/secured/Staff/Filter/ByName/V2?name=" + event)
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('property.personality', result.data, this.state));
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   };
   // </editor-fold>
 
@@ -1130,13 +1400,17 @@ export default class Property extends Component {
       }
     })));
 
-    http.post("/api/secured/Item/Stock/Return",formData).then(result => {
-      if (result.status === 200) {
-        this.removeCartItem();
-        this.resetModalParam('outcome');
-        this.onReady(this.eventData);
-      }
-    });
+    http.post("/api/secured/Item/Stock/Return",formData)
+      .then(result => {
+        if (result.status === 200) {
+          this.removeCartItem();
+          this.resetModalParam('outcome');
+          this.onReady(this.eventData);
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   }
 
   outcomeGenerateOverhead() {
@@ -1152,13 +1426,17 @@ export default class Property extends Component {
   };
 
   warehouseManagement = (id) => {
-    http.get("/api/secured/Staff/Filter/ByStock?stockId=" + id).then(result => {
-      if (result.status === 200) {
-        this.setState(State('property.stockManList',_.map(result.data,(value)=> {
-          return {id:value.id, name:value.fullname}
-        }), this.state));
-      }
-    });
+    http.get("/api/secured/Staff/Filter/ByStock?stockId=" + id)
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('property.stockManList',_.map(result.data,(value)=> {
+            return {id:value.id, name:value.fullname}
+          }), this.state));
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   };
   // </editor-fold>
 
@@ -1184,13 +1462,17 @@ export default class Property extends Component {
       }
     })));
 
-    http.post("/api/secured/Item/Section/Transfer",formData).then(result => {
-      if (result.status === 200) {
-        this.removeCartItem();
-        this.resetModalParam('movAB');
-        this.onReady(this.eventData);
-      }
-    });
+    http.post("/api/secured/Item/Section/Transfer",formData)
+      .then(result => {
+        if (result.status === 200) {
+          this.removeCartItem();
+          this.resetModalParam('movAB');
+          this.onReady(this.eventData);
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   }
 
   movABGenerateOverhead() {
@@ -1204,13 +1486,17 @@ export default class Property extends Component {
   };
 
   propertyManagement = () => {
-    http.get("/api/secured/Staff/Filter/ByProperty?name=").then(result => {
-      if (result.status === 200) {
-        this.setState(State('property.propertyManagementList', _.map(result.data,(value) =>{
-          return {id:value.id, name:value.fullname}
-        }), this.state));
-      }
-    })
+    http.get("/api/secured/Staff/Filter/ByProperty?name=")
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('property.propertyManagementList', _.map(result.data,(value) =>{
+            return {id:value.id, name:value.fullname}
+          }), this.state));
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   };
   // </editor-fold>
 
@@ -1235,13 +1521,17 @@ export default class Property extends Component {
       }
     })));
 
-    http.post("/api/secured/Item/Stock/Return",formData).then(result => {
-      if (result.status === 200) {
-        this.removeCartItem();
-        this.resetModalParam('inverse');
-        this.onReady(this.eventData);
-      }
-    });
+    http.post("/api/secured/Item/Stock/Return",formData)
+      .then(result => {
+        if (result.status === 200) {
+          this.removeCartItem();
+          this.resetModalParam('inverse');
+          this.onReady(this.eventData);
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   }
 
   inverseGenerateOverhead() {
@@ -1255,13 +1545,21 @@ export default class Property extends Component {
   };
 
   inverseWarehouseManagement = (id) => {
-    http.get("/api/secured/Staff/Filter/ByStock?stockId=" + id).then(result => {
-      if (result.status === 200) {
-        this.setState(State('property.stockManList',_.map(result.data,(value)=> {
-          return {id:value.id, name:value.fullname}
-        }), this.state));
-      }
-    });
+    http.get("/api/secured/Staff/Filter/ByStock?stockId=" + id)
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('property.stockManList',_.map(result.data,(value)=> {
+            return {id:value.id, name:value.fullname}
+          }), this.state));
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   };
   // </editor-fold>
+
+  cartDialog=()=> {
+    this.setState(State('cart.dialog',true,this.state))
+  }
 }

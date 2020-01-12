@@ -1,39 +1,32 @@
 .ag-header {
-  overflow: visible !important;
-}
-.ag-header .ag-header-viewport {
-  overflow: visible !important;
-}
-.ag-header .ag-header-viewport .ag-header-row {
-  overflow: visible !important;
-}
-.ag-header .ag-header-viewport .ag-header-row .ag-header-cell {
-  overflow: visible !important;
-}
-.ag-header .ag-header-viewport .ag-header-row .ag-header-cell .ag-input-wrapper {
-  overflow: visible !important;
-}
-.ag-header .ag-header-viewport .ag-header-row .ag-header-cell .ag-input-wrapper div[ref=eDateWrapper] {
-  overflow: visible !important;
-}
-.ag-header .ag-header-viewport .ag-header-row .ag-header-cell .ag-input-wrapper div[ref=eDateWrapper] .react-datepicker__input-container input {
-  text-indent: 16px !important;
-}
-.ag-header .ag-header-viewport .ag-header-row .ag-header-cell .ag-input-wrapper div[ref=eDateWrapper] .form-group {
-  margin-bottom: 0;
-}
-.ag-header .ag-header-viewport .ag-header-row .ag-header-cell .ag-input-wrapper div[ref=eDateWrapper] .form-group input {
-  height: 20px;
-  width: 78px;
-  border-radius: 0;
-  padding: 0;
-  font-size: 12px;
-  padding-left: 3px;
-  text-indent: 16px !important;
-}
-.ag-header .ag-header-viewport .ag-header-row .ag-header-cell .ag-input-wrapper div[ref=eDateWrapper] .form-group .input-group-append button {
-  height: 20px;
-  width: 20px;
-}
+  overflow: visible !important; }
+  .ag-header .ag-header-viewport {
+    overflow: visible !important; }
+    .ag-header .ag-header-viewport .ag-header-row {
+      overflow: visible !important; }
+      .ag-header .ag-header-viewport .ag-header-row .ag-header-cell {
+        overflow: visible !important; }
+        .ag-header .ag-header-viewport .ag-header-row .ag-header-cell .ag-input-wrapper {
+          overflow: visible !important; }
+          .ag-header .ag-header-viewport .ag-header-row .ag-header-cell .ag-input-wrapper div[ref="eDateWrapper"] {
+            overflow: visible !important; }
+            .ag-header .ag-header-viewport .ag-header-row .ag-header-cell .ag-input-wrapper div[ref="eDateWrapper"] .react-datepicker__input-container input {
+              text-indent: 16px !important;
+              width: 100px; }
+            .ag-header .ag-header-viewport .ag-header-row .ag-header-cell .ag-input-wrapper div[ref="eDateWrapper"] .react-datepicker__close-icon {
+              right: -6px; }
+            .ag-header .ag-header-viewport .ag-header-row .ag-header-cell .ag-input-wrapper div[ref="eDateWrapper"] .form-group {
+              margin-bottom: 0; }
+              .ag-header .ag-header-viewport .ag-header-row .ag-header-cell .ag-input-wrapper div[ref="eDateWrapper"] .form-group input {
+                height: 20px;
+                width: 78px;
+                border-radius: 0;
+                padding: 0;
+                font-size: 12px;
+                padding-left: 3px;
+                text-indent: 16px !important; }
+              .ag-header .ag-header-viewport .ag-header-row .ag-header-cell .ag-input-wrapper div[ref="eDateWrapper"] .form-group .input-group-append button {
+                height: 20px;
+                width: 20px; }
 
 /*# sourceMappingURL=datePicker.css.map */

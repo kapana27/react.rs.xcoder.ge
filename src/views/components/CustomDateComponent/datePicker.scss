@@ -13,8 +13,11 @@
             .react-datepicker__input-container{
               input{
                 text-indent: 16px !important;
-
+                width: 100px;
               }
+            }
+            .react-datepicker__close-icon {
+              right: -6px;
             }
             overflow: visible !important;
             .form-group {

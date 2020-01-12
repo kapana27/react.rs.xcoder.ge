@@ -578,6 +578,7 @@ export default class Warehouse extends Component {
     const selectedTabId = this.selectedTabId;
     const cartItems = _.map(this.state.cart['tab'+this.state.tab],( (value,index)=>index));
     let tabID = this.state.tab;
+    const error = this.error;
     if(filter){
       this.gridApi.setFilterModel(null);
     }
@@ -636,19 +637,26 @@ export default class Warehouse extends Component {
         localStorage.setItem("filter",JSON.stringify(parameters))
         http.get(Config.management.warehouse.get.items+"?stockId="+tabID+"&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
           .then(response => {
-            params.successCallback(response['data'].map((v, k) => {
-              v['rowId'] = (params['request']['startRow'] + 1 + k );
-              if(v.barCodeType){
-                if (v['barcode'].toString().length <= v['barCodeType']['length']) {
-                  v.barcode = v['barCodeType']['value'] + new Array(v['barCodeType']['length'] - (v['barcode'].toString().length - 1)).join('0').slice((v['barCodeType']['length'] - (v['barcode'].toString().length - 1) || 2) * -1) + v['barcode'];
+            if (response.status === 200) {
+              params.successCallback(response['data'].map((v, k) => {
+                v['rowId'] = (params['request']['startRow'] + 1 + k);
+                if (v.barCodeType) {
+                  if (v['barcode'].toString().length <= v['barCodeType']['length']) {
+                    v.barcode = v['barCodeType']['value'] + new Array(v['barCodeType']['length'] - (v['barcode'].toString().length - 1)).join('0').slice((v['barCodeType']['length'] - (v['barcode'].toString().length - 1) || 2) * -1) + v['barcode'];
+                  }
+                  v['barcode'] = (v['spend'] === 1) ? '' : (v['barcode'].toString() === '0') ? '' : v['barcode'];
                 }
-                v['barcode'] = (v['spend'] === 1) ? '' : (v['barcode'].toString() === '0') ? '' : v['barcode'];
+                v['count'] = 1;
+                v['cartId'] = v['id'];
+                v['inCart'] = (cartItems.indexOf(v['id'].toString()) > -1);
+                return v;
+              }), response['totalCount']);
+              if(response.error){
+                error(response.error)
               }
-              v['count'] = 1;
-              v['cartId'] = v['id'];
-              v['inCart'] = (cartItems.indexOf(v['id'].toString()) > -1);
-              return v;
-            }), response['totalCount']);
+            }else{
+              error(response.error)
+            }
           })
           .catch(error => {
             params.failCallback();
@@ -751,6 +759,25 @@ export default class Warehouse extends Component {
             }}
             onFilter={()=>this.onGridReady(this.eventData,true)}
             onClick={()=>this.setState(State('inventor.search.show',false,this.state))}
+            onClear={()=>this.setState(State('inventor.search.data',{
+              name:"",
+              maker:"",
+              model:"",
+              price:"",
+              amount:"",
+              measureUnit:"",
+              barcode:"",
+              factoryNumber:"",
+              itemGroup:"",
+              itemType:"",
+              itemStatus:"",
+              supplier:"",
+              invoice:"",
+              invoiceAddon:"",
+              inspectionNumber:"",
+              dateFrom:'',
+              dateTo:''
+            },this.state))}
           />
           :''}
         <div
@@ -2057,6 +2084,9 @@ export default class Warehouse extends Component {
                   if(e.count>data.amount){
                     e.count=data.amount;
                   }
+                  else if(e.count < 1){
+                    e.count = 1;
+                  }
                   data.count = e.count;
                   this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
                 }
@@ -2128,6 +2158,8 @@ export default class Warehouse extends Component {
                   let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
                   if(e.count>data.amount){
                     e.count=data.amount;
+                  }else if(e.count < 1){
+                    e.count = 1;
                   }
                   data.count = e.count;
                   this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
@@ -2158,6 +2190,8 @@ export default class Warehouse extends Component {
               let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
               if(e.count>data.amount){
                 e.count=data.amount;
+              }else if(e.count < 1){
+                e.count = 1;
               }
               data.count = e.count;
               this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
@@ -2315,13 +2349,17 @@ export default class Warehouse extends Component {
       }
     })));
 
-    http.post("/api/secured/Item/Stock/Transfer",formData).then(result => {
-      if (result.status === 200) {
-        this.removeCartItem();
-        this.resetModalParam('outcome');
-        this.onReady(this.eventData);
-      }
-    });
+    http.post("/api/secured/Item/Stock/Transfer",formData)
+      .then(result => {
+        if (result.status === 200) {
+          this.removeCartItem();
+          this.resetModalParam('outcome');
+          this.onReady(this.eventData);
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   };
 
   // პიროვნება ტაბის  ღილაკები
@@ -2337,7 +2375,7 @@ export default class Warehouse extends Component {
     formData.append('trDate',moment(this.state.inventor.outcome.date).format('DD-MM-YYYY'));
 
     formData.append('fromStock', this.state.tab);
-    formData.append('roomId', this.state.inventor.outcome.room.id);
+    formData.append('roomId', _.isUndefined(this.state.inventor.outcome.room.id)? '':this.state.inventor.outcome.room.id);
     formData.append('carrierPerson', this.state.inventor.outcome.transPerson.id); // ტრანსპორტ. პასხ. პირი:
     formData.append('toWhomSection', this.state.inventor.outcome.propertyManagement.id); // ქონების მართვა
     formData.append('requestPerson', this.state.inventor.outcome.requestPerson.id); // მომთხოვნი პიროვნება
@@ -2348,18 +2386,22 @@ export default class Warehouse extends Component {
       let val =  JSON.parse(value);
       return {
         itemId: val.id,
-        amount: val.amount,
+        amount: val.count,
         list:""
       }
     })));
 
-    http.post("/api/secured/Item/Stock/Transfer",formData).then(result => {
-      if (result.status === 200) {
-        this.removeCartItem();
-        this.resetModalParam('outcome');
-        this.onReady(this.eventData);
-      }
-    });
+    http.post("/api/secured/Item/Stock/Transfer",formData)
+      .then(result => {
+        if (result.status === 200) {
+          this.removeCartItem();
+          this.resetModalParam('outcome');
+          this.onReady(this.eventData);
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   };
   // </editor-fold>
   // <editor-fold defaultstate="collapsed" desc="ზედნადებით მიღება">
@@ -2377,62 +2419,83 @@ export default class Warehouse extends Component {
         this.setState(State('inventor.stockManList',_.map(result.data,(value)=> {
           return {id:value.id, name:value.fullname}
         }), this.state));
+      }else{
+        this.error(result.error);
       }
     });
   };
   propertyManagement = () => {
-    http.get("/api/secured/Staff/Filter/ByProperty?name=").then(result => {
-      if (result.status === 200) {
-        this.setState(State('inventor.propertyManagementList', _.map(result.data,(value) =>{
-          return {id:value.id, name:value.fullname}
-        }), this.state));
-      }
-    })
+    http.get("/api/secured/Staff/Filter/ByProperty?name=")
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('inventor.propertyManagementList', _.map(result.data,(value) =>{
+            return {id:value.id, name:value.fullname}
+          }), this.state));
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   };
   transPersonList(e){
-    http.get("/api/secured/Staff/Filter/ByName/V2?name="+e).then(result => {
-      if (result.status === 200) {
-        this.setState(State('inventor.transPersonList',_.map(result.data,(value)=>{
-          return {id:value.id, name:value.fullname, fullName: value.fullname}
-        }), this.state));
-      }
-    });
+    http.get("/api/secured/Staff/Filter/ByName/V2?name="+e)
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('inventor.transPersonList',_.map(result.data,(value)=>{
+            return {id:value.id, name:value.fullname, fullName: value.fullname}
+          }), this.state));
+        } else {
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   }
   // მომთხოვნი პიროვნება
   requestPersonList(e) {
-    http.get("/api/secured/Staff/Filter/ByName/V2?name="+e).then(result => {
-      if (result.status === 200) {
-        this.setState(State('inventor.requestPersonList', _.map(result.data,(value) =>{
-          return {id:value.id, name:value.fullname, fullName: value.fullname}
-        }), this.state));
-      }
-    });
+    http.get("/api/secured/Staff/Filter/ByName/V2?name="+e)
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('inventor.requestPersonList', _.map(result.data,(value) =>{
+            return {id:value.id, name:value.fullname, fullName: value.fullname}
+          }), this.state));
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   }
   inverseWarehouseManagement = (id) => {
-    http.get("/api/secured/Staff/Filter/ByStock?stockId=" + id).then(result => {
-      if (result.status === 200) {
-        this.setState(State('inventor.stockManList',_.map(result.data,(value)=> {
-          return {id:value.id, name:value.fullname}
-        }), this.state));
-      }
-    });
+    http.get("/api/secured/Staff/Filter/ByStock?stockId=" + id)
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('inventor.stockManList',_.map(result.data,(value)=> {
+            return {id:value.id, name:value.fullname}
+          }), this.state));
+        }
+      });
   };
   Person=(event)=>{
     this.setState(State('inventor.personality', [], this.state));
-    http.get("/api/secured/Staff/Filter/ByName/V2?name=" + event).then(result => {
-      if (result.status === 200) {
-        this.setState(State('inventor.personality', result.data, this.state));
-      }
-    })
+    http.get("/api/secured/Staff/Filter/ByName/V2?name=" + event)
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('inventor.personality', result.data, this.state));
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   };
   personRoom =(id)=>{
-    http.get("/api/secured/Item/Building/Rooms?receiverPerson=" + id).then(result => {
-      if (result.status === 200) {
-        this.setState(State('inventor.roomList',_.map(result.data,(value)=>{
-          return {id:value.id,name:value.name}
-        }), this.state));
-      }
-    });
+    http.get("/api/secured/Item/Building/Rooms?receiverPerson=" + id)
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('inventor.roomList',_.map(result.data,(value)=>{
+            return {id:value.id,name:value.name}
+          }), this.state));
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   };
   resetModalParam(modal){
     this.setState(State('inventor.'+modal+'.dialog',false,this.state));
@@ -2525,12 +2588,16 @@ export default class Warehouse extends Component {
   removeCartItem(modal) {
     let formData = new FormData();
     formData.append('globalKey', this.state.tab);
-    http.post("/api/secured/internal/session/clear",formData).then(result => {
-      if (result.status === 200) {
-        this.setState(State('cart.tab11',[],this.state));
-       this.onReady(this.eventData);
-      }
-    });
+    http.post("/api/secured/internal/session/clear",formData)
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('cart.tab'+[this.state.tab],[],this.state));
+          this.onReady(this.eventData);
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   }
 
 
@@ -2556,13 +2623,17 @@ export default class Warehouse extends Component {
       }
     })));
 
-    http.post("/api/secured/Item/Stock/Change",formData).then(result => {
-      if (result.status === 200) {
-        this.removeCartItem();
-        this.resetModalParam('transfer');
-        this.onReady(this.eventData);
-      }
-    });
+    http.post("/api/secured/Item/Stock/Change",formData)
+      .then(result => {
+        if (result.status === 200) {
+          this.removeCartItem();
+          this.resetModalParam('transfer');
+          this.onReady(this.eventData);
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   }
 
   transferGenerateOverheadAB() {
@@ -2625,14 +2696,18 @@ export default class Warehouse extends Component {
     formData.append('itypes',_.join(itypes,','));
 
 
-    http.post('/api/secured/Rs/getBuyerWaybillsEx',formData).then(result => {
-      if(result.status===200){
-        this.setState(State('inventor.overhead.buyerWaybillsEx', result.data, this.state),
-          ()=>    this.setState(State('inventor.overhead.expand',true,this.state)));
-        //this.onGridReady(this.eventData);
-        console.log(this.state.inventor.overhead)
-      }
-    });
+    http.post('/api/secured/Rs/getBuyerWaybillsEx',formData)
+      .then(result => {
+        if(result.status===200){
+          this.setState(State('inventor.overhead.buyerWaybillsEx', result.data, this.state),
+            ()=>    this.setState(State('inventor.overhead.expand',true,this.state)));
+          //this.onGridReady(this.eventData);
+          console.log(this.state.inventor.overhead)
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   };
   onTransfer = (event) => {
     this.setState(State('inventor.transfer.dialog',true,this.state));
@@ -2641,35 +2716,48 @@ export default class Warehouse extends Component {
   };
   suggestSupplier = (event) => {
     this.setState(State('inventor.supplierSuggestions', [], this.state));
-    http.get("/api/secured/Supplier/Filter?query=" + event).then(result => {
-      if (result.status === 200) {
-        this.setState(State('inventor.supplierSuggestions', result.data, this.state));
-      }
-    })
+    http.get("/api/secured/Supplier/Filter?query=" + event)
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('inventor.supplierSuggestions', result.data, this.state));
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   };
   suggestItem = (event) => {
     this.setState(State('inventor.itemSuggestions', [], this.state));
-    http.get("/api/secured/Item/Filter/ByName?str=" + event).then(result => {
-      if (result.status === 200) {
-        this.setState(State('inventor.itemSuggestions', result.data, this.state));
-      }
-    })
+    http.get("/api/secured/Item/Filter/ByName?str=" + event)
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('inventor.itemSuggestions', result.data, this.state));
+        }
+      })
   };
   suggestMaker = (event) => {
     this.setState(State('inventor.makerSuggestions', [], this.state));
-    http.get("/api/secured/List/Maker/Filter?query=" + event).then(result => {
-      if (result.status === 200) {
-        this.setState(State('inventor.makerSuggestions', result.data, this.state));
-      }
-    })
+    http.get("/api/secured/List/Maker/Filter?query=" + event)
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('inventor.makerSuggestions', result.data, this.state));
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   };
   suggestModel = (event) => {
     this.setState(State('inventor.modelSuggestions', [], this.state));
-    http.get("/api/secured/List/Model/Filter?query="+event+"&parent=" + this.state.inventor.income.detail.maker.id ).then(result => {
-      if (result.status === 200) {
-        this.setState(State('inventor.modelSuggestions', result.data, this.state));
-      }
-    })
+    http.get("/api/secured/List/Model/Filter?query="+event+"&parent=" + this.state.inventor.income.detail.maker.id )
+      .then(result => {
+        if (result.status === 200) {
+          this.setState(State('inventor.modelSuggestions', result.data, this.state));
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   };
   itemTemplate=(event)=>{
     const {generatedName}=event;
@@ -2819,7 +2907,7 @@ export default class Warehouse extends Component {
           this.error(result.error)
         }
       })
-      .catch()
+      .catch(reason => this.error(reason.error) );
   };
   getFreeCodes = () => {
     this.setState(State('inventor.income.detail.expand', true, this.state));
@@ -2831,28 +2919,34 @@ export default class Warehouse extends Component {
 
     http.post("/api/secured/List/BarCode/Get/FreeCodes?barCodeType=" + barcode + "&count=" + this.state.inventor.income.detail.count+"&itemGroup="+this.state.inventor.income.detail.itemGroup.id,formData)
       .then(result => {
-        this.setState(State("inventor.income.detail.list", _.map(result.data, value => {
-          return {
-            "car": { number: this.state.inventor.income.detail.car.number, year: this.state.inventor.income.detail.car.year, vin:this.state.inventor.income.detail.factoryNumber  },
-            "barCodeName": value.barCodeItem.value,
-            "barCode": value.barCodeItem.barCodeVisualValue,
-            "serialNumber": this.state.inventor.income.detail.factoryNumber,
-            "amount": value.amount
-          }
-        }), this.state));
-
-
+        if(result.status === 200){
+          this.setState(State("inventor.income.detail.list", _.map(result.data, value => {
+            return {
+              "car": { number: this.state.inventor.income.detail.car.number, year: this.state.inventor.income.detail.car.year, vin:this.state.inventor.income.detail.factoryNumber  },
+              "barCodeName": value.barCodeItem.value,
+              "barCode": value.barCodeItem.barCodeVisualValue,
+              "serialNumber": this.state.inventor.income.detail.factoryNumber,
+              "amount": value.amount
+            }
+          }), this.state));
+        }else{
+          this.error(result.error);
+        }
       })
-      .catch()
+      .catch(reason => this.error(reason.error) );
   };
   lastbarCode=(type)=> {
     console.log(type);
     type['id'] = (_.isUndefined(type.id) || _.isNull(type.id) )? '': type.id;
     http.get("/api/secured/List/BarCode/Get/LastCode?barCodeType="+type.id)
       .then(result => {
-        this.setState(State('inventor.income.detail.lastbarCode', result.data, this.state));
+        if(result.status === 200) {
+          this.setState(State('inventor.income.detail.lastbarCode', result.data, this.state));
+        }else{
+          this.error(result.error);
+        }
       })
-      .catch()
+      .catch(reason => this.error(reason.error) );
   }
   onSaveDetail=()=>{
     let data= this.state.inventor.income.data;
@@ -2861,7 +2955,7 @@ export default class Warehouse extends Component {
     this.setState(State('inventor.makerSuggestions', [], this.state));
     this.setState(State('inventor.modelSuggestions', [], this.state));
     let formData= new FormData();
-    console.log(this.state.inventor.income.detail.barCodeType)
+    //console.log(this.state.inventor.income.detail.barCodeType)
 
     formData.append('data', JSON.stringify({
       name: this.state.inventor.income.detail.item.name,
@@ -2878,22 +2972,26 @@ export default class Warehouse extends Component {
       selectedItemType: this.state.inventor.income.detail.type,
       status: this.state.inventor.income.detail.status.id
     }));
-    http.post('/api/secured/Item/PreInsert/Add',formData).then(result => {
-      if(result.status===200){
-        if(!this.state.inventor.income.detail.edit){
-          data.push(this.state.inventor.income.detail);
+    http.post('/api/secured/Item/PreInsert/Add',formData)
+      .then(result => {
+        if(result.status===200){
+          if(!this.state.inventor.income.detail.edit){
+            data.push(this.state.inventor.income.detail);
+          }
+          this.onGridReady(this.eventData);
+          this.setState(State("inventor.income.data", data, this.state),
+            () =>{
+              this.setState(State('inventor.income.detail.dialog', false, this.state),
+                () => this.resetDetail())
+            });
+        }else{
+          this.error(result.error);
         }
-        this.onGridReady(this.eventData);
-        this.setState(State("inventor.income.data", data, this.state),
-          () =>{
-            this.setState(State('inventor.income.detail.dialog', false, this.state),
-              () => this.resetDetail())
-          });
-      }
-    })
+      })
+      .catch(reason => this.error(reason.error) );
+  };
 
 
-  }
   onSaveEditDetail=()=>{
     let data= [];
     this.setState(State('inventor.itemSuggestions', [], this.state));
@@ -2916,17 +3014,21 @@ export default class Warehouse extends Component {
       selectedItemType: this.state.inventor.selected.type,
       status: this.state.inventor.selected.status.id
     }));
-    http.post('/api/secured/Item/Update?id='+this.state.inventor.selected.id,formData).then(result => {
-      if(result.status===200){
-        this.onGridReady(this.eventData);
-        data.push(this.state.inventor.selected);
-        this.setState(State("inventor.selected.data", data, this.state),
-          () =>{
-            this.setState(State('inventor.selected.dialog', false, this.state),
-              () => { this.resetInventor();this.gridApi.deselectAll() ;})
-          });
-      }
-    })
+    http.post('/api/secured/Item/Update?id='+this.state.inventor.selected.id,formData)
+      .then(result => {
+        if(result.status===200){
+          this.onGridReady(this.eventData);
+          data.push(this.state.inventor.selected);
+          this.setState(State("inventor.selected.data", data, this.state),
+            () =>{
+              this.setState(State('inventor.selected.dialog', false, this.state),
+                () => { this.resetInventor();this.gridApi.deselectAll() ;})
+            });
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
   }
   parseInventorDetailData = (data) => {
     this.setState(State('inventor.income.detail.maker', (data.maker) ? data.maker : {id: null, name: ""}, this.state));
@@ -3346,12 +3448,10 @@ export default class Warehouse extends Component {
           this.setState(State('inventor.income.dialog', false, this.state))
           this.onGridReady(this.eventData)
         }else{
-          alert('დაფიქსირდა შეცდომა')
+          this.error(result.error);
         }
       })
-      .catch(reason => {
-        alert('დაფიქსირდა შეცდომა: '+reason.text)
-      })
+      .catch(reason => this.error(reason.error) );
   }
   onSelectionChanged = () => {
 
@@ -3423,8 +3523,14 @@ export default class Warehouse extends Component {
     formData.append("id",this.state.inventor.selected.id);
     formData.append("data", JSON.stringify(data));
     http.post("/api/secured/Item/Update",formData)
-      .then(result => console.log(result))
-      .catch(reason => console.log(reason))
+      .then(result=>{
+        if(result.status === 200){
+          console.log(result)
+        }else{
+          this.error(result.error)
+        }
+      })
+      .catch(reason => this.error(reason.error))
   };
   edit=()=> {
     if(this.state.inventor.selected.id){

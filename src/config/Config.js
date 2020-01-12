@@ -10,7 +10,8 @@ export const Config = {
     property:{
       post:{},
       get:{
-        items:'/api/secured/Item/Section/Out/Select'
+        21: '/api/secured/Item/Section/Out/Select',
+        22: '/api/secured/Item/Section/In/Select'
       }
     }
   },
