@@ -1,19 +1,47 @@
 .rs-table-container {
-  height: 100%; }
-  .rs-table-container .rs-table {
-    position: relative;
-    width: 100%;
-    height: calc(100% - 20px);
-    overflow-y: scroll; }
-    .rs-table-container .rs-table table {
-      width: 100%;
-      position: relative; }
-    .rs-table-container .rs-table .p-paginator {
-      position: absolute;
-      bottom: 0;
-      width: 100%; }
-    .rs-table-container .rs-table .selected {
-      background: #007ad9;
-      color: white; }
+  height: 100%;
+  background: white;
+}
+.rs-table-container .rs-table {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 20px);
+  overflow-y: scroll;
+}
+.rs-table-container .rs-table table {
+  width: 100%;
+  position: relative;
+  background-color: #f4f4f4;
+}
+.rs-table-container .rs-table table thead tr th {
+  padding: 0.5em;
+  background-color: inherit;
+  border: 1px solid #c8c8c8;
+  font-weight: 500;
+  font-size: 11px;
+  line-height: 12px;
+}
+.rs-table-container .rs-table table tbody tr td {
+  padding: 0.5em;
+  background-color: inherit;
+  border: 1px solid #c8c8c8;
+  white-space: nowrap;
+  line-height: 16px;
+  font-size: 13px;
+}
+.rs-table-container .rs-table table tbody tr:hover {
+  background-color: #cbcbcb;
+  cursor: pointer;
+  border: 1px solid #c8c8c8;
+}
+.rs-table-container .rs-table .p-paginator {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+.rs-table-container .rs-table .selected {
+  background: #007ad9;
+  color: white;
+}
 
 /*# sourceMappingURL=table.css.map */

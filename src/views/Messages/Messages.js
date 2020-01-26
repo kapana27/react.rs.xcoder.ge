@@ -81,6 +81,8 @@ class Messages extends Component{
 
   render() {
     return  (
+      <div className="messages">
+
       <React.Fragment>
         {
           this.state.confirm?
@@ -154,6 +156,7 @@ class Messages extends Component{
             </div>
         </div>
       </React.Fragment>
+      </div>
     )
   }
   tabClick(tabID) {

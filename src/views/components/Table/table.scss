@@ -1,5 +1,6 @@
 .rs-table-container{
   height: 100%;
+  background: white;
   .rs-table{
     position: relative;
     width: 100%;
@@ -8,6 +9,37 @@
     table{
       width: 100%;
       position: relative;
+      background-color: #f4f4f4;
+        thead {
+          tr{
+            th{
+              padding: .5em;
+              background-color: inherit;
+              border: 1px solid #c8c8c8;
+              font-weight: 500;
+              font-size: 11px;
+              line-height: 12px;
+            }
+
+          }
+        }
+        tbody{
+          tr {
+            td {
+              padding: .5em;
+              background-color: inherit;
+              border: 1px solid #c8c8c8;
+              white-space: nowrap;
+              line-height: 16px;
+              font-size: 13px;
+            }
+            &:hover {
+              background-color: #cbcbcb;
+              cursor: pointer;
+              border: 1px solid #c8c8c8;
+            }
+          }
+        }
 
 
     }

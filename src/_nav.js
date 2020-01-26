@@ -51,13 +51,13 @@ export default {
           //icon: 'icon-puzzle',
         },
       ]
-    },*/
+    },
+    */
     {
       name: 'ცნობარი',
-      url: '/Directory',
+      url: '/directory',
       icon: 'icon-drop',
     },
-
 
   ],
 };
