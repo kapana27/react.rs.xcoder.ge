@@ -52,12 +52,12 @@ export default {
         },
       ]
     },
+    */
     {
       name: 'ცნობარი',
       url: '/directory',
       icon: 'icon-drop',
-    },*/
-
+    },
 
   ],
 };

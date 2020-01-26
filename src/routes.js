@@ -1,5 +1,7 @@
 import React from 'react';
 
+const Directory = React.lazy(() => import('./views/Directory'));
+
 const Breadcrumbs = React.lazy(() => import('./views/Base/Breadcrumbs'));
 const Cards = React.lazy(() => import('./views/Base/Cards'));
 const Carousels = React.lazy(() => import('./views/Base/Carousels'));
@@ -40,9 +42,9 @@ const WareHouse = React.lazy(() => import('./views/Management/warehouse'));
 const Property = React.lazy(() => import('./views/Management/property'));
 const Messages = React.lazy(() => import('./views/Messages'));
 
-// https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home' },
+  { path: '/directory',exact: true, name: 'Directory', component: Directory },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/theme', exact: true, name: 'Theme', component: Colors },
   { path: '/theme/colors', name: 'Colors', component: Colors },
@@ -86,7 +88,9 @@ const routes = [
   { path: '/Management', exact: true, name: 'Management', component: Management },
   { path: '/Management/warehouse', name: 'WareHouse', component: WareHouse },
   { path: '/Management/property', name: 'Property', component: Property },
-  { path: '/Messages', name: 'Message', component: Messages },
+  { path: '/messages', name: 'Message', component: Messages },
+  { path: '/directory', name: 'Directory', component: Messages },
 ];
 
 export default routes;
+

@@ -587,7 +587,7 @@ To share variables between Sass files, you can use Sass imports. For example, `s
 This will allow you to do imports like
 
 ```scss
-@import 'styles/_colors.scss'; // assuming a styles directory under src/
+@import 'styles/_colors.scss'; // assuming a styles Directory under src/
 @import '~nprogress/nprogress'; // importing a css file from the nprogress node module
 ```
 
