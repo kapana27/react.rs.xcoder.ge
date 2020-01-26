@@ -519,7 +519,10 @@ export default class Property extends Component {
         text:'',
         title:'',
         // cart data before clearCarts
-        cart: {},
+        cart: {
+          tab21:[],
+          tab22:[],
+        },
         // print data key->value
         data: {},
         //overhead info -> title,lastCode
@@ -753,7 +756,10 @@ export default class Property extends Component {
         successModal:false,
         text:'',
         title:'',
-        cart: {},
+        cart: {
+          tab21:[],
+          tab22:[],
+        },
         data: {},
         overhead: {}
       },this.state));
