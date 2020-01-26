@@ -1,5 +1,5 @@
-import {CardCellRenderer} from  './CardCellRenderer'
-import {Modal} from  './Modal'
+import {CardCellRenderer} from  './CardCellRenderer';
+import {Modal} from  './Modal';
 import {Calendar} from './DatePicker';
 import {AutoComplete} from  './AutoComplete/AutoComplete';
 import {FileUploader} from  './FileUploader/FileUploader';
@@ -9,7 +9,9 @@ import {Search} from "./Search";
 import {Overhead} from "./Overhead/Overhead";
 import {ErrorModal} from "./ErrorModal";
 import {Table } from  './Table/Table';
-import {Confirm} from './Confirm/Confirm'
+import {Confirm} from './Confirm/Confirm';
+import {PrintModal} from './PrintModal';
+
 export {
   CardCellRenderer,
   Modal,
@@ -22,6 +24,7 @@ export {
   Overhead,
   ErrorModal,
   Table,
-  Confirm
+  Confirm,
+  PrintModal
 }
 

@@ -2168,8 +2168,7 @@ export default class Warehouse extends Component {
               </div>
           }
         </Modal>
-        <Modal
-          header="კალათა"
+        <Modal header="კალათა"
           footer = {
             <div className="dialog_footer">
               <div className="left_side">
@@ -2324,6 +2323,22 @@ export default class Warehouse extends Component {
 
   // შენობა ტაბის  ღილაკები
   outcameTab0GenerateOverhead=()=> {
+    /*let fields = ['propertyManagement','requestPerson','transPerson'];
+
+    let errors = [];
+    for (let f in fields){
+      console.log(this.state.inventor.outcome[f]);
+      if(this.state.inventor.outcome[f] === ''){
+        errors.push(f);
+      }
+    };
+
+    if(errors.length > 0){
+      this.error('გთხოვთ შეავსოთ ყველა ველი');
+    }else{
+      this.setState(State('inventor.outcome.expand',true,this.state));
+      this.getCode('new');
+    }*/
     this.setState(State('inventor.outcome.expand',true,this.state));
     this.getCode('new');
   };

@@ -1,0 +1,22 @@
+table {border-collapse: collapse;}  table, td, th {border: 1px solid black;}
+
+.tarigi { color: red; padding-top: 200px;}
+
+input {border:none !important;}
+
+@media print {
+  table {
+    border-collapse: collapse;
+  }
+
+  table, td, th {
+    border: 1px solid black;
+  }
+  .tarigi {
+    color: red;
+    padding-top: 200px;
+  }
+  input {
+    border:none;
+  }
+}

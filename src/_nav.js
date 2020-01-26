@@ -25,7 +25,7 @@ export default {
       url: '/messages',
       icon: 'icon-drop',
     },
-    {
+    /*{
       name: 'რეპორტი',
       url: '/report',
       icon: 'icon-puzzle',
@@ -56,7 +56,7 @@ export default {
       name: 'ცნობარი',
       url: '/directory',
       icon: 'icon-drop',
-    },
+    },*/
 
 
   ],

@@ -122,6 +122,7 @@ class Messages extends Component{
                     <th >მოდელი</th>
                     <th >ფასი</th>
                     <th >რაოდენობა</th>
+                    <th >სულ ფასი</th>
                     <th >შტრიხკოდი</th>
                   </tr>
                   </thead>
@@ -135,11 +136,17 @@ class Messages extends Component{
                   },
                   {
                     field:'item.model.name'
-                  },{
+                  },
+                  {
                     field:'item.price'
-                  },{
-                    field:'item.amount'
-                  },{
+                  },
+                  {
+                    field:'addonAmount'
+                  },
+                  {
+                    field:'addonSumAmount'
+                  },
+                  {
                     field:'item.fullBarcode'
                   },
                 ]}

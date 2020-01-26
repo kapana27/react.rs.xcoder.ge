@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import http, {PREFIX} from '../../../api/http';
 import {Config} from "../../../config/Config";
-import {CardCellRenderer, Modal, Calendar, AutoComplete, FileUploader, Cart, Search, Overhead, ErrorModal} from '../../components'
+import {CardCellRenderer, Modal, Calendar, AutoComplete, FileUploader, Cart, Search, Overhead, ErrorModal, PrintModal} from '../../components'
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
@@ -20,7 +20,7 @@ import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import 'primeflex/primeflex.css';
 import './property.css';
-import {State,putInCart,clearCartItem,removeCartItem,getCartItems} from '../../../utils';
+import {State, putInCart, clearCartItem, removeCartItem, getCartItems, PrintElem} from '../../../utils';
 import * as moment from "moment";
 import CustomDateComponent from "../../components/CustomDateComponent/CustomDateComponent";
 export default class Property extends Component {
@@ -512,10 +512,25 @@ export default class Property extends Component {
       errorDialog: {
         modal: false,
         text: ''
+      },
+      print: {
+        dialog:false,
+        successModal:false,
+        text:'',
+        title:'',
+        // cart data before clearCarts
+        cart: {},
+        // print data key->value
+        data: {},
+        //overhead info -> title,lastCode
+        overhead: {}
       }
     };
     this.loadInventorData();
   }
+
+
+
   removeItemFromCart=(tab,key)=>{
     removeCartItem({"globalKey":tab, "key": key,"value":"key"})
       .then(result => {
@@ -610,8 +625,9 @@ export default class Property extends Component {
         const parameters = [];
         for (const f in params['request']['filterModel']) {
           const name = (f.split('.').length > 0) ? f.split('.')[0] : f;
+
           parameters.push({
-            property: name==='trDate'? 'tr_date': name,
+            property: (name==='trDate'|| name==='trDate_1')? 'tr_date': name.replace('_1',''),
             value: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' ) ? moment(params['request']['filterModel'][f]['dateFrom']).format("DD/MM/YYYY") : params['request']['filterModel'][f]['filter'],
             operator: (params['request']['filterModel'][f]['filterType'] != undefined && params['request']['filterModel'][f]['filterType'] === 'date' ) ? 'eq' : 'like'
           });
@@ -725,13 +741,33 @@ export default class Property extends Component {
     this.setState(State('errorDialog',{modal:true, text: error},this.state));
   };
 
+  clearPrintData = (action) => {
+    if(action === 'print'){
+      this.setState(State('print',{
+        successModal:false,
+        dialog:true,
+      },this.state));
+    }else{
+      this.setState(State('print',{
+        dialog:false,
+        successModal:false,
+        text:'',
+        title:'',
+        cart: {},
+        data: {},
+        overhead: {}
+      },this.state));
+    }
+  };
+
   render() {
     let tabClass = 'p-button-secondary';
 
     return (
       <React.Fragment >
 
-        {this.state.errorDialog.modal? <ErrorModal text={this.state.errorDialog.text} onClick={()=>this.setState(State('errorDialog',{modal: false, text: ''},this.state))}/> : ''}
+        {this.state.print.modal? <ErrorModal text={this.state.errorDialog.text} onClick={()=>this.setState(State('errorDialog',{modal: false, text: ''},this.state))}/> : ''}
+        {this.state.print.successModal? <PrintModal text={this.state.print.text} onClick={(action)=> this.clearPrintData(action)}/> : ''}
 
         <div className="actionButton">
           <div className="buttonBox" style={{width: '150px'}}>
@@ -818,7 +854,73 @@ export default class Property extends Component {
           />
         </div>
 
+        <Modal
+          header="განპიროვნება"
+          visible={this.state.print.dialog}
+          onHide={()=>this.resetModalParam('print')} style={{width:'900px'}}
+          footer = {
+            <div className="dialog_footer">
+              <div className="left_side">
+                <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
+              </div>
 
+              <Button label="ბეჭდვა" className="p-button-secondary" onClick={()=>PrintElem(this.dispositionModalRef)}/>
+              <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.resetModalParam('print')}/>
+            </div>
+          }>
+          {
+            (this.state.property.disposition.expand)?
+              <div className="expand_mode">
+                <Overhead title={this.state.print.overhead.title} carts={this.state.print.cart} tab={this.state.tab}  newCode={this.state.print.overhead.newCode}/>
+              </div>
+              :
+              <div className="incomeModal p-grid">
+                <div className="fullwidth p-col-8">
+                  <div className="p-grid">
+                    <div className="fullwidth p-col-6">
+                      <label>თარიღი</label>
+                      <Calendar date={this.state.property.disposition.date} onDateChange={props=>this.setState(State('property.disposition.date',props,this.state)) } />
+                    </div>
+                    <div className="fullwidth p-col-6">
+                      <label>პიროვნება</label>
+                      <AutoComplete
+                        field="fullname"
+                        suggestions={this.state.property.personality}
+                        onComplete={this.dispositionPerson}
+                        onSelect={(e)=>this.setState(State('property.disposition.person',e,this.state),()=>this.dispositionPersonRoom(this.state.property.disposition.person.id))}
+                        onChange={(e) => this.setState(State('property.disposition.person',e,this.state))}
+                        value={this.state.property.disposition.person}
+                      />
+                    </div>
+                    <div className="fullwidth p-col-12">
+                      <label>აირჩიეთ ოთახი</label>
+                      <Dropdown value={this.state.property.disposition.room} options={this.state.property.roomList} onChange={(e) => this.setState(State( "property.disposition.room",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="აირჩიეთ ოთახი" style={{width:'100%'}} />
+                    </div>
+                  </div>
+                </div>
+                <div className="fullwidth p-col-4">
+                  <label>კომენტარი</label>
+                  <InputTextarea value={this.state.property.disposition.comment} onChange = {(e)=>this.setState(State('property.disposition.comment',e.target.value,this.state))} rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
+                </div>
+
+                <Cart
+                  onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
+                  data={this.state.cart['tab'+this.state.tab]}
+                  onChangeAmount={e=>{
+                    let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
+                    if(e.count>data.amount){
+                      e.count=data.amount;
+                    }else if(e.count < 1){
+                      e.count = 1;
+                    }
+                    data.count = e.count;
+                    this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
+                  }}
+                />
+
+              </div>
+          }
+        </Modal>
 
         <Modal
           header="განპიროვნება"
@@ -1132,10 +1234,23 @@ export default class Property extends Component {
           }
         </Modal>
 
-        <Modal header="კალათა" visible={this.state.cart.dialog} onHide={()=>this.setState(State('cart.dialog',false,this.state))} style={{width:'800px'}} >
+        <Modal header="კალათა"
+               footer = {
+                 <div className="dialog_footer">
+                   <div className="left_side">
+                     <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
+                   </div>
+                   <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.setState(State('cart.dialog', false, this.state))}/>
+                 </div>
+               }
+               onClick={()=>this.removeCartItem()}
+               visible={this.state.cart.dialog}
+               onHide={() => this.setState(State('cart.dialog', false, this.state))}
+               style={{width: '800px'}}
+        >
           <Cart
             onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
-            data={this.state.cart['tab'+this.state.tab]}
+            data={this.state.cart['tab' + this.state.tab]}
             onChangeAmount={e=>{
               let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
               if(e.count>data.amount){
@@ -1311,7 +1426,7 @@ export default class Property extends Component {
     formData.append('note', this.state.property.disposition.comment);
     formData.append('addon', this.state.property.newCode);
     formData.append('trDate',moment(this.state.property.disposition.date).format('DD-MM-YYYY'));
-    formData.append('roomId', this.state.property.disposition.room.id);
+    formData.append('roomId', _.isUndefined(this.state.property.disposition.room.id)? '':this.state.property.disposition.room.id);
     formData.append('receiverPerson', this.state.property.disposition.person.id);
     formData.append('files', this.state.property.disposition.files);
 
@@ -1319,10 +1434,24 @@ export default class Property extends Component {
       let val =  JSON.parse(value);
       return {
         itemId: val.id,
-        amount: val.amount,
+        amount: val.count,
         list:""
       }
     })));
+
+    // prepear print data
+    this.setState(State('print.cart',this.state.cart['tab'+this.state.tab],this.state));
+    this.setState(State('print.title','განპიროვნება',this.state));
+    this.setState(State('print.overhead',{
+      title:'ქონების მართვის გასავლის ელ. ზედდებული ქ.გ - ',
+      lastCode: this.state.property.newCode
+    },this.state));
+    this.setState(State('print.data',{
+      'თარიღი': moment(this.state.property.disposition.date).format("DD-MM-YYYY"),
+      'პიროვნება': this.state.property.disposition.person.fullname,
+      'ოთახი':this.state.property.disposition.room.id,
+      'კომენტარი': this.state.property.disposition.comment
+    },this.state));
 
     http.post("/api/secured/Item/Person/Transfer",formData)
       .then(result => {
@@ -1330,6 +1459,10 @@ export default class Property extends Component {
           this.removeCartItem();
           this.resetModalParam('disposition');
           this.onReady(this.eventData);
+          this.setState(State('print',{
+            successModal:true,
+            text: 'ოპერაცია ჭარმატებით შესრულდა! გნებავთ ძედდებულის ბეჭდვა?'
+          },this.state));
         }else{
           this.error(result.error);
         }
@@ -1343,7 +1476,6 @@ export default class Property extends Component {
   };
 
   onDisposition() {
-    console.log(this.state);
     this.setState(State('property.disposition.dialog',true,this.state));
     this.setState(State('property.disposition.expand',false,this.state));
 
@@ -1561,5 +1693,5 @@ export default class Property extends Component {
 
   cartDialog=()=> {
     this.setState(State('cart.dialog',true,this.state))
-  }
+  };
 }
