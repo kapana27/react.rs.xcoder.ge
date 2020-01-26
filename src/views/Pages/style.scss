@@ -1,0 +1,19 @@
+
+.auth {
+  h1 {
+    font-family: 'lbet-mt', sans-serif;
+  }
+  .text-muted{
+    font-family: 'lbet-nus';
+  }
+  .input-group {
+    font-family: 'lbet-nus';
+  }
+  button {
+    font-family: 'lbet-mt', sans-serif;
+    &.btn-link {
+      font-family: 'lbet-nus';
+    }
+  }
+}
+

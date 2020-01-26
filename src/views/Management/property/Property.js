@@ -515,7 +515,7 @@ export default class Property extends Component {
       },
       print: {
         dialog:false,
-        successModal:false,
+        modal:false,
         text:'',
         title:'',
         // cart data before clearCarts
@@ -526,7 +526,10 @@ export default class Property extends Component {
         // print data key->value
         data: {},
         //overhead info -> title,lastCode
-        overhead: {}
+        overhead: {
+          title:'',
+          lastCode:''
+        }
       }
     };
     this.loadInventorData();
@@ -746,14 +749,12 @@ export default class Property extends Component {
 
   clearPrintData = (action) => {
     if(action === 'print'){
-      this.setState(State('print',{
-        successModal:false,
-        dialog:true,
-      },this.state));
+      this.setState(State('print.modal',false,this.state));
+      this.setState(State('print.dialog',true,this.state));
     }else{
       this.setState(State('print',{
         dialog:false,
-        successModal:false,
+        modal:false,
         text:'',
         title:'',
         cart: {
@@ -761,9 +762,16 @@ export default class Property extends Component {
           tab22:[],
         },
         data: {},
-        overhead: {}
+        overhead: {
+          title:'',
+          lastCode:''
+        }
       },this.state));
     }
+  };
+  openPrintMode=()=>{
+    PrintElem(this.dispositionRef);
+    this.clearPrintData('cancel');
   };
 
   render() {
@@ -773,7 +781,7 @@ export default class Property extends Component {
       <React.Fragment >
 
         {this.state.print.modal? <ErrorModal text={this.state.errorDialog.text} onClick={()=>this.setState(State('errorDialog',{modal: false, text: ''},this.state))}/> : ''}
-        {this.state.print.successModal? <PrintModal text={this.state.print.text} onClick={(action)=> this.clearPrintData(action)}/> : ''}
+        {this.state.print.modal? <PrintModal text={this.state.print.text} onClick={(action)=> this.clearPrintData(action)}/> : ''}
 
         <div className="actionButton">
           <div className="buttonBox" style={{width: '150px'}}>
@@ -861,71 +869,27 @@ export default class Property extends Component {
         </div>
 
         <Modal
-          header="განპიროვნება"
+          header="საბეჭდი ვერსია"
           visible={this.state.print.dialog}
           onHide={()=>this.resetModalParam('print')} style={{width:'900px'}}
           footer = {
             <div className="dialog_footer">
-              <div className="left_side">
-                <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
-              </div>
-
-              <Button label="ბეჭდვა" className="p-button-secondary" onClick={()=>PrintElem(this.dispositionModalRef)}/>
+              <div className="left_side"></div>
+              <Button label="ბეჭდვა" className="p-button-secondary" onClick={()=>this.openPrintMode()}/>
               <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.resetModalParam('print')}/>
             </div>
           }>
-          {
-            (this.state.property.disposition.expand)?
-              <div className="expand_mode">
-                <Overhead title={this.state.print.overhead.title} carts={this.state.print.cart} tab={this.state.tab}  newCode={this.state.print.overhead.newCode}/>
-              </div>
-              :
-              <div className="incomeModal p-grid">
-                <div className="fullwidth p-col-8">
-                  <div className="p-grid">
-                    <div className="fullwidth p-col-6">
-                      <label>თარიღი</label>
-                      <Calendar date={this.state.property.disposition.date} onDateChange={props=>this.setState(State('property.disposition.date',props,this.state)) } />
-                    </div>
-                    <div className="fullwidth p-col-6">
-                      <label>პიროვნება</label>
-                      <AutoComplete
-                        field="fullname"
-                        suggestions={this.state.property.personality}
-                        onComplete={this.dispositionPerson}
-                        onSelect={(e)=>this.setState(State('property.disposition.person',e,this.state),()=>this.dispositionPersonRoom(this.state.property.disposition.person.id))}
-                        onChange={(e) => this.setState(State('property.disposition.person',e,this.state))}
-                        value={this.state.property.disposition.person}
-                      />
-                    </div>
-                    <div className="fullwidth p-col-12">
-                      <label>აირჩიეთ ოთახი</label>
-                      <Dropdown value={this.state.property.disposition.room} options={this.state.property.roomList} onChange={(e) => this.setState(State( "property.disposition.room",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="აირჩიეთ ოთახი" style={{width:'100%'}} />
-                    </div>
-                  </div>
-                </div>
-                <div className="fullwidth p-col-4">
-                  <label>კომენტარი</label>
-                  <InputTextarea value={this.state.property.disposition.comment} onChange = {(e)=>this.setState(State('property.disposition.comment',e.target.value,this.state))} rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
-                </div>
 
-                <Cart
-                  onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
-                  data={this.state.cart['tab'+this.state.tab]}
-                  onChangeAmount={e=>{
-                    let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
-                    if(e.count>data.amount){
-                      e.count=data.amount;
-                    }else if(e.count < 1){
-                      e.count = 1;
-                    }
-                    data.count = e.count;
-                    this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
-                  }}
-                />
+          <div ref={(ref)=>this.dispositionRef=ref}>
+              {_.map(this.state.print.data,(item, key) =>
+                <div><b>{key}:</b>&nbsp;{item}</div>
+              )}
 
-              </div>
-          }
+            <div className="expand_mode">
+              <Overhead title={this.state.print.overhead.title} carts={this.state.print.cart} tab={this.state.tab}  newCode={this.state.print.overhead.lastCode}/>
+            </div>
+
+          </div>
         </Modal>
 
         <Modal
@@ -1005,7 +969,7 @@ export default class Property extends Component {
         </Modal>
 
         <Modal
-          header="ინვენტარის საწყობში დაბრუნება" visible={this.state.property.outcome.dialog} onHide={()=>this.resetModalParam('outcome')} style={{width:'900px'}}
+          header="ინვენტარის საწყობში შებრუნება" visible={this.state.property.outcome.dialog} onHide={()=>this.resetModalParam('outcome')} style={{width:'900px'}}
           footer = {
             <div className="dialog_footer">
               <div className="left_side">
@@ -1344,8 +1308,14 @@ export default class Property extends Component {
   };
 
   resetModalParam(modal){
-    this.setState(State('property.'+modal+'.dialog',false,this.state));
-    this.setState(State('property.'+modal+'.expand',false,this.state));
+    if(modal !== 'print'){
+      this.setState(State('property.'+modal+'.dialog',false,this.state));
+      this.setState(State('property.'+modal+'.expand',false,this.state));
+      this.setState(State('property.'+modal+'.date',new Date(),this.state));
+      this.setState(State('property.'+modal+'.comment','',this.state));
+      this.setState(State('property.'+modal+'.files',[],this.state));
+    }
+
 
     this.setState(State('property.personality',[],this.state));
     this.setState(State('property.roomList',[],this.state));
@@ -1355,9 +1325,6 @@ export default class Property extends Component {
     this.setState(State('property.requestPersonList',[],this.state));
 
 
-    this.setState(State('property.'+modal+'.date',new Date(),this.state));
-    this.setState(State('property.'+modal+'.comment','',this.state));
-    this.setState(State('property.'+modal+'.files',[],this.state));
 
 
     if(modal === 'disposition') {
@@ -1377,6 +1344,9 @@ export default class Property extends Component {
       this.setState(State('property.'+modal+'.transPerson','',this.state));
       this.setState(State('property.'+modal+'.section','',this.state));
       this.setState(State('property.'+modal+'.stockMan','',this.state));
+    }
+    if(modal === 'print') {
+      this.clearPrintData('cancel');
     }
   }
 
@@ -1446,7 +1416,7 @@ export default class Property extends Component {
     })));
 
     // prepear print data
-    this.setState(State('print.cart',this.state.cart['tab'+this.state.tab],this.state));
+    this.setState(State('print.cart.tab'+this.state.tab,this.state.cart['tab'+this.state.tab],this.state));
     this.setState(State('print.title','განპიროვნება',this.state));
     this.setState(State('print.overhead',{
       title:'ქონების მართვის გასავლის ელ. ზედდებული ქ.გ - ',
@@ -1459,16 +1429,16 @@ export default class Property extends Component {
       'კომენტარი': this.state.property.disposition.comment
     },this.state));
 
+
+
     http.post("/api/secured/Item/Person/Transfer",formData)
       .then(result => {
         if (result.status === 200) {
           this.removeCartItem();
           this.resetModalParam('disposition');
           this.onReady(this.eventData);
-          this.setState(State('print',{
-            successModal:true,
-            text: 'ოპერაცია ჭარმატებით შესრულდა! გნებავთ ძედდებულის ბეჭდვა?'
-          },this.state));
+          this.setState(State('print.text','ოპერაცია წარმატებით შესრულდა! გნებავთ ზედდებულის ბეჭდვა?',this.state));
+          this.setState(State('print.modal',true,this.state));
         }else{
           this.error(result.error);
         }
@@ -1538,12 +1508,29 @@ export default class Property extends Component {
       }
     })));
 
+    // prepear print data
+    this.setState(State('print.cart.tab'+this.state.tab,this.state.cart['tab'+this.state.tab],this.state));
+    this.setState(State('print.title','ინვენტარის საწყობში შებრუნება',this.state));
+    this.setState(State('print.overhead',{
+      title:'ქონების მართვის გასავლის ელ. ზედდებული ქ.გ - ',
+      lastCode: this.state.property.newCode
+    },this.state));
+    this.setState(State('print.data',{
+      'თარიღი': moment(this.state.property.outcome.date).format('DD-MM-YYYY'),
+      'სექცია': this.state.property.outcome.section.name,
+      'საწყობის მართვა':this.state.property.outcome.stockMan.name,
+      'ტრანსპორტ. პასხ. პირი':this.state.property.outcome.transPerson.fullName,
+      'კომენტარი': this.state.property.outcome.comment
+    },this.state));
+
     http.post("/api/secured/Item/Stock/Return",formData)
       .then(result => {
         if (result.status === 200) {
           this.removeCartItem();
           this.resetModalParam('outcome');
           this.onReady(this.eventData);
+          this.setState(State('print.text','ოპერაცია წარმატებით შესრულდა! გნებავთ ზედდებულის ბეჭდვა?',this.state));
+          this.setState(State('print.modal',true,this.state));
         }else{
           this.error(result.error);
         }
@@ -1600,12 +1587,29 @@ export default class Property extends Component {
       }
     })));
 
+    // prepear print data
+    this.setState(State('print.cart.tab'+this.state.tab,this.state.cart['tab'+this.state.tab],this.state));
+    this.setState(State('print.title','განპიროვნება',this.state));
+    this.setState(State('print.overhead',{
+      title:'ქონების მართვის გასავლის ელ. ზედდებული ქ.გ - ',
+      lastCode: this.state.property.newCode
+    },this.state));
+    this.setState(State('print.data',{
+      'თარიღი': moment(this.state.property.movAB.date).format('DD-MM-YYYY'),
+      'ქონების მართვა': this.state.property.movAB.propertyManagement.name,
+      'მომთხოვნი პიროვნება':this.state.property.movAB.requestPerson.fullName,
+      'ტრანსპორტ. პასხ. პირი':this.state.property.movAB.transPerson.fullName,
+      'კომენტარი': this.state.property.movAB.comment
+    },this.state));
+
     http.post("/api/secured/Item/Section/Transfer",formData)
       .then(result => {
         if (result.status === 200) {
           this.removeCartItem();
           this.resetModalParam('movAB');
           this.onReady(this.eventData);
+          this.setState(State('print.text','ოპერაცია წარმატებით შესრულდა! გნებავთ ზედდებულის ბეჭდვა?',this.state));
+          this.setState(State('print.modal',true,this.state));
         }else{
           this.error(result.error);
         }
@@ -1659,12 +1663,29 @@ export default class Property extends Component {
       }
     })));
 
+    // prepear print data
+    this.setState(State('print.cart.tab'+this.state.tab,this.state.cart['tab'+this.state.tab],this.state));
+    this.setState(State('print.title','ინვენტარის საწყობში დაბრუნება',this.state));
+    this.setState(State('print.overhead',{
+      title:'ქონების მართვის გასავლის ელ. ზედდებული ქ.გ - ',
+      lastCode: this.state.property.newCode
+    },this.state));
+    this.setState(State('print.data',{
+      'თარიღი': moment(this.state.property.inverse.date).format('DD-MM-YYYY'),
+      'სექცია': this.state.property.inverse.section.name,
+      'საწყობის მართვა':this.state.property.inverse.stockMan.name,
+      'ტრანსპორტ. პასხ. პირი':this.state.property.inverse.transPerson.fullName,
+      'კომენტარი': this.state.property.inverse.comment
+    },this.state));
+
     http.post("/api/secured/Item/Stock/Return",formData)
       .then(result => {
         if (result.status === 200) {
           this.removeCartItem();
           this.resetModalParam('inverse');
           this.onReady(this.eventData);
+          this.setState(State('print.text','ოპერაცია წარმატებით შესრულდა! გნებავთ ზედდებულის ბეჭდვა?',this.state));
+          this.setState(State('print.modal',true,this.state));
         }else{
           this.error(result.error);
         }

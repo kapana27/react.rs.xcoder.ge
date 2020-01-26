@@ -9,7 +9,7 @@ import {
   FileUploader,
   Cart,
   TreeTableGroup,
-  Search, Overhead, ErrorModal,
+  Search, Overhead, ErrorModal, PrintModal,
 } from '../../components'
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -27,7 +27,7 @@ import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import './warehouse.css';
 import 'primeflex/primeflex.css';
-import {State,putInCart,clearCartItem,removeCartItem,getCartItems} from '../../../utils';
+import {State, putInCart, clearCartItem, removeCartItem, getCartItems, PrintElem} from '../../../utils';
 import {Validator} from "../../../utils/validator";
 import * as moment from 'moment';
 import OverheadModalTable from "../../components/OverheadModalTable/OverheadModalTable";
@@ -489,6 +489,24 @@ export default class Warehouse extends Component {
         value: "",
         number: "",
         dropdown:{id:null, name:''},
+      },
+      print: {
+        dialog:false,
+        modal:false,
+        text:'',
+        title:'',
+        // cart data before clearCarts
+        cart: {
+          tab21:[],
+          tab22:[],
+        },
+        // print data key->value
+        data: {},
+        //overhead info -> title,lastCode
+        overhead: {
+          title:'',
+          lastCode:''
+        }
       }
     };
     this.loadConstructor();
@@ -721,10 +739,40 @@ export default class Warehouse extends Component {
   error=(error='დაფიქსირდა შეცდომა')=>{
     this.setState(State('errorDialog',{dialog:true, text: error},this.state));
   };
+
+  clearPrintData = (action) => {
+    if(action === 'print'){
+      this.setState(State('print.modal',false,this.state));
+      this.setState(State('print.dialog',true,this.state));
+    }else{
+      this.setState(State('print',{
+        dialog:false,
+        modal:false,
+        text:'',
+        title:'',
+        cart: {
+          tab21:[],
+          tab22:[],
+        },
+        data: {},
+        overhead: {
+          title:'',
+          lastCode:''
+        }
+      },this.state));
+    }
+  };
+  openPrintMode=()=>{
+    PrintElem(this.dispositionRef);
+    this.clearPrintData('cancel');
+  };
+
   render() {
     return (
       <React.Fragment>
         {this.state.errorDialog.dialog? <ErrorModal text={this.state.errorDialog.text} onClick={()=>this.setState(State('errorDialog',{dialog: false, text: ''},this.state))}/> : ''}
+        {this.state.print.modal? <PrintModal text={this.state.print.text} onClick={(action)=> this.clearPrintData(action)}/> : ''}
+
         <div className="actionButton">
           <div className="buttonBox" style={{width: '150px'}}>
             <Button label="A" icon="pi pi-home" className={this.state.tab === 11?'':'p-button-secondary'} onClick={()=>this.tabClick(11)}/>
@@ -807,6 +855,32 @@ export default class Warehouse extends Component {
             frameworkComponents={this.state.grid.frameworkComponents}
           />
         </div>
+
+
+        <Modal
+          header="საბეჭდი ვერსია"
+          visible={this.state.print.dialog}
+          onHide={()=>this.resetModalParam('print')} style={{width:'900px'}}
+          footer = {
+            <div className="dialog_footer">
+              <div className="left_side"></div>
+              <Button label="ბეჭდვა" className="p-button-secondary" onClick={()=>this.openPrintMode()}/>
+              <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.resetModalParam('print')}/>
+            </div>
+          }>
+
+          <div ref={(ref)=>this.dispositionRef=ref}>
+            {_.map(this.state.print.data,(item, key) =>
+              <div><b>{key}:</b>&nbsp;{item}</div>
+            )}
+
+            <div className="expand_mode" style={{marginTop:'20px'}}>
+              <Overhead title={this.state.print.overhead.title} carts={this.state.print.cart} tab={this.state.tab}  newCode={this.state.print.overhead.lastCode}/>
+            </div>
+
+          </div>
+        </Modal>
+
 
         <Modal
           header="ზედნადებით მიღება" visible={this.state.inventor.overhead.dialog}
@@ -1788,8 +1862,7 @@ export default class Warehouse extends Component {
                         :
                         <span/>
                     }
-                    <Button label="ზედდებულის გააქტიურება" icon="pi pi-check"
-                            onClick={() => this.onSaveInventor()}/>
+                    <Button label="ზედდებულის გააქტიურება" icon="pi pi-check" onClick={() => this.onSaveInventor()}/>
                   </React.Fragment>
                   :
                   <Button label="ზედდებულის გენერაცია" icon="pi pi-check" onClick={() => this.generateInventor()}/>
@@ -2019,7 +2092,7 @@ export default class Warehouse extends Component {
                     </div>
                     <div className="fullwidth p-col-4">
                       <label>კომენტარი</label>
-                      <InputTextarea rows={4} placeholder="შენიშვნა" style={{width: '100%', minHeight: '100px'}}/>
+                      <InputTextarea value={this.state.inventor.outcome.comment} onChange = {(e)=>this.setState(State('inventor.outcome.comment',e.target.value,this.state))} rows={4} placeholder="შენიშვნა" style={{width: '100%', minHeight: '100px'}}/>
                     </div>
                   </div>
                 </TabPanel>
@@ -2072,7 +2145,7 @@ export default class Warehouse extends Component {
                     </div>
                     <div className="fullwidth p-col-12">
                       <label>კომენტარი</label>
-                      <InputTextarea rows={1} placeholder="შენიშვნა" style={{width: '100%'}}/>
+                      <InputTextarea value={this.state.inventor.outcome.comment} onChange = {(e)=>this.setState(State('inventor.outcome.comment',e.target.value,this.state))} rows={1} placeholder="შენიშვნა" style={{width: '100%'}}/>
                     </div>
                   </div>
                 </TabPanel>
@@ -2364,12 +2437,29 @@ export default class Warehouse extends Component {
       }
     })));
 
+    // prepear print data
+    this.setState(State('print.cart.tab'+this.state.tab,this.state.cart['tab'+this.state.tab],this.state));
+    this.setState(State('print.title','ინვენტარის გაცემა',this.state));
+    this.setState(State('print.overhead',{
+      title:'ქონების მართვის გასავლის ელ. ზედდებული ქ.გ - ',
+      lastCode: this.state.inventor.newCode
+    },this.state));
+    this.setState(State('print.data',{
+      'თარიღი': moment(this.state.inventor.outcome.date).format('DD-MM-YYYY'),
+      'ქონების მართვა': this.state.inventor.outcome.propertyManagement.name,
+      'მომთხოვნი პიროვნება':this.state.inventor.outcome.requestPerson.name,
+      'ტრანსპორტ. პასხ. პირი':this.state.inventor.outcome.transPerson.fullName,
+      'კომენტარი': this.state.inventor.outcome.comment
+    },this.state));
+
     http.post("/api/secured/Item/Stock/Transfer",formData)
       .then(result => {
         if (result.status === 200) {
           this.removeCartItem();
           this.resetModalParam('outcome');
           this.onReady(this.eventData);
+          this.setState(State('print.text','ოპერაცია წარმატებით შესრულდა! გნებავთ ზედდებულის ბეჭდვა?',this.state));
+          this.setState(State('print.modal',true,this.state));
         }else{
           this.error(result.error);
         }
@@ -2406,12 +2496,31 @@ export default class Warehouse extends Component {
       }
     })));
 
+    // prepear print data
+    this.setState(State('print.cart.tab'+this.state.tab,this.state.cart['tab'+this.state.tab],this.state));
+    this.setState(State('print.title','ინვენტარის გაცემა',this.state));
+    this.setState(State('print.overhead',{
+      title:'ქონების მართვის გასავლის ელ. ზედდებული ქ.გ - ',
+      lastCode: this.state.inventor.newCode
+    },this.state));
+    this.setState(State('print.data',{
+      'თარიღი': moment(this.state.inventor.outcome.date).format('DD-MM-YYYY'),
+      'პიროვნება': this.state.inventor.outcome.person.fullname,
+      'ქონების მართვა':this.state.inventor.outcome.propertyManagement.name,
+      'სექცია':this.state.inventor.outcome.room.name,
+      'ტრანსპორტირების პასხ. პირი':this.state.inventor.outcome.transPerson.fullName,
+      'მომთხოვნი პიროვნება':this.state.inventor.outcome.requestPerson.fullName,
+      'კომენტარი': this.state.inventor.outcome.comment
+    },this.state));
+
     http.post("/api/secured/Item/Stock/Transfer",formData)
       .then(result => {
         if (result.status === 200) {
           this.removeCartItem();
           this.resetModalParam('outcome');
           this.onReady(this.eventData);
+          this.setState(State('print.text','ოპერაცია წარმატებით შესრულდა! გნებავთ ზედდებულის ბეჭდვა?',this.state));
+          this.setState(State('print.modal',true,this.state));
         }else{
           this.error(result.error);
         }
@@ -2513,8 +2622,13 @@ export default class Warehouse extends Component {
       .catch(reason => this.error(reason.error) );
   };
   resetModalParam(modal){
-    this.setState(State('inventor.'+modal+'.dialog',false,this.state));
-    this.setState(State('inventor.'+modal+'.expand',false,this.state));
+    if(modal !== 'print') {
+      this.setState(State('inventor.' + modal + '.dialog', false, this.state));
+      this.setState(State('inventor.' + modal + '.expand', false, this.state));
+      this.setState(State('inventor.' + modal + '.date', new Date(), this.state));
+      this.setState(State('inventor.' + modal + '.comment', '', this.state));
+      this.setState(State('inventor.' + modal + '.files', [], this.state));
+    }
 
     this.setState(State('inventor.personality',[],this.state));
     this.setState(State('inventor.roomList',[],this.state));
@@ -2522,10 +2636,6 @@ export default class Warehouse extends Component {
     this.setState(State('inventor.propertyManagementList',[],this.state));
     this.setState(State('inventor.transPersonList',[],this.state));
     this.setState(State('inventor.requestPersonList',[],this.state));
-
-    this.setState(State('inventor.'+modal+'.date',new Date(),this.state));
-    this.setState(State('inventor.'+modal+'.comment','',this.state));
-    this.setState(State('inventor.'+modal+'.files',[],this.state));
 
     if(modal === 'transfer') {
       this.setState(State('inventor.'+modal+'.transPerson','',this.state));
@@ -2599,6 +2709,9 @@ export default class Warehouse extends Component {
       }
       this.setState(State('inventor.'+modal,overhead,this.state));
     }
+    if(modal === 'print') {
+      this.clearPrintData('cancel');
+    }
   }
   removeCartItem(modal) {
     let formData = new FormData();
@@ -2638,12 +2751,29 @@ export default class Warehouse extends Component {
       }
     })));
 
+    // prepear print data
+    this.setState(State('print.cart.tab'+this.state.tab,this.state.cart['tab'+this.state.tab],this.state));
+    this.setState(State('print.title','ინვენტარის საწყობში შებრუნება',this.state));
+    this.setState(State('print.overhead',{
+      title:'ქონების მართვის გასავლის ელ. ზედდებული ქ.გ - ',
+      lastCode: this.state.inventor.newCode
+    },this.state));
+    this.setState(State('print.data',{
+      'თარიღი': moment(this.state.inventor.transfer.date).format('DD-MM-YYYY'),
+      'სექცია': this.state.inventor.transfer.section.name,
+      'ქონების მართვა':this.state.inventor.transfer.propertyManagement.name,
+      'ტრანსპორტ. პასხ. პირი':this.state.inventor.transfer.transPerson.fullName,
+      'კომენტარი': this.state.inventor.transfer.comment
+    },this.state));
+
     http.post("/api/secured/Item/Stock/Change",formData)
       .then(result => {
         if (result.status === 200) {
           this.removeCartItem();
           this.resetModalParam('transfer');
           this.onReady(this.eventData);
+          this.setState(State('print.text','ოპერაცია წარმატებით შესრულდა! გნებავთ ზედდებულის ბეჭდვა?',this.state));
+          this.setState(State('print.modal',true,this.state));
         }else{
           this.error(result.error);
         }
@@ -3456,12 +3586,29 @@ export default class Warehouse extends Component {
       }
     })));
 
+    // prepear print data
+    this.setState(State('print.cart.tab'+this.state.tab,this.state.cart['tab'+this.state.tab],this.state));
+    this.setState(State('print.title','ინვენტარის მიღება',this.state));
+    this.setState(State('print.overhead',{
+      title:'საწყობის შემოსავლის ელ. ზედდებული № '+ this.state.inventor.income.tempAddon.Left+' - ',
+      lastCode: this.state.inventor.income.tempAddon.Right
+    },this.state));
+    this.setState(State('print.data',{
+      'თარიღი': moment(this.state.inventor.income.date).format('DD-MM-YYYY'),
+      'მიმწოდებელი': this.state.inventor.income.supplier.name,
+      'სასაქონლო ზედნადები':this.state.inventor.income.invoice,
+      'მიღება ჩაბარების აქტი':this.state.inventor.income.inspectionNumber,
+      'კომენტარი': this.state.inventor.income.comment
+    },this.state));
+
     http.post('/api/secured/Item/Insert',formData)
       .then(result => {
         if(result.status ===200) {
           alert("შეინახა წარმატებით");
-          this.setState(State('inventor.income.dialog', false, this.state))
-          this.onGridReady(this.eventData)
+          this.setState(State('inventor.income.dialog', false, this.state));
+          this.onGridReady(this.eventData);
+          this.setState(State('print.text','ოპერაცია წარმატებით შესრულდა! გნებავთ ზედდებულის ბეჭდვა?',this.state));
+          this.setState(State('print.modal',true,this.state));
         }else{
           this.error(result.error);
         }
