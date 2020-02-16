@@ -36,6 +36,7 @@
     input {
       flex: 1 1 auto;
       width: 1%;
+      height: 25px;
     }
   .react-datepicker-wrapper{
     input{
@@ -43,6 +44,13 @@
       text-indent: 25px !important;
     }
   }
+    .p-inputtext {
+      padding: 0.2em 0.2em;
+      font-size: 12px;
+    }
+    .p-dropdown.p-component {
+      height: 25px;
+    }
   }
 
 

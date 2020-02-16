@@ -12,6 +12,12 @@ const get = (uri) => {
           resolve(response.data);
         })
         .catch(reason => {
+          if(reason.response.status===401){
+            setTimeout(()=>{
+              window.location.href="/#/login";
+            },100)
+
+          }
           console.log(reason)
         });
     } catch (e) {
@@ -27,6 +33,10 @@ const post = (uri, formData) => {
           resolve(response.data);
         })
         .catch(reason => {
+          console.log(reason.response.status)
+          setTimeout(()=>{
+            window.location.href="/#/login";
+          },100)
           reject(reason)
         });
     }catch (e) {
@@ -35,7 +45,22 @@ const post = (uri, formData) => {
 
   })
 };
+const session=()=>{
+  return new Promise((resolve, reject) => {
+    get(PREFIX + "/api/secured/ping")
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch(reason => {
+        console.log(reason.response.status)
+        setTimeout(() => {
+          window.location.href = "/#/login";
+        }, 100)
+      });
+  })
+}
 export default {
   get,
-  post
+  post,
+  session
 }

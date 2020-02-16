@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { AppAsideToggler, AppNavbarBrand, AppSidebarToggler } from '@coreui/react';
 import logo from '../../assets/img/brand/logo.png'
 import sygnet from '../../assets/img/brand/sygnet.png'
+import './header.css';
 
 const propTypes = {
   children: PropTypes.node,
@@ -26,9 +27,16 @@ class DefaultHeader extends Component {
           full={{ src: logo, width: 142, height: 41, alt: 'Logo' }}
           minimized={{ src: sygnet, width: 30, height: 30, alt: 'CoreUI Logo' }}
         />
-        <AppSidebarToggler className="d-md-down-none" display="lg" />
 
-       {/* <Nav className="d-md-down-none" navbar>
+        <div className="user_area">
+          <div className="left_side">&nbsp;</div>
+          <div className="right_side">
+            <div className="user">{this.props.user.firstName} {this.props.user.lastName}</div>
+          </div>
+        </div>
+
+        <AppSidebarToggler className="d-md-down-none" display="lg" />
+       {/* {<Nav className="d-md-down-none" navbar>
           <NavItem className="px-3">
             <NavLink to="/dashboard" className="nav-link" >Dashboard</NavLink>
           </NavItem>
@@ -38,7 +46,7 @@ class DefaultHeader extends Component {
           <NavItem className="px-3">
             <NavLink to="#" className="nav-link">Settings</NavLink>
           </NavItem>
-        </Nav>*/}
+        </Nav>}*/}
         {/*<Nav className="ml-auto" navbar>
           <NavItem className="d-md-down-none">
             <NavLink to="#" className="nav-link"><i className="icon-bell"></i><Badge pill color="danger">5</Badge></NavLink>

@@ -7,7 +7,6 @@
   margin: 10px 0;
   align-items: center;
 
-
   .buttonBox {
     &:not(:first-child){
       button {
@@ -51,6 +50,13 @@
         margin-right: 5px;
       }
     }
+  }
+
+  &.ribbon {
+    background: #fff;
+    border: 1px solid #c8ced3;
+    margin-top: -1px;
+    padding: 10px;
   }
 }
 

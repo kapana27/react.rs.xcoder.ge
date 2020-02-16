@@ -773,7 +773,7 @@ export default class Warehouse extends Component {
         {this.state.errorDialog.dialog? <ErrorModal text={this.state.errorDialog.text} onClick={()=>this.setState(State('errorDialog',{dialog: false, text: ''},this.state))}/> : ''}
         {this.state.print.modal? <PrintModal text={this.state.print.text} onClick={(action)=> this.clearPrintData(action)}/> : ''}
 
-        <div className="actionButton">
+        <div className="actionButton ribbon">
           <div className="buttonBox" style={{width: '150px'}}>
             <Button label="A" icon="pi pi-home" className={this.state.tab === 11?'':'p-button-secondary'} onClick={()=>this.tabClick(11)}/>
             <Button label="B" icon="pi pi-home" className={this.state.tab === 12?'':'p-button-secondary'} onClick={()=>this.tabClick(12)}/>
@@ -3604,7 +3604,6 @@ export default class Warehouse extends Component {
     http.post('/api/secured/Item/Insert',formData)
       .then(result => {
         if(result.status ===200) {
-          alert("შეინახა წარმატებით");
           this.setState(State('inventor.income.dialog', false, this.state));
           this.onGridReady(this.eventData);
           this.setState(State('print.text','ოპერაცია წარმატებით შესრულდა! გნებავთ ზედდებულის ბეჭდვა?',this.state));

@@ -99,7 +99,7 @@ class Messages extends Component{
               }}
             />:''
         }
-        <div className="actionButton">
+        <div className="actionButton ribbon">
           <div className="buttonBox">
             <Button label="მისაღები" className={this.state.tab === 0?'':'p-button-secondary'} onClick={()=>this.tabClick(0)} />
             <Button label="მიღებული"   className={this.state.tab === 1?'':'p-button-secondary'} onClick={()=>this.tabClick(1)} />

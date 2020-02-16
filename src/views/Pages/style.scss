@@ -15,5 +15,29 @@
       font-family: 'lbet-nus';
     }
   }
+  .main_logo {
+    text-align: center;
+    height: 100%;
+    width: 100%;
+    font-family: 'lbet-mt', sans-serif;
+    padding: 35px;
+
+    margin-left: -1px;
+    word-wrap: break-word;
+    background-color: #f8f8f8;
+    background-clip: border-box;
+    border: 1px solid #c8ced3;
+    border-radius: 0.25rem;
+
+    img {
+      display: inline;
+      width: 150px;
+    }
+    .company {}
+    .name {
+      font-size: 21px;
+      line-height: 20px;
+    }
+  }
 }
 

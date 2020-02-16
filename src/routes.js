@@ -88,7 +88,7 @@ const routes = [
   { path: '/Management/warehouse', name: 'WareHouse', component: WareHouse },
   { path: '/Management/property', name: 'Property', component: Property },
   { path: '/messages', name: 'Message', component: Messages },
-  { path: '/directory', name: 'Directory', component: Messages },
+  { path: '/directory', name: 'Directory', component: Directory },
 ];
 
 export default routes;

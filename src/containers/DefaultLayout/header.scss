@@ -1,0 +1,177 @@
+$navList: (
+  'Management/warehouse',
+  'Management/property',
+  'messages',
+  'directory'
+);
+
+.ribbon {
+  padding: 10px 10px 0 10px;
+  ul.nav {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    //align-items: center;
+    li{
+      display: inherit;
+      font-family: 'BPGArial',sans-serif;
+      border:1px solid rgba(200, 206, 211, 0);
+      //border-bottom: none;
+      border-bottom: 1px solid #c8ced3;
+      a{
+        color: #000;
+        padding: 5px 10px;
+        &:hover {
+          text-decoration: none !important;
+        }
+      }
+      &.active {
+        border:1px solid #c8ced3;
+        background: #fff;
+      }
+    }
+  }
+  /*.cont {
+    height: 50px;
+    background-color: #fff;
+    border: 1px solid #c8ced3;
+    margin-top: -1px !important;
+    border-radius: 2px;
+    padding: 10px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+
+    [data-show] {
+      display: none;
+    }
+  }*/
+}
+
+
+@each $nav in $navList {
+  .ribbon[data-select="#{$nav}"] {
+    [data-active="#{$nav}"] {
+      background: #fff;
+      border:1px solid #c8ced3;
+      border-bottom: none;
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      box-shadow: 0px -3px 5px rgba(0, 0, 0, 0.14);
+    }
+    [data-show="#{$nav}"] {
+      display: block;
+    }
+  }
+}
+
+.actionButton {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+  align-items: center;
+
+
+  .buttonBox {
+    &:not(:first-child){
+      button {
+        min-width: 120px;
+      }
+    }
+    span.p-button-text {
+      font-family: 'lbet-mt',sans-serif!important;
+      font-size: 12px!important;
+    }
+    .pi {
+      font-size: 1em;
+    }
+    &.tf {
+      font-family: 'lbet-mt',sans-serif !important;
+    }
+    &:nth-child(1){
+      display: flex;
+      justify-content: flex-start;
+    }
+    &:nth-child(2){
+      display: flex;
+      justify-content: center;
+    }
+    &:nth-child(3){
+      app-language {
+        span{
+          position: relative !important;
+        }
+      }
+      display: flex; justify-content: flex-end;
+    }
+    button {
+      height: 28.28px;
+      margin: 0 5px;
+    }
+    .cart {
+      display: flex;
+      line-height: 28px;
+      fa-icon {
+        margin-right: 5px;
+      }
+    }
+  }
+}
+
+.user {
+  padding-left: 28px;
+  padding-right: 28px;
+  position: relative;
+  &:before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top:-1px;
+    width: 23px;
+    height: 22px;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAMAAAAMs7fIAAAAwFBMVEVNT1r///9NT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pNT1pc6z7tAAAAP3RSTlMAAAECAwwODxMZHyY0OkRFT1RVV2FiZ2tucnZ8foCBjI2OkJGUlZaaoaasr7S2urvBwsfOz9Db3N3h6Onv9f46MBh6AAAAhklEQVR4AV3I577BQBAH0P+9OkGUIHoR0Yvoxbz/W7HZ+c2S8/FAa+xvQQvKn44JKSszWdLyMlWejozLM5RxeLoyFk9Z5v8exislg1o4fZiB/4k1zFheujiuJHsFnoxP9KjbzplollPTftKXQQxT+rUBRWEZiQBx2x3Nt4fT9XLcLbxmKfEGAcMlAga8LaEAAAAASUVORK5CYII=);
+    background-color: #f5f7f7;
+    border-radius: 50px;
+    //border:1px solid #c1c1c1;
+    background-position: center 3px;
+    background-repeat: no-repeat;
+  }
+  .dr-nav {
+    display: none;
+    padding: 10px;
+    background: #fff;
+    position: absolute;
+    right: 0;
+    top: 30px;
+    width: 200px;
+    border: 1px solid #c8ced3;
+    z-index: 99999;
+    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.72);
+    border-radius: 3px;
+    border-top-right-radius: 5px;
+
+    &:before {
+      position: absolute;
+      content: '';
+      top: -10px;
+      right: 3px;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 10px solid white;
+    }
+
+    button {
+      color: #ffffff;
+      background-color: #e91224;
+      border: 1px solid #e91224;
+      width: 100%;
+      border-radius: 2px;
+      padding: 5px;
+    }
+  }
+  &:hover {
+    .dr-nav {
+      display: block;
+    }
+  }
+}

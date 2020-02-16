@@ -8,5 +8,23 @@
   font-family: 'lbet-mt', sans-serif; }
   .auth button.btn-link {
     font-family: 'lbet-nus'; }
+.auth .main_logo {
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  font-family: 'lbet-mt', sans-serif;
+  padding: 35px;
+  margin-left: -1px;
+  word-wrap: break-word;
+  background-color: #f8f8f8;
+  background-clip: border-box;
+  border: 1px solid #c8ced3;
+  border-radius: 0.25rem; }
+  .auth .main_logo img {
+    display: inline;
+    width: 150px; }
+  .auth .main_logo .name {
+    font-size: 21px;
+    line-height: 20px; }
 
 /*# sourceMappingURL=style.css.map */

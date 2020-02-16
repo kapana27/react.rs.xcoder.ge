@@ -61,35 +61,38 @@ export const Search = (props) => {
             <label>მიმწოდებელი:</label>
             <InputText type="text" value={props.data.supplier} onChange={(e)=>props.onChange(e.target.value,'supplier')}/>
           </div>
-          <div className="p-col-3" style={{maxWidth:'280px',paddingRight:'20px'}}>
-            <label>ფასი: დან-მდე</label>
-            <div className="flex-box">
-              <InputText type="text"  value={props.data.priceFrom} onChange={(e)=>props.onChange(e.target.value,'priceFrom')}/>
-              <InputText type="text" value={props.data.priceTo}  onChange={(e)=>props.onChange(e.target.value,'priceTo')}/>
+          <div className="p-grid">
+            <div className="p-col-4" style={{maxWidth:'280px',paddingRight:'20px'}}>
+              <label>ფასი: დან-მდე</label>
+              <div className="flex-box">
+                <InputText type="text"  value={props.data.priceFrom} onChange={(e)=>props.onChange(e.target.value,'priceFrom')}/>
+                <InputText type="text" value={props.data.priceTo}  onChange={(e)=>props.onChange(e.target.value,'priceTo')}/>
+              </div>
+            </div>
+            <div className="p-col-4" style={{maxWidth:'331px',paddingRight:'20px'}}>
+              <label>თარიღი: დან-მდე</label>
+              <div className="flex-box">
+                <Calendar date={props.data.dateFrom} onDateChange={date =>props.onChange(date,'dateFrom') }/>
+                <Calendar date={props.data.dateTo} onDateChange={date => props.onChange(date,'dateTo')}/>
+              </div>
+            </div>
+            <div className="p-col-4">
+              <label>შტრიხკოდი: დან-მდე</label>
+              <div className="flex-box">
+                <Dropdown
+                  placeholder="შტრიხკოდი"
+                  optionLabel="name"
+                  style={{width:'76px', minWidth:'76px'}}
+                  onChange={(e)=>props.onChange(e.target.value, 'barCodeType')}
+                  value={props.data.barCodeType}
+                  options={props.barcodeTypes}
+                />
+                <InputText type="text" value={props.data.barcodeFrom} onChange={(e)=>props.onChange(e.target.value,'barcodeFrom')}/>
+                <InputText type="text"  value={props.data.barcodeTo} onChange={(e)=>props.onChange(e.target.value,'barcodeTo')}/>
+              </div>
             </div>
           </div>
-          <div className="p-col-3" style={{maxWidth:'331px',paddingRight:'20px'}}>
-            <label>თარიღი: დან-მდე</label>
-            <div className="flex-box">
-              <Calendar date={props.data.dateFrom} onDateChange={date =>props.onChange(date,'dateFrom') }/>
-              <Calendar date={props.data.dateTo} onDateChange={date => props.onChange(date,'dateTo')}/>
-            </div>
-          </div>
-          <div className="p-col-3">
-            <label>შტრიხკოდი: დან-მდე</label>
-            <div className="flex-box">
-              <Dropdown
-                placeholder="შტრიხკოდი"
-                optionLabel="name"
-                style={{width:'76px', minWidth:'76px'}}
-                onChange={(e)=>props.onChange(e.target.value, 'barCodeType')}
-                value={props.data.barCodeType}
-                options={props.barcodeTypes}
-              />
-              <InputText type="text" value={props.data.barcodeFrom} onChange={(e)=>props.onChange(e.target.value,'barcodeFrom')}/>
-              <InputText type="text"  value={props.data.barcodeTo} onChange={(e)=>props.onChange(e.target.value,'barcodeTo')}/>
-            </div>
-          </div>
+
 
           <div  style={{minWidth:'350px',maxWidth:'100%', paddingRight:'20px', paddingTop:'12px',flex:'1'}}>
             <div style={{float:'right'}}>

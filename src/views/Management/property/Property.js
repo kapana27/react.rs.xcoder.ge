@@ -23,6 +23,7 @@ import './property.css';
 import {State, putInCart, clearCartItem, removeCartItem, getCartItems, PrintElem} from '../../../utils';
 import * as moment from "moment";
 import CustomDateComponent from "../../components/CustomDateComponent/CustomDateComponent";
+import {EventEmitter} from "../../../eventEmitter";
 export default class Property extends Component {
   constructor(props){
     super(props);
@@ -608,7 +609,25 @@ export default class Property extends Component {
   }
 
   componentDidMount() {
+    EventEmitter.subscribe('onClickMenu',this.onClickMenu)
   }
+
+
+  onClickMenu=(event)=>{
+    if(event.openTab){
+      this.tabClick(event.openTab);
+    }
+    else if(event.openDialog){
+      switch(event.openDialog) {
+        case'onDisposition':
+          this.onDisposition();
+          break;
+        case'onOutcome':
+          this.onOutcome();
+          break;
+      }
+    }
+  };
   onReady = (params) => {
     this.getCartItems().then(()=>{
       this.onGridReady(params)
@@ -783,7 +802,7 @@ export default class Property extends Component {
         {this.state.print.modal? <ErrorModal text={this.state.errorDialog.text} onClick={()=>this.setState(State('errorDialog',{modal: false, text: ''},this.state))}/> : ''}
         {this.state.print.modal? <PrintModal text={this.state.print.text} onClick={(action)=> this.clearPrintData(action)}/> : ''}
 
-        <div className="actionButton">
+        <div className="actionButton ribbon">
           <div className="buttonBox" style={{width: '150px'}}>
             <Button label="გასანაწილებელი" className={this.state.tab === 21?'':'p-button-secondary'} onClick={()=>this.tabClick(21)} />
             <Button label="განაწილებული"   className={this.state.tab === 22?'':'p-button-secondary'} onClick={()=>this.tabClick(22)} />

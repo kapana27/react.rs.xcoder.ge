@@ -32,6 +32,11 @@
     line-height: 28px; }
     .actionButton .buttonBox .cart fa-icon {
       margin-right: 5px; }
+  .actionButton.ribbon {
+    background: #fff;
+    border: 1px solid #c8ced3;
+    margin-top: -1px;
+    padding: 10px; }
 
 .arrow-icon {
   position: relative;

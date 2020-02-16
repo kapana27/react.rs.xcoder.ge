@@ -2,7 +2,7 @@ import React, { Component, Suspense } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import * as router from 'react-router-dom';
 import { Container } from 'reactstrap';
-
+import http from '../../api/http';
 import {
   AppAside,
   AppFooter,
@@ -23,6 +23,7 @@ import routes from '../../routes';
 const DefaultAside = React.lazy(() => import('./DefaultAside'));
 const DefaultFooter = React.lazy(() => import('./DefaultFooter'));
 const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
+const HeaderNav = React.lazy(() => import('./HeaderNav'));
 
 class DefaultLayout extends Component {
 
@@ -33,16 +34,36 @@ class DefaultLayout extends Component {
     this.props.history.push('/login')
   }
 
+  constructor(props) {
+    super(props);
+    this.state={
+      user:{
+        id:null,
+        username:"",
+        firstName:"",
+        lastName:""
+      }
+    }
+    http.session().then(result => {
+      this.setState({
+        user: result
+      })
+    })
+  }
+
   render() {
     return (
       <div className="app">
-        <AppHeader fixed>
+
+        <HeaderNav {...this.props} router={router} user={this.state.user} />
+
+        {/*<AppHeader fixed>
           <Suspense  fallback={this.loading()}>
-            <DefaultHeader onLogout={e=>this.signOut(e)}/>
+            <DefaultHeader user={this.state.user} onLogout={e=>this.signOut(e)}/>
           </Suspense>
-        </AppHeader>
+        </AppHeader>*/}
         <div className="app-body">
-          <AppSidebar fixed display="lg">
+          {/*<AppSidebar fixed display="lg">
             <AppSidebarHeader />
             <AppSidebarForm />
             <Suspense>
@@ -50,7 +71,7 @@ class DefaultLayout extends Component {
             </Suspense>
             <AppSidebarFooter />
             <AppSidebarMinimizer />
-          </AppSidebar>
+          </AppSidebar>*/}
           <main className="main">
 {/*
             <AppBreadcrumb appRoutes={routes} router={router}/>
@@ -81,11 +102,11 @@ class DefaultLayout extends Component {
             </Suspense>
           </AppAside>
         </div>
-        <AppFooter>
+        {/*<AppFooter>
           <Suspense fallback={this.loading()}>
             <DefaultFooter />
           </Suspense>
-        </AppFooter>
+        </AppFooter>*/}
       </div>
     );
   }
