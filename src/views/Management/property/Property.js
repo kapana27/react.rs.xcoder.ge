@@ -867,9 +867,9 @@ export default class Property extends Component {
                 </li>:''
             }
 
-            <li>
+            <li onClick={()=>this.cartDialog()}>
               <div className="cart_count">
-                <i className="fa fa-cart-plus fa-lg " onClick={()=>this.cartDialog()}/>
+                <i className="fa fa-cart-plus fa-lg"/>
                 <span>{_.size(this.state.cart['tab'+this.state.tab])}</span>
               </div>
               <span>კალათა</span>
