@@ -1,9 +1,9 @@
 .search {
-  background: #dedede;
   padding: 12px 20px;
-  border: 1px solid #ccc;
   margin-bottom: 10px;
-  display: flex; }
+  display: flex;
+  background: #f5f7f7;
+  border: 1px solid #bdc3c7; }
   .search label {
     margin-bottom: 1px;
     font-size: 12px;

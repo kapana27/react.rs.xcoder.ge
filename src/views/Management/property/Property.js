@@ -802,32 +802,80 @@ export default class Property extends Component {
         {this.state.print.modal? <ErrorModal text={this.state.errorDialog.text} onClick={()=>this.setState(State('errorDialog',{modal: false, text: ''},this.state))}/> : ''}
         {this.state.print.modal? <PrintModal text={this.state.print.text} onClick={(action)=> this.clearPrintData(action)}/> : ''}
 
+        {/*<div className="actionButton ribbon">*/}
+        {/*  <div className="buttonBox" style={{width: '150px'}}>*/}
+        {/*    <Button label="გასანაწილებელი" className={this.state.tab === 21?'':'p-button-secondary'} onClick={()=>this.tabClick(21)} />*/}
+        {/*    <Button label="განაწილებული"   className={this.state.tab === 22?'':'p-button-secondary'} onClick={()=>this.tabClick(22)} />*/}
+        {/*  </div>*/}
+        {/*  <div className="buttonBox"></div>*/}
+        {/*  <div className="buttonBox">*/}
+        {/*    {*/}
+        {/*      (this.state.tab === 21)?*/}
+        {/*        <React.Fragment >*/}
+        {/*          <Button label="განპიროვნება" className="p-button-danger" onClick={()=>this.onDisposition()} />*/}
+        {/*          <Button label="ინვ. შებრუნება"  className="ui-button-raised" onClick={()=>this.onOutcome()} />*/}
+        {/*          <Button label="ინვ. მოძრაობა შენობებს შორის"  className="ui-button-raised" onClick={()=>this.onMoveAB()} />*/}
+        {/*        </React.Fragment>*/}
+        {/*        :*/}
+        {/*        <Button label="ინვ. საწყობში დაბრუნება"  className="ui-button-raised" onClick={()=>this.onInverse()} />*/}
+        {/*    }*/}
+        {/*    {*/}
+        {/*      (!this.state.property.search.show)?*/}
+        {/*      <Button label="ძებნა" icon="pi pi-search" style={{minWidth:'115px'}}  onClick={()=>this.setState(State('property.search.show',true,this.state))}/>:''*/}
+        {/*    }*/}
+        {/*    <div className="cart_count">*/}
+        {/*      <i className="fa fa-cart-plus fa-lg " onClick={()=>this.cartDialog()}/>*/}
+        {/*      <span>{_.size(this.state.cart['tab'+this.state.tab])}</span>*/}
+        {/*    </div>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
+
+
         <div className="actionButton ribbon">
           <div className="buttonBox" style={{width: '150px'}}>
             <Button label="გასანაწილებელი" className={this.state.tab === 21?'':'p-button-secondary'} onClick={()=>this.tabClick(21)} />
             <Button label="განაწილებული"   className={this.state.tab === 22?'':'p-button-secondary'} onClick={()=>this.tabClick(22)} />
           </div>
-          <div className="buttonBox"></div>
-          <div className="buttonBox">
+          <ul className="buttonBox">
             {
               (this.state.tab === 21)?
                 <React.Fragment >
-                  <Button label="განპიროვნება" className="p-button-danger" onClick={()=>this.onDisposition()} />
-                  <Button label="ინვ. შებრუნება"  className="ui-button-raised" onClick={()=>this.onOutcome()} />
-                  <Button label="ინვ. მოძრაობა შენობებს შორის"  className="ui-button-raised" onClick={()=>this.onMoveAB()} />
+                  <li onClick={() => this.onDisposition()}>
+                    <i><img src="/assets/Favorites/icons8-sell-50-2.png" /></i>
+                    <span>განპიროვნება</span>
+                  </li>
+                  <li onClick={() => this.onOutcome()}>
+                    <i><img src="/assets/Favorites/icons8-return-50.png" /></i>
+                    <span>ინვ. შებრუნება</span>
+                  </li>
+                  <li onClick={() => this.onMoveAB()}>
+                    <i><img src="/assets/Favorites/icons8-warehouse-50-6.png" /><img src="/assets/Favorites/icons8-replace-50.png" style={{height:'20px',marginTop:'14px'}} /><img src="/assets/Favorites/icons8-warehouse-50-6.png" /></i>
+                    <span>ინვ. მოძრაობა შენობებს შორის</span>
+                  </li>
                 </React.Fragment>
                 :
-                <Button label="ინვ. საწყობში დაბრუნება"  className="ui-button-raised" onClick={()=>this.onInverse()} />
+                <li onClick={() => this.onInverse()}>
+                  <i><img src="/assets/Favorites/icons8-trolley-50.png" /><img src="/assets/Favorites/icons8-undo-50.png" /></i>
+                  <span>ინვ. საწყობში დაბრუნება</span>
+                </li>
             }
             {
               (!this.state.property.search.show)?
-              <Button label="ძებნა" icon="pi pi-search" style={{minWidth:'115px'}}  onClick={()=>this.setState(State('property.search.show',true,this.state))}/>:''
+                <li onClick={()=>this.setState(State('property.search.show',true,this.state))}>
+                  <i><img src="/assets/Favorites/icons8-search-property-50.png" /></i>
+                  <span>ძებნა</span>
+                </li>:''
             }
-            <div className="cart_count">
-              <i className="fa fa-cart-plus fa-lg " onClick={()=>this.cartDialog()}/>
-              <span>{_.size(this.state.cart['tab'+this.state.tab])}</span>
-            </div>
-          </div>
+
+            <li>
+              <div className="cart_count">
+                <i className="fa fa-cart-plus fa-lg " onClick={()=>this.cartDialog()}/>
+                <span>{_.size(this.state.cart['tab'+this.state.tab])}</span>
+              </div>
+              <span>კალათა</span>
+            </li>
+
+          </ul>
         </div>
 
         {(this.state.property.search.show)?

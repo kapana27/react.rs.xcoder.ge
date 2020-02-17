@@ -6,6 +6,8 @@
   justify-content: space-between;
   margin: 10px 0;
   align-items: center; }
+  .actionButton .buttonBox:not(:first-child) button {
+    min-width: 120px; }
   .actionButton .buttonBox span.p-button-text {
     font-family: "lbet-mt", sans-serif !important;
     font-size: 12px !important; }
@@ -36,7 +38,27 @@
     background: #fff;
     border: 1px solid #c8ced3;
     margin-top: -1px;
-    padding: 10px; }
+    padding: 5px; }
+  .actionButton ul.buttonBox {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-family: 'barial',sans-serif; }
+    .actionButton ul.buttonBox li {
+      text-align: center;
+      padding: 10px 8px;
+      border: 1px solid transparent; }
+      .actionButton ul.buttonBox li:hover {
+        cursor: pointer;
+        border-color: #a4cef9;
+        background-color: rgba(164, 206, 249, 0.2); }
+      .actionButton ul.buttonBox li i {
+        display: block;
+        height: 35px; }
+        .actionButton ul.buttonBox li i img {
+          height: 100%; }
+      .actionButton ul.buttonBox li span {
+        font-size: 12px; }
 
 .arrow-icon {
   position: relative;
