@@ -263,5 +263,97 @@
   }
 }
 
+.actionButton {
+  display: flex;
+  justify-content: end;
+  margin: 10px 0;
+  align-items: center;
+
+  .buttonBox {
+    &:not(:first-child){
+      button {
+        min-width: 120px;
+      }
+    }
+    span.p-button-text {
+      font-family: 'lbet-mt',sans-serif!important;
+      font-size: 12px!important;
+    }
+    .pi {
+      font-size: 1em;
+    }
+    &.tf {
+      font-family: 'lbet-mt',sans-serif !important;
+    }
+    &:nth-child(1){
+      display: flex;
+      justify-content: flex-start;
+    }
+    &:nth-child(2){
+      display: flex;
+      justify-content: center;
+      border-left: 1px solid #ccc;
+      padding: 0 1px;
+      border-right: 1px solid #ccc;
+    }
+    &:nth-child(3){
+      padding: 0 1px;
+      border-right: 1px solid #ccc;
+      app-language {
+        span{
+          position: relative !important;
+        }
+      }
+      display: flex; justify-content: flex-end;
+    }
+    button {
+      height: 28.28px;
+      margin: 0 5px;
+    }
+    .cart {
+      display: flex;
+      line-height: 28px;
+      fa-icon {
+        margin-right: 5px;
+      }
+    }
+  }
+
+  &.ribbon {
+    background: #fff;
+    border: 1px solid #c8ced3;
+    margin-top: -1px;
+    padding: 5px;
+  }
+
+  ul.buttonBox {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-family: 'barial',sans-serif;
+    li {
+      //margin: 0 5px;
+      text-align: center;
+      padding: 10px 8px;
+      border: 1px solid transparent;
+      &:hover {
+        cursor: pointer;
+        border-color: #a4cef9;
+        background-color: rgba(164, 206, 249, 0.2);
+      }
+      i{
+        display: block;
+        height: 35px;
+        img {
+          height: 100%;
+        }
+      }
+      span {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
 
 

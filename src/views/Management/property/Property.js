@@ -832,7 +832,7 @@ export default class Property extends Component {
 
 
         <div className="actionButton ribbon">
-          <div className="buttonBox" style={{width: '150px'}}>
+          <div className="buttonBox" style={{width: '250px'}}>
             <Button label="გასანაწილებელი" className={this.state.tab === 21?'':'p-button-secondary'} onClick={()=>this.tabClick(21)} />
             <Button label="განაწილებული"   className={this.state.tab === 22?'':'p-button-secondary'} onClick={()=>this.tabClick(22)} />
           </div>
@@ -849,7 +849,7 @@ export default class Property extends Component {
                     <span>ინვ. შებრუნება</span>
                   </li>
                   <li onClick={() => this.onMoveAB()}>
-                    <i><img src="/assets/Favorites/icons8-warehouse-50-6.png" /><img src="/assets/Favorites/icons8-replace-50.png" style={{height:'20px',marginTop:'14px'}} /><img src="/assets/Favorites/icons8-warehouse-50-6.png" /></i>
+                    <i><img src="/assets/Favorites/icons8-skyscrapers-50.png" /><img src="/assets/Favorites/icons8-replace-50.png" style={{height:'20px',marginTop:'14px'}} /><img src="/assets/Favorites/icons8-skyscrapers-50.png" /></i>
                     <span>ინვ. მოძრაობა შენობებს შორის</span>
                   </li>
                 </React.Fragment>

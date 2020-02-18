@@ -1,38 +1,6 @@
 * {
   outline: none !important; }
 
-.actionButton {
-  display: flex;
-  justify-content: space-between;
-  margin: 10px 0;
-  align-items: center; }
-  .actionButton .buttonBox span.p-button-text {
-    font-family: "lbet-mt", sans-serif !important;
-    font-size: 12px !important; }
-  .actionButton .buttonBox .pi {
-    font-size: 1em; }
-  .actionButton .buttonBox.tf {
-    font-family: 'lbet-mt',sans-serif !important; }
-  .actionButton .buttonBox:nth-child(1) {
-    display: flex;
-    justify-content: flex-start; }
-  .actionButton .buttonBox:nth-child(2) {
-    display: flex;
-    justify-content: center; }
-  .actionButton .buttonBox:nth-child(3) {
-    display: flex;
-    justify-content: flex-end; }
-    .actionButton .buttonBox:nth-child(3) app-language span {
-      position: relative !important; }
-  .actionButton .buttonBox button {
-    height: 28.28px;
-    margin: 0 5px; }
-  .actionButton .buttonBox .cart {
-    display: flex;
-    line-height: 28px; }
-    .actionButton .buttonBox .cart fa-icon {
-      margin-right: 5px; }
-
 .arrow-icon {
   position: relative;
   padding-left: 25px; }

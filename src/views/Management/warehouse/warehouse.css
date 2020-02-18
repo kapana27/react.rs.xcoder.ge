@@ -1,65 +1,6 @@
 * {
   outline: none !important; }
 
-.actionButton {
-  display: flex;
-  justify-content: space-between;
-  margin: 10px 0;
-  align-items: center; }
-  .actionButton .buttonBox:not(:first-child) button {
-    min-width: 120px; }
-  .actionButton .buttonBox span.p-button-text {
-    font-family: "lbet-mt", sans-serif !important;
-    font-size: 12px !important; }
-  .actionButton .buttonBox .pi {
-    font-size: 1em; }
-  .actionButton .buttonBox.tf {
-    font-family: 'lbet-mt',sans-serif !important; }
-  .actionButton .buttonBox:nth-child(1) {
-    display: flex;
-    justify-content: flex-start; }
-  .actionButton .buttonBox:nth-child(2) {
-    display: flex;
-    justify-content: center; }
-  .actionButton .buttonBox:nth-child(3) {
-    display: flex;
-    justify-content: flex-end; }
-    .actionButton .buttonBox:nth-child(3) app-language span {
-      position: relative !important; }
-  .actionButton .buttonBox button {
-    height: 28.28px;
-    margin: 0 5px; }
-  .actionButton .buttonBox .cart {
-    display: flex;
-    line-height: 28px; }
-    .actionButton .buttonBox .cart fa-icon {
-      margin-right: 5px; }
-  .actionButton.ribbon {
-    background: #fff;
-    border: 1px solid #c8ced3;
-    margin-top: -1px;
-    padding: 5px; }
-  .actionButton ul.buttonBox {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    font-family: 'barial',sans-serif; }
-    .actionButton ul.buttonBox li {
-      text-align: center;
-      padding: 10px 8px;
-      border: 1px solid transparent; }
-      .actionButton ul.buttonBox li:hover {
-        cursor: pointer;
-        border-color: #a4cef9;
-        background-color: rgba(164, 206, 249, 0.2); }
-      .actionButton ul.buttonBox li i {
-        display: block;
-        height: 35px; }
-        .actionButton ul.buttonBox li i img {
-          height: 100%; }
-      .actionButton ul.buttonBox li span {
-        font-size: 12px; }
-
 .arrow-icon {
   position: relative;
   padding-left: 25px; }

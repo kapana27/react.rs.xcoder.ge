@@ -20,9 +20,6 @@ export const Search = (props) => {
           <div className="p-col-3">
             <label>დასახელება:</label>
             <InputText type="text" value={props.data.name} onChange={(e)=>props.onChange(e.target.value,'name')} />
-          </div><div className="p-col-3">
-            <label>დასახელება:</label>
-            <InputText type="text" value={props.data.name} onChange={(e)=>props.onChange(e.target.value,'name')} />
           </div>
           <div className="p-col-3">
             <label>მარკა:</label>

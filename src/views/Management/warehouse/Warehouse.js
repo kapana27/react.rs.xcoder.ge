@@ -799,7 +799,7 @@ export default class Warehouse extends Component {
         {/*</div>*/}
 
         <div className="actionButton ribbon">
-          <div className="buttonBox" style={{width: '150px'}}>
+          <div className="buttonBox" style={{width: '125px'}}>
             <Button label="A" icon="pi pi-home" className={this.state.tab === 11?'':'p-button-secondary'} onClick={()=>this.tabClick(11)}/>
             <Button label="B" icon="pi pi-home" className={this.state.tab === 12?'':'p-button-secondary'} onClick={()=>this.tabClick(12)}/>
           </div>
