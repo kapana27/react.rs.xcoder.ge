@@ -889,25 +889,30 @@ export default class Property extends Component {
             }}
             onFilter={()=>this.onGridReady(this.eventData,true)}
             onClick={()=>this.setState(State('property.search.show',false,this.state))}
-            onClear={()=>this.setState(State('property.search.data',{
-              name:"",
-              maker:"",
-              model:"",
-              price:"",
-              amount:"",
-              measureUnit:"",
-              barcode:"",
-              factoryNumber:"",
-              itemGroup:"",
-              itemType:"",
-              itemStatus:"",
-              supplier:"",
-              invoice:"",
-              invoiceAddon:"",
-              inspectionNumber:"",
-              dateFrom:'',
-              dateTo:''
-            },this.state))}
+            onClear={()=>
+            {
+              this.onReady(this.eventData);
+              this.setState(State('property.search.data',{
+                name:"",
+                maker:"",
+                model:"",
+                price:"",
+                amount:"",
+                measureUnit:"",
+                barcode:"",
+                factoryNumber:"",
+                itemGroup:"",
+                itemType:"",
+                itemStatus:"",
+                supplier:"",
+                invoice:"",
+                invoiceAddon:"",
+                inspectionNumber:"",
+                dateFrom:'',
+                dateTo:''
+              },this.state))
+            }
+            }
           />:''}
 
         <div id="myGrid" className="ag-theme-balham" >

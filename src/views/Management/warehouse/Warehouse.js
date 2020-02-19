@@ -855,25 +855,30 @@ export default class Warehouse extends Component {
             }}
             onFilter={()=>this.onGridReady(this.eventData,true)}
             onClick={()=>this.setState(State('inventor.search.show',false,this.state))}
-            onClear={()=>this.setState(State('inventor.search.data',{
-              name:"",
-              maker:"",
-              model:"",
-              price:"",
-              amount:"",
-              measureUnit:"",
-              barcode:"",
-              factoryNumber:"",
-              itemGroup:"",
-              itemType:"",
-              itemStatus:"",
-              supplier:"",
-              invoice:"",
-              invoiceAddon:"",
-              inspectionNumber:"",
-              dateFrom:'',
-              dateTo:''
-            },this.state))}
+            onClear={()=>
+             {
+               this.onReady(this.eventData);
+               this.setState(State('inventor.search.data',{
+                 name:"",
+                 maker:"",
+                 model:"",
+                 price:"",
+                 amount:"",
+                 measureUnit:"",
+                 barcode:"",
+                 factoryNumber:"",
+                 itemGroup:"",
+                 itemType:"",
+                 itemStatus:"",
+                 supplier:"",
+                 invoice:"",
+                 invoiceAddon:"",
+                 inspectionNumber:"",
+                 dateFrom:'',
+                 dateTo:''
+               },this.state))
+             }
+            }
           />
           :''}
         <div

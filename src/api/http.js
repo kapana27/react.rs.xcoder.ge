@@ -1,5 +1,5 @@
 import axios from 'axios';
-export const PREFIX = '';
+export const PREFIX = '/rs';
 axios.create({
   baseURL: '/',
 });
@@ -47,7 +47,7 @@ const post = (uri, formData) => {
 };
 const session=()=>{
   return new Promise((resolve, reject) => {
-    get(PREFIX + "/api/secured/ping")
+    get("/api/secured/ping")
       .then((response) => {
         resolve(response.data);
       })
@@ -58,7 +58,7 @@ const session=()=>{
         }, 100)
       });
   })
-}
+};
 export default {
   get,
   post,

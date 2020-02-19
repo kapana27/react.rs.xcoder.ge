@@ -23,7 +23,7 @@ class HeaderNav extends Component {
               <div className="user">
                 {this.props.user.firstName} {this.props.user.lastName}
                 <div className="dr-nav">
-                  <button>გამოსვლა</button>
+                  <button onClick={()=>this.props.onLogout()}>გამოსვლა</button>
                 </div>
               </div>
             </li>
