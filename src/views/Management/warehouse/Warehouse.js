@@ -773,31 +773,6 @@ export default class Warehouse extends Component {
         {this.state.errorDialog.dialog? <ErrorModal text={this.state.errorDialog.text} onClick={()=>this.setState(State('errorDialog',{dialog: false, text: ''},this.state))}/> : ''}
         {this.state.print.modal? <PrintModal text={this.state.print.text} onClick={(action)=> this.clearPrintData(action)}/> : ''}
 
-        {/*<div className="actionButton ribbon">*/}
-        {/*  <div className="buttonBox" style={{width: '150px'}}>*/}
-        {/*    <Button label="A" icon="pi pi-home" className={this.state.tab === 11?'':'p-button-secondary'} onClick={()=>this.tabClick(11)}/>*/}
-        {/*    <Button label="B" icon="pi pi-home" className={this.state.tab === 12?'':'p-button-secondary'} onClick={()=>this.tabClick(12)}/>*/}
-        {/*  </div>*/}
-        {/*  <div className="buttonBox">*/}
-        {/*    <Button label="ინვ.მიღება" icon="pi pi-plus" onClick={() => this.onInventorIncome()}/>*/}
-        {/*    <Button label="ზედ.მიღება" icon="pi pi-plus" onClick={() => this.onOverheadIncome()}/>*/}
-        {/*    <Button label="რედაქტირება" icon="pi pi-pencil" onClick={()=>this.edit()}/>*/}
-        {/*  </div>*/}
-        {/*  <div className="buttonBox">*/}
-        {/*    <Button label="ინვენტარის გაცემა" icon="pi pi-arrow-up" className="p-button-danger" onClick={() => this.onInventorOutcome()}/>*/}
-        {/*    <Button label="მოძრაობა A-B" className="ui-button-raised arrow-icon" onClick={()=>this.onTransfer()} style={{width:'140px'}}/>*/}
-        {/*    {*/}
-        {/*      (!this.state.inventor.search.show)?*/}
-        {/*        <Button label="ძებნა" icon="pi pi-search"*/}
-        {/*                onClick={()=>this.setState(State('inventor.search.show',true,this.state))}/>:''*/}
-        {/*    }*/}
-        {/*    <div className="cart_count">*/}
-        {/*      <i className="fa fa-cart-plus fa-lg " onClick={()=>this.cartDialog()}/>*/}
-        {/*      <span>{_.size(this.state.cart['tab'+this.state.tab])}</span>*/}
-        {/*    </div>*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-
         <div className="actionButton ribbon">
           <div className="buttonBox" style={{width: '125px'}}>
             <Button label="A" icon="pi pi-home" className={this.state.tab === 11?'':'p-button-secondary'} onClick={()=>this.tabClick(11)}/>
@@ -826,15 +801,10 @@ export default class Warehouse extends Component {
               <i><img src="/assets/Favorites/icons8-separate-document-50.png" /></i>
               <span>მოძრაობა A-B</span>
             </li>
-
-            {
-              (!this.state.inventor.search.show)?
-                <li onClick={()=>this.setState(State('inventor.search.show',true,this.state))}>
-                  <i><img src="/assets/Favorites/icons8-search-property-50.png" /></i>
-                  <span>ძებნა</span>
-                </li>:''
-            }
-
+            <li onClick={()=>this.state.inventor.search.show? this.setState(State('inventor.search.show',false,this.state)) : this.setState(State('inventor.search.show',true,this.state))}>
+              <i><img src="/assets/Favorites/icons8-search-property-50.png" /></i>
+              <span>ძებნა</span>
+            </li>
             <li onClick={()=>this.cartDialog()}>
               <div className="cart_count">
                 <i className="fa fa-cart-plus fa-lg" />

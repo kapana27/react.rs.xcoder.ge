@@ -400,11 +400,11 @@ export default class Property extends Component {
               return params['data']['tmpAmount'] > 0;
             } catch (e) {}
           },
-          'ag-gray': function(params) {
-            try {
-              return params['data']['tmpAmount'] === 0 && (params['data']['initialAmount'] !== params['data']['amount']);
-            } catch (e) {}
-          }
+          //'ag-gray': function(params) {
+          //  try {
+          //    return params['data']['tmpAmount'] === 0 && (params['data']['initialAmount'] !== params['data']['amount']);
+          //  } catch (e) {}
+          //}
         },
         rowSelection: 'single',
         rowModelType:'serverSide',
@@ -802,35 +802,6 @@ export default class Property extends Component {
         {this.state.print.modal? <ErrorModal text={this.state.errorDialog.text} onClick={()=>this.setState(State('errorDialog',{modal: false, text: ''},this.state))}/> : ''}
         {this.state.print.modal? <PrintModal text={this.state.print.text} onClick={(action)=> this.clearPrintData(action)}/> : ''}
 
-        {/*<div className="actionButton ribbon">*/}
-        {/*  <div className="buttonBox" style={{width: '150px'}}>*/}
-        {/*    <Button label="გასანაწილებელი" className={this.state.tab === 21?'':'p-button-secondary'} onClick={()=>this.tabClick(21)} />*/}
-        {/*    <Button label="განაწილებული"   className={this.state.tab === 22?'':'p-button-secondary'} onClick={()=>this.tabClick(22)} />*/}
-        {/*  </div>*/}
-        {/*  <div className="buttonBox"></div>*/}
-        {/*  <div className="buttonBox">*/}
-        {/*    {*/}
-        {/*      (this.state.tab === 21)?*/}
-        {/*        <React.Fragment >*/}
-        {/*          <Button label="განპიროვნება" className="p-button-danger" onClick={()=>this.onDisposition()} />*/}
-        {/*          <Button label="ინვ. შებრუნება"  className="ui-button-raised" onClick={()=>this.onOutcome()} />*/}
-        {/*          <Button label="ინვ. მოძრაობა შენობებს შორის"  className="ui-button-raised" onClick={()=>this.onMoveAB()} />*/}
-        {/*        </React.Fragment>*/}
-        {/*        :*/}
-        {/*        <Button label="ინვ. საწყობში დაბრუნება"  className="ui-button-raised" onClick={()=>this.onInverse()} />*/}
-        {/*    }*/}
-        {/*    {*/}
-        {/*      (!this.state.property.search.show)?*/}
-        {/*      <Button label="ძებნა" icon="pi pi-search" style={{minWidth:'115px'}}  onClick={()=>this.setState(State('property.search.show',true,this.state))}/>:''*/}
-        {/*    }*/}
-        {/*    <div className="cart_count">*/}
-        {/*      <i className="fa fa-cart-plus fa-lg " onClick={()=>this.cartDialog()}/>*/}
-        {/*      <span>{_.size(this.state.cart['tab'+this.state.tab])}</span>*/}
-        {/*    </div>*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-
-
         <div className="actionButton ribbon">
           <div className="buttonBox" style={{width: '250px'}}>
             <Button label="გასანაწილებელი" className={this.state.tab === 21?'':'p-button-secondary'} onClick={()=>this.tabClick(21)} />
@@ -859,14 +830,11 @@ export default class Property extends Component {
                   <span>ინვ. საწყობში დაბრუნება</span>
                 </li>
             }
-            {
-              (!this.state.property.search.show)?
-                <li onClick={()=>this.setState(State('property.search.show',true,this.state))}>
-                  <i><img src="/assets/Favorites/icons8-search-property-50.png" /></i>
-                  <span>ძებნა</span>
-                </li>:''
-            }
 
+            <li onClick={()=>this.state.property.search.show? this.setState(State('property.search.show',false,this.state)) : this.setState(State('property.search.show',true,this.state))}>
+              <i><img src="/assets/Favorites/icons8-search-property-50.png" /></i>
+              <span>ძებნა</span>
+            </li>
             <li onClick={()=>this.cartDialog()}>
               <div className="cart_count">
                 <i className="fa fa-cart-plus fa-lg"/>

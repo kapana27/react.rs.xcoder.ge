@@ -7,6 +7,7 @@ $navList: (
 
 .ribbon {
   padding: 10px 10px 0 10px;
+  background: #2d93e2;
   ul.nav {
     list-style: none;
     padding: 0;
@@ -20,7 +21,7 @@ $navList: (
       //border-bottom: none;
       border-bottom: 1px solid #c8ced3;
       a{
-        color: #000;
+        color: #fff;
         padding: 5px 10px;
         &:hover {
           text-decoration: none !important;
@@ -58,9 +59,11 @@ $navList: (
       border-top-left-radius: 3px;
       border-top-right-radius: 3px;
       box-shadow: 0px -3px 5px rgba(0, 0, 0, 0.14);
+      a {color: #000;}
     }
     [data-show="#{$nav}"] {
       display: block;
+
     }
   }
 }
@@ -71,6 +74,7 @@ $navList: (
   padding-left: 28px;
   padding-right: 28px;
   position: relative;
+  color: #fff;
   &:before {
     content: '';
     position: absolute;
