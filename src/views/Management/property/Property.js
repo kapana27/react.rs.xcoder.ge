@@ -1,7 +1,20 @@
 import React, { Component } from 'react';
 import http, {PREFIX} from '../../../api/http';
 import {Config} from "../../../config/Config";
-import {CardCellRenderer, Modal, Calendar, AutoComplete, FileUploader, Cart, Search, Overhead, ErrorModal, PrintModal} from '../../components'
+import {
+  CardCellRenderer,
+  Modal,
+  Calendar,
+  AutoComplete,
+  FileUploader,
+  Cart,
+  Search,
+  Overhead,
+  ErrorModal,
+  PrintModal,
+  PrintContent,
+  PrintGridData
+} from '../../components'
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
@@ -467,6 +480,17 @@ export default class Property extends Component {
           comment: "",
           files:[],
         },
+        // ინვენტარის შებრუნება
+        invReturn: {
+          expand: false,
+          dialog: false,
+          date: new Date(),
+          comment: "",
+          transPerson: "",
+          propertyManagement: "",
+          requestPerson: "",
+          files:[],
+        },
         search: {
           show: false,
           data: {
@@ -474,9 +498,13 @@ export default class Property extends Component {
             maker:"",
             model:"",
             price:"",
+            priceFrom:"",
+            priceTo:"",
             amount:"",
             measureUnit:"",
             barcode:"",
+            barcodeFrom:"",
+            barcodeTo:"",
             factoryNumber:"",
             itemGroup:"",
             itemType:"",
@@ -517,6 +545,7 @@ export default class Property extends Component {
       print: {
         dialog:false,
         modal:false,
+        method:'',
         text:'',
         title:'',
         // cart data before clearCarts
@@ -526,6 +555,7 @@ export default class Property extends Component {
         },
         // print data key->value
         data: {},
+        newData: [],
         //overhead info -> title,lastCode
         overhead: {
           title:'',
@@ -555,6 +585,12 @@ export default class Property extends Component {
         action: function () {
           window.open( PREFIX+'/api/secured/Item/'+((params.context.thisComponent.state.tab===21)?'Section/Out/Export':'Section/In/Export')+'?filter=' +encodeURIComponent(localStorage.getItem('filter'))+"&list="+_.map(params.context.thisComponent.state.cart['tab' + params.context.thisComponent.state.tab],(value,index)=>index).join(","), '_blank');
 
+        }
+      },
+      {
+        name: 'ბეჭდვა',
+        action: function () {
+          params.context.thisComponent.printGridData();
         }
       },
       'separator',
@@ -701,6 +737,9 @@ export default class Property extends Component {
         http.get(Config.management.property.get[tab]+"?stockId="+tab+"&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
           .then(response => {
             if (response.status === 200) {
+
+              localStorage.setItem("totalCount",response['totalCount']);
+
               params.successCallback(response['data'].map((v, k) => {
                 v['rowId'] = (params['request']['startRow'] + 1 + k );
                 if(v.barCodeType){
@@ -766,14 +805,46 @@ export default class Property extends Component {
     this.setState(State('errorDialog',{modal:true, text: error},this.state));
   };
 
+  printGridData = () => {
+    this.setState(State('print.method','gridData',this.state));
+    let c = localStorage.getItem('totalCount');
+    if(_.size(this.state.cart['tab'+this.state.tab]) > 0){
+      c = _.size(this.state.cart['tab'+this.state.tab]);
+      this.setState(State('print.text','დასაბეჭდი მონაცემბის შეადგენს '+c+' გნებავთ გაგრძელება',this.state));
+    }else{
+      this.setState(State('print.text','დასაბეჭდი მონაცემბის შეადგენს '+c+' გნებავთ გაგრძელება',this.state));
+    }
+    this.setState(State('print.modal',true,this.state));
+  };
+
   clearPrintData = (action) => {
     if(action === 'print'){
+      let url = "/api/secured/TransferOperation/Print?id="+this.state.print.overhead.lastCode;
+      if(this.state.print.method === "gridData"){
+        if(this.state.tab === 11 || this.state.tab === 12){
+          url = "/api/secured/Print/Stock/Item?stockId="+this.state.tab+'&filter=' +encodeURIComponent(localStorage.getItem('filter'))+"&list="+_.map(this.state.cart['tab' + this.state.tab],(value,index)=>index).join(",");
+        }else if(this.state.tab === 21){
+          url = "/api/secured/Print/Section/Out/Item?"+'filter=' +encodeURIComponent(localStorage.getItem('filter'))+"&list="+_.map(this.state.cart['tab' + this.state.tab],(value,index)=>index).join(",");
+        }else if(this.state.tab === 22){
+          url = "/api/secured/Print/Section/In/Item?"+'filter=' +encodeURIComponent(localStorage.getItem('filter'))+"&list="+_.map(this.state.cart['tab' + this.state.tab],(value,index)=>index).join(",");
+        }
+      }
       this.setState(State('print.modal',false,this.state));
-      this.setState(State('print.dialog',true,this.state));
+      http.get(url)
+        .then(result => {
+          if (result.status === 200) {
+            this.setState(State('print.newData',result.data,this.state));
+            this.setState(State('print.dialog',true,this.state));
+          } else {
+            this.error(result.error);
+          }
+        })
+        .catch(reason => this.error(reason.error) );
     }else{
       this.setState(State('print',{
         dialog:false,
         modal:false,
+        method:'',
         text:'',
         title:'',
         cart: {
@@ -781,6 +852,7 @@ export default class Property extends Component {
           tab22:[],
         },
         data: {},
+        newData: {},
         overhead: {
           title:'',
           lastCode:''
@@ -788,6 +860,7 @@ export default class Property extends Component {
       },this.state));
     }
   };
+
   openPrintMode=()=>{
     PrintElem(this.dispositionRef);
     this.clearPrintData('cancel');
@@ -816,8 +889,8 @@ export default class Property extends Component {
                     <span>განპიროვნება</span>
                   </li>
                   <li onClick={() => this.onOutcome()}>
-                    <i><img src="/assets/Favorites/icons8-return-50.png" /></i>
-                    <span>ინვ. შებრუნება</span>
+                    <i><img src="/assets/Favorites/icons8-trolley-50.png" /><img src="/assets/Favorites/icons8-undo-50.png" /></i>
+                    <span>ინვ. საწყობში შებრუნება</span>
                   </li>
                   <li onClick={() => this.onMoveAB()}>
                     <i><img src="/assets/Favorites/icons8-skyscrapers-50.png" /><img src="/assets/Favorites/icons8-replace-50.png" style={{height:'20px',marginTop:'14px'}} /><img src="/assets/Favorites/icons8-skyscrapers-50.png" /></i>
@@ -825,10 +898,16 @@ export default class Property extends Component {
                   </li>
                 </React.Fragment>
                 :
-                <li onClick={() => this.onInverse()}>
-                  <i><img src="/assets/Favorites/icons8-trolley-50.png" /><img src="/assets/Favorites/icons8-undo-50.png" /></i>
-                  <span>ინვ. საწყობში დაბრუნება</span>
-                </li>
+                <React.Fragment >
+                  <li onClick={() => this.onInverse()}>
+                    <i><img src="/assets/Favorites/icons8-trolley-50.png" /><img src="/assets/Favorites/icons8-undo-50.png" /></i>
+                    <span>ინვ. საწყობში დაბრუნება</span>
+                  </li>
+                  <li onClick={() => this.onInventorReturn()}>
+                    <i><img src="/assets/Favorites/icons8-return-50.png" /></i>
+                    <span>ინვ. შებრუნება</span>
+                  </li>
+                </React.Fragment>
             }
 
             <li onClick={()=>this.state.property.search.show? this.setState(State('property.search.show',false,this.state)) : this.setState(State('property.search.show',true,this.state))}>
@@ -843,6 +922,12 @@ export default class Property extends Component {
               <span>კალათა</span>
             </li>
 
+          </ul>
+          <ul className="buttonBox">
+            <li onClick={() => this.printGridData()}>
+              <i><img src="/assets/Favorites/icons8-print-50.png" /></i>
+              <span>ბეჭდვა</span>
+            </li>
           </ul>
         </div>
 
@@ -865,9 +950,13 @@ export default class Property extends Component {
                 maker:"",
                 model:"",
                 price:"",
+                priceFrom:"",
+                priceTo:"",
                 amount:"",
                 measureUnit:"",
                 barcode:"",
+                barcodeFrom:"",
+                barcodeTo:"",
                 factoryNumber:"",
                 itemGroup:"",
                 itemType:"",
@@ -921,14 +1010,21 @@ export default class Property extends Component {
           }>
 
           <div ref={(ref)=>this.dispositionRef=ref}>
-              {_.map(this.state.print.data,(item, key) =>
-                <div><b>{key}:</b>&nbsp;{item}</div>
-              )}
+            {/*{_.map(this.state.print.data,(item, key) =>
+              <div><b>{key}:</b>&nbsp;{item}</div>
+            )}*/}
+            {
+              this.state.print.dialog?
+                <div className="expand_mode">
+                  {
+                    this.state.print.method === 'gridData'?
+                      <PrintGridData method={this.state.print.method} newData={this.state.print.newData} title={this.state.print.overhead.title} carts={this.state.print.cart} tab={this.state.tab}  newCode={this.state.print.overhead.lastCode}/>
+                      :
+                      <PrintContent method={this.state.print.method} newData={this.state.print.newData} title={this.state.print.overhead.title} carts={this.state.print.cart} tab={this.state.tab}  newCode={this.state.print.overhead.lastCode}/>
+                  }
 
-            <div className="expand_mode">
-              <Overhead title={this.state.print.overhead.title} carts={this.state.print.cart} tab={this.state.tab}  newCode={this.state.print.overhead.lastCode}/>
-            </div>
-
+                </div> : ''
+            }
           </div>
         </Modal>
 
@@ -1085,6 +1181,80 @@ export default class Property extends Component {
           }
         </Modal>
 
+
+        <Modal
+          header="ინვენტარის შებრუნება" visible={this.state.property.invReturn.dialog} onHide={()=>this.resetModalParam('invReturn')} style={{width:'900px'}}
+          footer = {
+            <div className="dialog_footer">
+              <div className="left_side">
+                <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
+                <Button label="დოკუმენტები" className="ui-button-raised"/>
+              </div>
+              {
+                (!this.state.property.invReturn.expand)?
+                  <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.onInventorReturnOverhead()} />
+                  :
+                  <React.Fragment>
+                    <span className="last_code">ბოლო კოდი - {this.state.property.lastCode} </span>
+                    <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.onInventorReturnActiveOverhead()}/>
+                  </React.Fragment>
+              }
+              <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.resetModalParam('invReturn')} />
+            </div>
+          }>
+          {
+            (this.state.property.invReturn.expand)?
+              <div className="expand_mode">
+                <Overhead title="თანამშრომლის გასავლის ელ.ზედდებული თ.გ - " carts={this.state.cart} tab={this.state.tab}  newCode={this.state.property.newCode} onChange={e=>this.setState(State('property.newCode',e.target.value,this.state))}/>
+              </div>
+              :
+              <div className="incomeModal p-grid">
+                <div className="fullwidth p-col-12">
+                  <div className="p-grid">
+                    <div className="fullwidth p-col-4">
+                      <label>თარიღი</label>
+                      <Calendar date={this.state.property.invReturn.date} onDateChange={props=>this.setState(State('property.invReturn.date',props,this.state)) } />
+                    </div>
+                    <div className="fullwidth p-col-4">
+                      <label>ქონების მართვა</label>
+                      <Dropdown value={this.state.property.invReturn.propertyManagement}  onMouseDown={(e)=>this.propertyManagement()} options={this.state.property.propertyManagementList} onChange={(e) => this.setState(State("property.invReturn.propertyManagement",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="" style={{width:'100%'}} />
+                    </div>
+                    <div className="fullwidth p-col-4">
+                      <label>ტრანსპორტ. პასხ. პირი:</label>
+                      <AutoComplete
+                        field="fullName"
+                        suggestions={this.state.property.transPersonList}
+                        onComplete={(e) => this.transPersonList(e)}
+                        onSelect={(e)=>this.setState(State('property.invReturn.transPerson',e,this.state))}
+                        onChange={(e) => this.setState(State('property.invReturn.transPerson',e,this.state))}
+                        value={this.state.property.invReturn.transPerson}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="fullwidth p-col-12">
+                  <label>კომენტარი</label>
+                  <InputTextarea value={this.state.property.invReturn.comment} onChange = {(e)=>this.setState(State('property.invReturn.comment',e.target.value,this.state))} rows={1} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
+                </div>
+                <Cart
+                  onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
+                  data={this.state.cart['tab'+this.state.tab]}
+                  onChangeAmount={e=>{
+                    let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
+                    if(e.count>data.amount){
+                      e.count=data.amount;
+                    }else if(e.count < 1){
+                      e.count = 1;
+                    }
+                    data.count = e.count;
+                    this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
+                  }}
+                />
+              </div>
+          }
+        </Modal>
+
+
         <Modal
           header="ინვენტარის მოძრაობა შენობებს შორის" visible={this.state.property.movAB.dialog} onHide={()=>this.resetModalParam('movAB')} style={{width:'900px'}}
           footer = {
@@ -1191,7 +1361,7 @@ export default class Property extends Component {
           {
             (this.state.property.inverse.expand)?
               <div className="expand_mode">
-                <Overhead title="ქონების მართვის გასავლის ელ. ზედდებული ქ.გ - " carts={this.state.cart} tab={this.state.tab}  newCode={this.state.property.newCode} onChange={e=>this.setState(State('property.newCode',e.target.value,this.state))}/>
+                <Overhead title="თანამშრომლის გასავლის ელ.ზედდებული თ.გ - " carts={this.state.cart} tab={this.state.tab}  newCode={this.state.property.newCode} onChange={e=>this.setState(State('property.newCode',e.target.value,this.state))}/>
               </div>
               :
               <div className="incomeModal p-grid">
@@ -1375,7 +1545,7 @@ export default class Property extends Component {
       this.setState(State('property.'+modal+'.stockMan','',this.state));
       this.setState(State('property.'+modal+'.section','',this.state));
     }
-    if(modal === 'movAB') {
+    if(modal === 'movAB' || modal === 'invReturn') {
       this.setState(State('property.'+modal+'.transPerson','',this.state));
       this.setState(State('property.'+modal+'.propertyManagement','',this.state));
       this.setState(State('property.'+modal+'.requestPerson','',this.state));
@@ -1661,6 +1831,7 @@ export default class Property extends Component {
     this.setState(State('property.movAB.expand',true,this.state));
     this.getCode('new');
   };
+
   onMoveAB = (event) => {
     this.resetModalParam('movAB');
     this.getCode('last');
@@ -1681,6 +1852,7 @@ export default class Property extends Component {
       .catch(reason => this.error(reason.error) );
   };
   // </editor-fold>
+
 
   // <editor-fold defaultstate="collapsed" desc="ინვენტარის საწყობში დაბრუნება მოდალი">
   inverseActiveOverhead() {
@@ -1718,7 +1890,7 @@ export default class Property extends Component {
       'კომენტარი': this.state.property.inverse.comment
     },this.state));
 
-    http.post("/api/secured/Item/Stock/Return",formData)
+    http.post("/api/secured/Item/Staff/Stock/Return",formData)
       .then(result => {
         if (result.status === 200) {
           this.removeCartItem();
@@ -1761,4 +1933,71 @@ export default class Property extends Component {
   cartDialog=()=> {
     this.setState(State('cart.dialog',true,this.state))
   };
+
+
+  // <editor-fold defaultstate="collapsed" desc="ინვენტარის შებრუნება">
+  onInventorReturnActiveOverhead() {
+    let formData = new FormData();
+
+    formData.append('note', this.state.property.invReturn.comment);
+    formData.append('addon', this.state.property.newCode);
+    formData.append('trDate',moment(this.state.property.invReturn.date).format('DD-MM-YYYY'));
+
+    formData.append('carrierPerson', this.state.property.invReturn.transPerson.id); // ტრანსპორტ. პასხ. პირი:
+    formData.append('toWhomSection', this.state.property.invReturn.propertyManagement.id); // ქონების მართვა
+    formData.append('requestPerson', this.state.property.invReturn.requestPerson.id); // მომთხოვნი პიროვნება
+
+    formData.append('files', this.state.property.invReturn.files);
+    formData.append('list', JSON.stringify(_.map(this.state.cart["tab"+this.state.tab], value => {
+      let val =  JSON.parse(value);
+      return {
+        itemId: val.id,
+        amount: val.count,
+        list:""
+      }
+    })));
+
+    // prepear print data
+    this.setState(State('print.cart.tab'+this.state.tab,this.state.cart['tab'+this.state.tab],this.state));
+    this.setState(State('print.title','განპიროვნება',this.state));
+    this.setState(State('print.overhead',{
+      title:'ქონების მართვის გასავლის ელ. ზედდებული ქ.გ - ',
+      lastCode: this.state.property.newCode
+    },this.state));
+    this.setState(State('print.data',{
+      'თარიღი': moment(this.state.property.invReturn.date).format('DD-MM-YYYY'),
+      'ქონების მართვა': this.state.property.invReturn.propertyManagement.name,
+      'მომთხოვნი პიროვნება':this.state.property.invReturn.requestPerson.fullName,
+      'ტრანსპორტ. პასხ. პირი':this.state.property.invReturn.transPerson.fullName,
+      'კომენტარი': this.state.property.invReturn.comment
+    },this.state));
+
+    http.post("/api/secured/Item/Property/Transfer",formData)
+      .then(result => {
+        if (result.status === 200) {
+          this.removeCartItem();
+          this.resetModalParam('invReturn');
+          this.onReady(this.eventData);
+          this.setState(State('print.text','ოპერაცია წარმატებით შესრულდა! გნებავთ ზედდებულის ბეჭდვა?',this.state));
+          this.setState(State('print.modal',true,this.state));
+        }else{
+          this.error(result.error);
+        }
+      })
+      .catch(reason => this.error(reason.error) );
+  }
+
+  onInventorReturnOverhead() {
+    this.setState(State('property.invReturn.expand',true,this.state));
+    this.getCode('new');
+  };
+
+  onInventorReturn = (event) => {
+    this.resetModalParam('invReturn');
+    this.getCode('last');
+    this.setState(State('property.invReturn.dialog',true,this.state));
+  };
+  // </editor-fold>
+
+
 }

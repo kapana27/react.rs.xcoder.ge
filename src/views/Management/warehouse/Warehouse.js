@@ -9,7 +9,7 @@ import {
   FileUploader,
   Cart,
   TreeTableGroup,
-  Search, Overhead, ErrorModal, PrintModal,
+  Search, Overhead, ErrorModal, PrintModal,PrintContent,PrintGridData
 } from '../../components'
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -424,9 +424,13 @@ export default class Warehouse extends Component {
             maker:"",
             model:"",
             price:"",
+            priceFrom:"",
+            priceTo:"",
             amount:"",
             measureUnit:"",
             barcode:"",
+            barcodeFrom:"",
+            barcodeTo:"",
             factoryNumber:"",
             itemGroup:"",
             itemType:"",
@@ -493,6 +497,7 @@ export default class Warehouse extends Component {
       print: {
         dialog:false,
         modal:false,
+        method:'', // default print, print gridData
         text:'',
         title:'',
         // cart data before clearCarts
@@ -502,6 +507,7 @@ export default class Warehouse extends Component {
         },
         // print data key->value
         data: {},
+        newData: [],
         //overhead info -> title,lastCode
         overhead: {
           title:'',
@@ -512,6 +518,7 @@ export default class Warehouse extends Component {
     this.loadConstructor();
   }
   getContextMenuItems=(params)=>{
+
     return  [
       'copy', 'copyWithHeaders', 'paste', 'separator',
       {
@@ -520,6 +527,12 @@ export default class Warehouse extends Component {
           //window.open(params.context.thisComponent.prod + '/api/secured/Item/Stock/Export' + localStorage.getItem('filter')+"&list="+params.context.thisComponent.state.cart['tab' + params.context.thisComponent.state.tab].map(v=>v.id).join(","), '_blank');
           window.open( PREFIX+'/api/secured/Item/Stock/Export?stockId='+params.context.thisComponent.state.tab+'&filter=' +encodeURIComponent(localStorage.getItem('filter'))+"&list="+_.map(params.context.thisComponent.state.cart['tab' + params.context.thisComponent.state.tab],(value,index)=>index).join(","), '_blank');
 
+        }
+      },
+      {
+        name: 'ბეჭდვა',
+        action: function () {
+          params.context.thisComponent.printGridData();
         }
       },
       'separator',
@@ -588,6 +601,7 @@ export default class Warehouse extends Component {
   };
   onGridReady(params, filter= false) {
 
+
     this.eventData = params;
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
@@ -605,6 +619,7 @@ export default class Warehouse extends Component {
         const parameters = [];
 
         if (filter) {
+          console.log('filter',filterData);
           for (const f in filterData) {
             const name = (f.split('.').length > 0) ? f.split('.')[0] : f;
             if (filterData[f] !== '' && filterData[f] !== undefined && filterData[f] !== null) {
@@ -656,6 +671,9 @@ export default class Warehouse extends Component {
         http.get(Config.management.warehouse.get.items+"?stockId="+tabID+"&start="+params['request']['startRow']+"&limit="+params['request']['endRow']+"&filter="+encodeURIComponent(JSON.stringify(parameters)))
           .then(response => {
             if (response.status === 200) {
+
+              localStorage.setItem("totalCount",response['totalCount']);
+
               params.successCallback(response['data'].map((v, k) => {
                 v['rowId'] = (params['request']['startRow'] + 1 + k);
                 if (v.barCodeType) {
@@ -740,14 +758,49 @@ export default class Warehouse extends Component {
     this.setState(State('errorDialog',{dialog:true, text: error},this.state));
   };
 
+  printGridData = () => {
+    console.log(_.size(this.state.cart['tab'+this.state.tab]));
+    this.setState(State('print.method','gridData',this.state));
+    let c = localStorage.getItem('totalCount');
+
+    if(_.size(this.state.cart['tab'+this.state.tab]) > 0){
+      c = _.size(this.state.cart['tab'+this.state.tab]);
+      this.setState(State('print.text','დასაბეჭდი მონაცემბის შეადგენს '+c+' გნებავთ გაგრძელება',this.state));
+    }else{
+      this.setState(State('print.text','დასაბეჭდი მონაცემბის შეადგენს '+c+' გნებავთ გაგრძელება',this.state));
+    }
+
+    this.setState(State('print.modal',true,this.state));
+  };
+
   clearPrintData = (action) => {
     if(action === 'print'){
+      let url = "/api/secured/TransferOperation/Print?id="+this.state.print.overhead.lastCode;
+      if(this.state.print.method === "gridData"){
+        if(this.state.tab === 11 || this.state.tab === 12){
+          url = "/api/secured/Print/Stock/Item?stockId="+this.state.tab+'&filter=' +encodeURIComponent(localStorage.getItem('filter'))+"&list="+_.map(this.state.cart['tab' + this.state.tab],(value,index)=>index).join(",");
+        }else if(this.state.tab === 21){
+          url = "/api/secured/Print/Section/Out/Item?"+'filter=' +encodeURIComponent(localStorage.getItem('filter'))+"&list="+_.map(this.state.cart['tab' + this.state.tab],(value,index)=>index).join(",");
+        }else if(this.state.tab === 22){
+          url = "/api/secured/Print/Section/In/Item?"+'filter=' +encodeURIComponent(localStorage.getItem('filter'))+"&list="+_.map(this.state.cart['tab' + this.state.tab],(value,index)=>index).join(",");
+        }
+      }
       this.setState(State('print.modal',false,this.state));
-      this.setState(State('print.dialog',true,this.state));
+      http.get(url)
+        .then(result => {
+          if (result.status === 200) {
+            this.setState(State('print.newData',result.data,this.state));
+            this.setState(State('print.dialog',true,this.state));
+          } else {
+            this.error(result.error);
+          }
+        })
+        .catch(reason => this.error(reason.error) );
     }else{
       this.setState(State('print',{
         dialog:false,
         modal:false,
+        method:'',
         text:'',
         title:'',
         cart: {
@@ -755,6 +808,7 @@ export default class Warehouse extends Component {
           tab22:[],
         },
         data: {},
+        newData: {},
         overhead: {
           title:'',
           lastCode:''
@@ -762,6 +816,7 @@ export default class Warehouse extends Component {
       },this.state));
     }
   };
+
   openPrintMode=()=>{
     PrintElem(this.dispositionRef);
     this.clearPrintData('cancel');
@@ -772,6 +827,8 @@ export default class Warehouse extends Component {
       <React.Fragment>
         {this.state.errorDialog.dialog? <ErrorModal text={this.state.errorDialog.text} onClick={()=>this.setState(State('errorDialog',{dialog: false, text: ''},this.state))}/> : ''}
         {this.state.print.modal? <PrintModal text={this.state.print.text} onClick={(action)=> this.clearPrintData(action)}/> : ''}
+
+        {/*<FileUploader onSelectFile={files=>console.log(files)} onUpload={e=>console.log(e)}/>*/}
 
         <div className="actionButton ribbon">
           <div className="buttonBox" style={{width: '125px'}}>
@@ -814,6 +871,12 @@ export default class Warehouse extends Component {
             </li>
 
           </ul>
+          <ul className="buttonBox">
+            <li onClick={() => this.printGridData()}>
+              <i><img src="/assets/Favorites/icons8-print-50.png" /></i>
+              <span>ბეჭდვა</span>
+            </li>
+          </ul>
         </div>
         {(this.state.inventor.search.show)?
           <Search
@@ -833,9 +896,13 @@ export default class Warehouse extends Component {
                  maker:"",
                  model:"",
                  price:"",
+                 priceFrom:"",
+                 priceTo:"",
                  amount:"",
                  measureUnit:"",
                  barcode:"",
+                 barcodeFrom:"",
+                 barcodeTo:"",
                  factoryNumber:"",
                  itemGroup:"",
                  itemType:"",
@@ -893,14 +960,21 @@ export default class Warehouse extends Component {
           }>
 
           <div ref={(ref)=>this.dispositionRef=ref}>
-            {_.map(this.state.print.data,(item, key) =>
+            {/*{_.map(this.state.print.data,(item, key) =>
               <div><b>{key}:</b>&nbsp;{item}</div>
-            )}
+            )}*/}
+            {
+              this.state.print.dialog?
+                <div className="expand_mode">
+                  {
+                    this.state.print.method === 'gridData'?
+                    <PrintGridData method={this.state.print.method} newData={this.state.print.newData} title={this.state.print.overhead.title} carts={this.state.print.cart} tab={this.state.tab}  newCode={this.state.print.overhead.lastCode}/>
+                    :
+                    <PrintContent method={this.state.print.method} newData={this.state.print.newData} title={this.state.print.overhead.title} carts={this.state.print.cart} tab={this.state.tab}  newCode={this.state.print.overhead.lastCode}/>
+                  }
 
-            <div className="expand_mode" style={{marginTop:'20px'}}>
-              <Overhead title={this.state.print.overhead.title} carts={this.state.print.cart} tab={this.state.tab}  newCode={this.state.print.overhead.lastCode}/>
-            </div>
-
+              </div> : ''
+            }
           </div>
         </Modal>
 
@@ -2072,7 +2146,7 @@ export default class Warehouse extends Component {
           {
             (this.state.inventor.outcome.expand) ?
               <div className="expand_mode">
-                <Overhead title="ქონების მართვის გასავლის ელ. ზედდებული ქ.გ - " carts={this.state.cart} tab={this.state.tab}  newCode={this.state.inventor.newCode} onChange={e=>this.setState(State('inventor.newCode',e.target.value,this.state))}/>
+                <Overhead title="საწყობის გასავლის ელ. ზედდებული ს.გ - " carts={this.state.cart} tab={this.state.tab}  newCode={this.state.inventor.newCode} onChange={e=>this.setState(State('inventor.newCode',e.target.value,this.state))}/>
               </div>
               :
               <>

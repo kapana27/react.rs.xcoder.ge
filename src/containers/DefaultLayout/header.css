@@ -21,13 +21,15 @@
   padding: 0;
   display: flex;
   flex-direction: row;
-  color: red;
 }
 .ribbon ul.nav li {
   display: inherit;
   font-family: "BPGArial", sans-serif;
   border: 1px solid rgba(200, 206, 211, 0);
   border-bottom: 1px solid #c8ced3;
+}
+.ribbon ul.nav li[data-active]:hover {
+  background: rgba(255, 255, 255, 0.15);
 }
 .ribbon ul.nav li a {
   color: #fff;
@@ -49,6 +51,9 @@
   border-top-right-radius: 3px;
   box-shadow: 0px -3px 5px rgba(0, 0, 0, 0.14);
 }
+.ribbon[data-select="Management/warehouse"] [data-active="Management/warehouse"]:hover {
+  background: #fff !important;
+}
 .ribbon[data-select="Management/warehouse"] [data-active="Management/warehouse"] a {
   color: #000;
 }
@@ -63,6 +68,9 @@
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
   box-shadow: 0px -3px 5px rgba(0, 0, 0, 0.14);
+}
+.ribbon[data-select="Management/property"] [data-active="Management/property"]:hover {
+  background: #fff !important;
 }
 .ribbon[data-select="Management/property"] [data-active="Management/property"] a {
   color: #000;
@@ -79,6 +87,9 @@
   border-top-right-radius: 3px;
   box-shadow: 0px -3px 5px rgba(0, 0, 0, 0.14);
 }
+.ribbon[data-select=messages] [data-active=messages]:hover {
+  background: #fff !important;
+}
 .ribbon[data-select=messages] [data-active=messages] a {
   color: #000;
 }
@@ -93,6 +104,9 @@
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
   box-shadow: 0px -3px 5px rgba(0, 0, 0, 0.14);
+}
+.ribbon[data-select=directory] [data-active=directory]:hover {
+  background: #fff !important;
 }
 .ribbon[data-select=directory] [data-active=directory] a {
   color: #000;

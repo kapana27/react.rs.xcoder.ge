@@ -356,4 +356,78 @@
 }
 
 
+.p-dialog[role="dialog"] {
+  .expand_mode {
+    font-family: 'lbet-nus', sans-serif !important;
+
+    h3 {
+
+      font-size: 18px;
+      text-align: center;
+    }
+    input {
+      font-size: 18px;
+      border: none;
+      padding: 0;
+      width: 100px;
+    }
+
+    table {
+      width: 100%;
+      thead, tbody {
+        tr {
+          th {
+            padding: .571em .857em;
+            border: 1px solid #c8c8c8;
+            font-weight: 700;
+            color: #333;
+            background-color: #f4f4f4;
+            font-family: 'lbet-nus', sans-serif;
+            font-size: 11px;
+          }
+          td {
+            padding: 0.471em .857em;
+            border: 1px solid #c8c8c8;
+            font-weight: 700;
+            color: #333;
+            background-color: #fff;
+            font-family: 'lbet-nus', sans-serif;
+            font-size: 13px;
+          }
+        }
+      }
+    }
+    .gridData {
+      font-size: 12px;
+      table {
+        width: 100%;
+        thead, tbody {
+          tr {
+            th {
+              padding: .571em .857em;
+              border: 1px solid #c8c8c8;
+              font-weight: 700;
+              color: #333;
+              background-color: #f4f4f4;
+              font-family: 'lbet-nus', sans-serif;
+              font-size: 10px;
+            }
+            td {
+              padding: 0.471em .857em;
+              border: 1px solid #c8c8c8;
+              font-weight: 700;
+              color: #333;
+              background-color: #fff;
+              font-family: 'lbet-nus', sans-serif;
+              font-size: 9px;
+            }
+          }
+        }
+      }
+    }
+
+  }
+}
+
+
 

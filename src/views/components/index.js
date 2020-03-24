@@ -11,6 +11,8 @@ import {ErrorModal} from "./ErrorModal";
 import {Table } from  './Table/Table';
 import {Confirm} from './Confirm/Confirm';
 import {PrintModal} from './PrintModal';
+import {PrintContent} from './PrintContent/PrintContent';
+import {PrintGridData} from './PrintGridData/PrintGridData';
 
 export {
   CardCellRenderer,
@@ -25,6 +27,8 @@ export {
   ErrorModal,
   Table,
   Confirm,
-  PrintModal
+  PrintModal,
+  PrintContent,
+  PrintGridData
 }
 

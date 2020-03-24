@@ -22,6 +22,7 @@ export const FileUploader = (props) => {
     maxFileSize={1000000}
     onSelect={(e)=>props.onSelectFile(e)}
     auto={false}
+    onUpload={e=>props.onUpload(JSON.parse(e.xhr.response))}
     chooseLabel="აირჩიეთ ფაილი"
     cancelLabel="გაუქმება"
     uploadLabel="ატვირთვა"
@@ -55,7 +56,8 @@ const styles = {
 
 FileUploader.propTypes = {
   url: PropTypes.string,
-  onSelectFile:PropTypes.func
+  onSelectFile:PropTypes.func,
+  onUpload:PropTypes.func
 };
 FileUploader.defaultProps = {
   url:'/api/secured/Document/Upload',

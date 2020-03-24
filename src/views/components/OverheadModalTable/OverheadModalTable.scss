@@ -18,46 +18,7 @@
   position: relative;
 }
 .p-dialog[role="dialog"] {
-  .expand_mode {
-    h3 {
-      font-family: lbet-mt,sans-serif!important;
-      font-size: 18px;
-      text-align: center;
-    }
-    input {
-      font-size: 18px;
-      border: none;
-      padding: 0;
-      width: 100px;
-    }
 
-    table {
-      width: 100%;
-      thead, tbody {
-        tr {
-          th {
-            padding: .571em .857em;
-            border: 1px solid #c8c8c8;
-            font-weight: 700;
-            color: #333;
-            background-color: #f4f4f4;
-            font-family: 'lbet-st', sans-serif;
-            font-size: 11px;
-          }
-          td {
-            padding: 0.471em .857em;
-            border: 1px solid #c8c8c8;
-            font-weight: 700;
-            color: #333;
-            background-color: #fff;
-            font-family: 'lbet-st', sans-serif;
-            font-size: 13px;
-          }
-        }
-      }
-    }
-
-  }
   .p-dialog-title {
     font-family: lbet-mt,sans-serif!important;
   }
