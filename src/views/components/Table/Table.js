@@ -8,14 +8,20 @@ import moment from "moment";
 import http2 from "../../../api/http2";
 import { v4 as uuidv4 } from 'uuid';
 
+
+
+
 export const Table = (props) => {
+const [loaderName, setLoaderName] = useState(uuidv4());
+
 useEffect(()=>{
-  console.log("load")
-  http2.subscribeLoader(props.name+"-loader",e=>{
+
+  http2.subscribeLoader(loaderName, e => {
+    console.log(loaderName,e)
     setLoader(e);
-  })
+  });
   return ()=>{
-    http2.unsubscribeLoader(props.name + "-loader");
+    http2.unsubscribeLoader(loaderName);
   }
 },[])
 
@@ -50,13 +56,13 @@ useEffect(()=>{
           setTotal(result.data.totalCount);
           setData(result.data.data);
         }
-        getData();
+        getData(loaderName);
       })
 
   },[start]);
 
-  const getData=()=>{
-    http2.loader(props.name+"-loader").get(props.URL + "&page=1&start=" + start + "&limit=" + limit)
+  const getData=(name)=>{
+    http2.loader(name).get(props.URL + "&page=1&start=" + start + "&limit=" + limit)
       .then(result => {
         if(result.status){
           setTotal(result.data.totalCount);
@@ -69,7 +75,7 @@ useEffect(()=>{
   return (
       <div className="rs-table-container">
         <div className="rs-table">
-          { (loader)? <div className='gif_loader'></div>:""  }
+          { (loader)? <div className='gif_loader'/>:""  }
           <table>
             {thead}
             {

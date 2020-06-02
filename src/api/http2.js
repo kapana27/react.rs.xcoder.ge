@@ -126,6 +126,7 @@ const Request = {
       })
     }).finally(()=>{
       if(this.data.loader){
+        console.log(this.data.loaderData.event)
         this.dispatchLoader(this.data.loaderData.event,false);
       }
     })

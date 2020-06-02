@@ -18,7 +18,7 @@ class HeaderNav extends Component {
             <li data-active="Management/property"><a href="#/Management/property">ქონების მართვა</a></li>
             <li data-active="messages"><a href="#/messages">შეტყობინებები</a></li>
             <li data-active="directory"><a href="#/directory">ცნობარი</a></li>
-            <li style={{flex:1}} divider></li>
+            <li style={{flex:1}}/>
             <li>
               <div className="user">
                 {this.props.user.firstName} {this.props.user.lastName}

@@ -11,6 +11,10 @@ import './Directory.css';
 import {TabMenu} from 'primereact/tabmenu';
 import {Button} from "primereact/button";
 import http2 from '../../api/http2';
+import {MeasurementUnit} from "./Component/MeasurementUnit";
+import {Group} from "./Component/Group";
+import {Position} from "./Component/Position";
+import {Employeees} from "./Component/Emptoyees";
 
  class Directory extends Component{
   constructor(props) {
@@ -33,7 +37,8 @@ import http2 from '../../api/http2';
          {label: 'თანამშრომლები', type: 'structura_4'},
 
        ],
-       activeItem:{label:'სტრუქტურა',type:'structura'},
+        activeItem:{label:'სტრუქტურა',type:'structura'},
+
        activeStructuraItem: {label: 'საშტატო ერთეული', type: 'structura_1'},
        division:{
          parent:{
@@ -75,8 +80,8 @@ import http2 from '../../api/http2';
         <div className="actionButton ribbon">
           <div className="buttonBox">
             {
-              _.map(this.state.tabs, (a)=>{
-                return <Button label={a.label} className={this.state.activeItem.type === a.type?"":"p-button-secondary"} onClick={() => this.setState({activeItem: a})} />
+              _.map(this.state.tabs, (a,index)=>{
+                return <Button key={index} label={a.label} className={this.state.activeItem.type === a.type?"":"p-button-secondary"} onClick={() => this.setState({activeItem: a})} />
               })
             }
           </div>
@@ -282,7 +287,19 @@ import http2 from '../../api/http2';
                </div>
              </div>;
            }
-         default:
+         case 'structura_3':
+           if(this.state.activeItem['type']==='structura'){
+             return  <div className="row">
+                  <Position/>
+               </div>;
+           }
+         case 'structura_4':
+           if(this.state.activeItem['type']==='structura'){
+             return  <div className="row">
+               <Employeees/>
+             </div>;
+           }
+           default:
            return  null
            break;
        }
@@ -416,7 +433,8 @@ import http2 from '../../api/http2';
               </div>
               <div className="col-md-6">
                 <Table
-                  URL={"/api/secured/List/Model/Select?parent="+this.state.provider.id}
+                  name={"asdasd"}
+                  URL={"/api/secured/List/Model/Select?parent="+((!this.state.provider.id)? -1:this.state.provider.id)}
                   Thead={
                     <thead>
                     <tr>
@@ -435,7 +453,9 @@ import http2 from '../../api/http2';
                   ]}
                 />
               </div>
-            </div>
+            </div>;
+        case 'unit': return <div className="row"> <div className={"col-md-12"}><MeasurementUnit/></div></div>
+        case 'group': return <div className="row"> <div className={"col-md-12"}><Group/></div></div>
         default:
           break;
 
