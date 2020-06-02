@@ -8,6 +8,7 @@ export const Calendar = (props) => {
     <DatePicker
       selected={props.date}
       onChange={props.onDateChange}
+      maxDate={props.maxDate !== undefined?props.maxDate:''}
       dateFormat="dd-MM-Y"
       dropdownMode="select"
       showMonthDropdown

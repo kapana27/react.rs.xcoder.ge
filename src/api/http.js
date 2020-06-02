@@ -1,8 +1,16 @@
 import axios from 'axios';
-export const PREFIX = '';
+export let PREFIX = '';
+
+if(window.location.hostname === "rs.xcoder.ge"){
+  PREFIX = '/rs';
+}
+
 axios.create({
   baseURL: '/',
 });
+
+
+
 
 const get = (uri) => {
   return new Promise((resolve, reject) => {
@@ -25,6 +33,7 @@ const get = (uri) => {
     }
   });
 };
+
 const post = (uri, formData) => {
   return new Promise((resolve, reject) => {
     try{
@@ -59,6 +68,7 @@ const session=()=>{
       });
   })
 };
+
 export default {
   get,
   post,

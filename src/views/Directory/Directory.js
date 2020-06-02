@@ -10,6 +10,7 @@ import _ from  'lodash';
 import './Directory.css';
 import {TabMenu} from 'primereact/tabmenu';
 import {Button} from "primereact/button";
+import http2 from '../../api/http2';
 
  class Directory extends Component{
   constructor(props) {
@@ -103,6 +104,7 @@ import {Button} from "primereact/button";
              return  <div className="row">
                <div className="col-md-4">
                  <Table
+                   name={"futkara1"}
                    URL={"/api/secured/Organizational/Structure/Department/Select?1=1"}
                    onSelect={(selected)=>{ (!_.isEmpty(selected))? this.setState(State('division.parent', selected,this.state),()=>this.setState(State('section.parent.id',-1,this.state))):this.setState(State('division.parent.id', -1,this.state)) } }
                    Thead={
@@ -125,6 +127,7 @@ import {Button} from "primereact/button";
                </div>
                <div className="col-md-4">
                  <Table
+                   name={"futkara2"}
                    URL={"/api/secured/Organizational/Structure/Division/Select?parentId="+this.state.division.parent['id']}
                    onSelect={(selected)=>{ (!_.isEmpty(selected))? this.setState(State('section.parent', selected,this.state)):this.setState(State('section.parent.id', -1,this.state)) } }
 
@@ -148,6 +151,7 @@ import {Button} from "primereact/button";
                </div>
                <div className="col-md-4">
                  <Table
+                   name={"futkara3"}
                    URL={"/api/secured/Organizational/Structure/Sector/Select?parentId="+this.state.section.parent['id']}
                    Thead={
                      <thead>
@@ -285,7 +289,6 @@ import {Button} from "primereact/button";
      } catch (e) {
      }
    }
-
    renderData=()=> {
       switch (this.state.activeItem['type']) {
         case 'type':
@@ -360,7 +363,7 @@ import {Button} from "primereact/button";
                   />
               </div>
             </div>
-          case 'provider1':
+        case 'provider1':
             return <div className="row">
               <div className="col-md-12">
                 <Table

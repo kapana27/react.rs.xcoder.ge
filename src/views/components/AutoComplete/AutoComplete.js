@@ -21,14 +21,16 @@ export const AutoComplete = (props) => {
   function renderSuggestions(props) {
       if(props.suggestions.length>0 && container){
          return <div style={style.container} className="autocomplete-container">
-           {
-             props.suggestions.map((value,index) => {
-                if (props.field){
-                    return <div style={style.item} key={index} onClick={()=>select(value,props)}>{value[props.field]}</div>
-                }
-               return <div style={style.item} key={index} onClick={()=>select(value,props)}>{value}</div>
-             })
-           }
+           <div className="autocomplete_wrap">
+             {
+               props.suggestions.map((value,index) => {
+                  if (props.field){
+                      return <div style={style.item} key={index} onClick={()=>select(value,props)}>{value[props.field]}</div>
+                  }
+                 return <div style={style.item} key={index} onClick={()=>select(value,props)}>{value}</div>
+               })
+             }
+           </div>
          </div>
 
       }
@@ -78,7 +80,8 @@ AutoComplete.defaultProps = {
 const style = {
   container: {
     maxHeight: '200px',
-    width: 'auto',
+    //width: 'auto',
+    width: 'calc(100% - 44px)',
     minWidth:'180px',
     overflowY: 'scroll',
     border: "1px solid #b1a5a5",

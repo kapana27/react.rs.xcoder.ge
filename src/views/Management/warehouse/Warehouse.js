@@ -32,9 +32,10 @@ import {Validator} from "../../../utils/validator";
 import * as moment from 'moment';
 import OverheadModalTable from "../../components/OverheadModalTable/OverheadModalTable";
 import CustomDateComponent from "../../components/CustomDateComponent/CustomDateComponent";
-
+import http2 from '../../../api/http2';
 export default class Warehouse extends Component {
   constructor(props){
+
     super(props);
     this.nameRef = React.createRef();
     this.modelRef= React.createRef();
@@ -486,7 +487,8 @@ export default class Warehouse extends Component {
         {id: '1', name: 'შპს'},
         {id: '2', name: 'ინდმეწარმე'},
         {id: '3', name: 'ფიზიკური პირი'},
-        {id: '4', name: 'სააქციო საზოგადოება'}
+        {id: '4', name: 'სააქციო საზოგადოება'},
+        {id: '5', name: 'საბიუჯეტო ორგანიზაცია'}
       ],
       supplier: {
         dialog: false,
@@ -2014,18 +2016,17 @@ export default class Warehouse extends Component {
                 <div className="incomeModal p-grid">
                   <div className="fullwidth p-col-3">
                     <label>მიღების თარიღი</label>
-                    <Calendar date={this.state.inventor.income.date}
-                              onDateChange={props => this.setState(State('inventor.income.date', props, this.state))}/>
+                    <Calendar date={this.state.inventor.income.date} onDateChange={props => this.setState(State('inventor.income.date', props, this.state))} maxDate={new Date()} />
                   </div>
                   <div className="fullwidth p-col-3">
-                    <label>მიმწოდებელი</label>
+                    <label>მომწოდებელი</label>
                     <AutoComplete
-                      field="name"
+                      field="generatedName"
                       class={this.state.inventor.income.errors.supplier ? 'bRed width-85' : 'width-85'}
                       suggestions={this.state.inventor.supplierSuggestions}
                       onComplete={this.suggestSupplier}
                       onSelect={(e) => this.setState(State('inventor.income.supplier', e, this.state))}
-                      onChange={(e) => this.setState(State('inventor.income.supplier.name', e, this.state))}
+                      onChange={(e) => this.setState(State('inventor.income.supplier.generatedName', e, this.state))}
                       value={this.state.inventor.income.supplier}
                       addIcon={true}
                       onAdd={()=> this.showSupplierDialog()}
@@ -2414,18 +2415,23 @@ export default class Warehouse extends Component {
         >
           <div className="mimwodeblis_tipi">
             <label>აირჩიეთ მიმწოდებლის ტიპი</label>
-            <Dropdown value={this.state.supplier.dropdown} options={this.state.supplierList} onChange={(e) => this.setState(State( "supplier.dropdown",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name"  style={{width:'100%'}} />
+            <Dropdown value={this.state.supplier.dropdown} options={this.state.supplierList} onChange={(e) => this.calculateNewSupplier(e)} optionLabel="name" placeholder="გთხოვთ აირჩიეთ"  style={{width:'100%'}} />
             {
+
               this.state.supplier.dropdown.name !== ''?
                 <div style={{display:'flex'}}>
-                  <div style={{marginRight: '15px'}}>
+                  <div style={{flex: '1'}}>
                     <label>{(this.state.supplier.dropdown.id === '2' || this.state.supplier.dropdown.id === '3') ? 'სახელი და გვარი': 'დასახელება'}</label>
                     <InputText style={{width: '100%'}} value={this.state.supplier.value} onChange={(e) => this.setState(State('supplier.value',e.target.value,this.state))} />
                   </div>
-                  <div>
-                    <label>{(this.state.supplier.dropdown.id === '2' || this.state.supplier.dropdown.id === '3') ? 'პირადი ნომერი' : 'საიდენტიფიკაციო'}</label>
-                    <InputText style={{width: '100%'}} value={this.state.supplier.number} onChange={(e) => this.setState(State('supplier.number',e.target.value,this.state))} />
-                  </div>
+                  {
+                    this.state.supplier.dropdown.id !== '5'?
+                      <div style={{marginLeft: '15px',flex: '1'}}>
+                        <label>{(this.state.supplier.dropdown.id === '2' || this.state.supplier.dropdown.id === '3') ? 'პირადი ნომერი' : 'საიდენტიფიკაციო'}</label>
+                        <InputText style={{width: '100%'}} value={this.state.supplier.number} onChange={(e) => this.setState(State('supplier.number',e.target.value,this.state))} />
+                      </div>:''
+                  }
+
                 </div>
               :''
             }
@@ -2435,6 +2441,38 @@ export default class Warehouse extends Component {
       </React.Fragment>
     );
   }
+
+  isNumeric(x) {
+    return !(isNaN(x)) && (typeof x !== "object") &&
+      (x != Number.POSITIVE_INFINITY) && (x != Number.NEGATIVE_INFINITY);
+  }
+
+  calculateNewSupplier(e){
+    //{id: '1', name: 'შპს'},
+    //{id: '2', name: 'ინდმეწარმე'},
+    //{id: '3', name: 'ფიზიკური პირი'},
+    //{id: '4', name: 'სააქციო საზოგადოება'},
+    //{id: '5', name: 'საბიუჯეტო ორგანიზაცია'}
+
+    this.setState(State('supplier.value', '', this.state));
+    this.setState(State('supplier.number', '', this.state));
+
+    let name = this.state.inventor.income.supplier.generatedName;
+
+    if(this.isNumeric(name)){
+      let len = name.split('').length;
+      if( (len === 9 && _.includes(['1','4'], e.value.id))  ||  (len === 11 && _.includes(['2','3'], e.value.id))  ) {
+        this.setState(State('supplier.number', name, this.state));
+      }else{
+        this.setState(State('supplier.value', '', this.state));
+      }
+    }else{
+      this.setState(State('supplier.value', name, this.state));
+    }
+
+    this.setState(State( "supplier.dropdown",{ id: e.value.id, name: e.value.name},this.state))
+  };
+
   showSupplierDialog(){
     this.setState(State('supplier.dialog', true, this.state));
     //this.setState(State('supplier.value', '', this.state));
@@ -3544,12 +3582,14 @@ export default class Warehouse extends Component {
     )
   }
   resetIncome=()=>{
+
+    this.setState(State('inventor.supplierSuggestions', [], this.state));
     this.setState(State('inventor.income',
       {
         dialog: false,
         showDetails: false,
         date: new Date(),
-        supplier: {id:null,name:''},
+        supplier: {id:null,name:'',generatedName:''},
         comment:"",
         addon: {Left: '', Right: ''},
         tempAddon: {Left: '', Right: ''},
@@ -3602,7 +3642,8 @@ export default class Warehouse extends Component {
         },
         data: []
       },this.state))
-  }
+
+  };
   generateInventor = async () => {
     const validate = Validator(['supplier'], this.state.inventor.income,'id');
     console.log(validate)

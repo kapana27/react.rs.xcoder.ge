@@ -5,8 +5,21 @@ import http from "../../../api/http";
 import _ from 'lodash';
 import './table.css'
 import moment from "moment";
-export const Table = (props) => {
+import http2 from "../../../api/http2";
+import { v4 as uuidv4 } from 'uuid';
 
+export const Table = (props) => {
+useEffect(()=>{
+  console.log("load")
+  http2.subscribeLoader(props.name+"-loader",e=>{
+    setLoader(e);
+  })
+  return ()=>{
+    http2.unsubscribeLoader(props.name + "-loader");
+  }
+},[])
+
+  let [loader,setLoader] = useState(false);
   let [start,setStart] = useState(props.start);
   let [limit,setLimit] = useState(props.limit);
   let [total,setTotal] = useState(props.rows);
@@ -26,32 +39,37 @@ export const Table = (props) => {
 
   useEffect(()=>{
     setData(props.data)
-
   },[props.data])
 
 
   useEffect(() => {
     if(props.URL !== undefined &&props.URL!== null && props.URL.toString().trim()!=='' )
-    http.get(props.URL + "&page=1&start=" + start + "&limit=" + limit)
+    http2.get(props.URL + "&page=1&start=" + start + "&limit=" + limit)
       .then(result => {
-        setTotal(result.totalCount);
-        setData(result.data);
+        if(result.status){
+          setTotal(result.data.totalCount);
+          setData(result.data.data);
+        }
         getData();
       })
 
   },[start]);
 
   const getData=()=>{
-    http.get(props.URL + "&page=1&start=" + start + "&limit=" + limit)
+    http2.loader(props.name+"-loader").get(props.URL + "&page=1&start=" + start + "&limit=" + limit)
       .then(result => {
-        setTotal(result.totalCount);
-        setData(result.data);
+        if(result.status){
+          setTotal(result.data.totalCount);
+          setData(result.data.data);
+        }
+
       })
   }
 
   return (
       <div className="rs-table-container">
         <div className="rs-table">
+          { (loader)? <div className='gif_loader'></div>:""  }
           <table>
             {thead}
             {
@@ -130,10 +148,12 @@ Table.propTypes = {
   Types: PropTypes.object,
   selected:PropTypes.object,
   onSelect: PropTypes.func,
-  data:PropTypes.array
+  data:PropTypes.array,
+  name:PropTypes.string
 };
 
 Table.defaultProps = {
+  name: uuidv4(),
   URL: "",
   Fields: [],
   Thead: <tbody><tr><td>header not found</td></tr></tbody>,

@@ -186,9 +186,6 @@
   .p-dropdown-label, .p-dropdown-list {font-family: "lbet-st", sans-serif;}
 }
 
-
-
-
 .printOverflow {
   position: absolute;
   z-index: 999997;
@@ -355,7 +352,6 @@
   }
 }
 
-
 .p-dialog[role="dialog"] {
   .expand_mode {
     font-family: 'lbet-nus', sans-serif !important;
@@ -428,6 +424,17 @@
 
   }
 }
+
+.gif_loader {
+  position: absolute;
+  top:0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.57) url("../assets/img/482.gif") no-repeat center center;
+  z-index: 999;
+}
+
 
 
 
