@@ -7,7 +7,7 @@ export const ErrorModal = (props) => {
   return (
     <div className="printOverflow">
       <div className="printBox" data-title="შეცდომა">
-        <i onClick = {props.onClick}></i>
+        <i onClick = {props.onClick}/>
         {props.text}
       </div>
     </div>

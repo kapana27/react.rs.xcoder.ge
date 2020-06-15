@@ -3,7 +3,7 @@ import {TreeTable} from 'primereact/treetable';
 import {Column} from "primereact/column";
 import Request from "../../../api/http2";
 import {TreeTableGroup} from "../../components";
-
+import PropTypes from 'prop-types';
 
 export const MeasurementUnit = (props) => {
   const [nodes, setNodes] = useState([]);
@@ -15,10 +15,15 @@ export const MeasurementUnit = (props) => {
     })
   },[props]);
     return (
-      <TreeTableGroup data={nodes}  column={[{field:'name', title:'name', expander:true},{field:'parent_name', title:'მშობელი ერთეული', expander:false}]} onSelectItemGroup={e=>console.log(e)}/>
+      <TreeTableGroup data={nodes}  column={[{field:'name', title:'name', expander:true},{field:'parent_name', title:'მშობელი ერთეული', expander:false}]} onSelectItemGroup={e=>props.onSelect(e)}/>
     )
 };
-
+MeasurementUnit.propTypes={
+  onSelect:PropTypes.func,
+}
+MeasurementUnit.defaultProps={
+  onSelect:(e)=>console.log(e)
+}
 const MeasureUnit =  ()=>{
     return  Request.get("/api/secured/MeasureUnit/Select")
 }

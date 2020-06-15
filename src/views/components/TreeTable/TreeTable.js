@@ -7,12 +7,25 @@ import http from "../../../api/http";
 import {Button} from "primereact/button";
 
 export const TreeTableGroup = (props) => {
+  const [selectedNodeKey1, setSelectedNodeKey1] =useState(null)
+  const [selectedData, setSelectedData] =useState({id:-1,name:''})
+
+  useEffect(()=>{
+    if(selectedData===null){
+      setSelectedNodeKey1(-1);
+    }else{
+      setSelectedNodeKey1(selectedData['key']);
+    }
+
+    props.onSelectItemGroup(selectedData['data']);
+  },[selectedData])
+
   return (
     <div>
-      <TreeTable value={props.data.root} selectionMode="single" onSelect={(e) => props.onSelectItemGroup(e.node.data)} >
+      <TreeTable value={props.data.root} selectionMode="single" onSelect={(e) =>{ (JSON.stringify(e.node)===JSON.stringify(selectedData))? setSelectedData({data:{id:-1}})  :  setSelectedData(e.node)  ; }} selectionKeys={selectedNodeKey1}  >
         {
           _.map(props.column,(value,index)=>{
-            return <Column key={index} field={value.field}  header={value.title} expander={value.expander}  body={value.body}> test</Column>
+            return <Column key={value} field={value.field}  header={value.title} expander={value.expander}  body={value.body}> test</Column>
           })
         }
       </TreeTable>

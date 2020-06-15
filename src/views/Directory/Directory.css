@@ -1,31 +1,41 @@
 .main-item .p-tabmenuitem .p-menuitem-link {
-  padding: 2px 5px !important; }
+  padding: 2px 5px !important;
+}
 
 .directory {
   width: 100%;
   height: calc(100vh - 170px);
-  display: flex; }
-  .directory .row {
-    width: 100%; }
-  .directory table {
-    background-color: #f4f4f4; }
-    .directory table thead tr th {
-      padding: .5em;
-      background-color: inherit;
-      border: 1px solid #c8c8c8;
-      font-weight: 500;
-      font-size: 11px;
-      line-height: 12px; }
-    .directory table tbody tr td {
-      padding: .5em;
-      background-color: inherit;
-      border: 1px solid #c8c8c8;
-      white-space: nowrap;
-      line-height: 16px;
-      font-size: 13px; }
-    .directory table tbody tr:hover {
-      background-color: #cbcbcb;
-      cursor: pointer;
-      border: 1px solid #c8c8c8; }
+  display: flex;
+}
+.directory td {
+  white-space: normal !important;
+}
+.directory .row {
+  width: 100%;
+}
+.directory table {
+  background-color: #f4f4f4;
+}
+.directory table thead tr th {
+  padding: 0.5em;
+  background-color: inherit;
+  border: 1px solid #c8c8c8;
+  font-weight: 500;
+  font-size: 11px;
+  line-height: 12px;
+}
+.directory table tbody tr td {
+  padding: 0.5em;
+  background-color: inherit;
+  border: 1px solid #c8c8c8;
+  white-space: normal !important;
+  line-height: 16px;
+  font-size: 13px;
+}
+.directory table tbody tr:hover {
+  background-color: #cbcbcb;
+  cursor: pointer;
+  border: 1px solid #c8c8c8;
+}
 
 /*# sourceMappingURL=Directory.css.map */

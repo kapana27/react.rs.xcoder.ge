@@ -13,6 +13,9 @@
 
 .directory{
 
+  td {
+    white-space: normal !important;
+  }
 
   width: 100%;
   height: calc(100vh - 170px);
@@ -20,6 +23,7 @@
   .row{
     width: 100%;
   }
+
 
   table{
     background-color: #f4f4f4;
@@ -39,10 +43,11 @@
     tbody{
       tr {
         td {
+
           padding: .5em;
           background-color: inherit;
           border: 1px solid #c8c8c8;
-          white-space: nowrap;
+          white-space: normal !important;
           line-height: 16px;
           font-size: 13px;
         }

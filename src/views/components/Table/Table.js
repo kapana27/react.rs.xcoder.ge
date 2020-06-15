@@ -7,17 +7,12 @@ import './table.css'
 import moment from "moment";
 import http2 from "../../../api/http2";
 import { v4 as uuidv4 } from 'uuid';
-
-
-
-
 export const Table = (props) => {
 const [loaderName, setLoaderName] = useState(uuidv4());
 
 useEffect(()=>{
 
   http2.subscribeLoader(loaderName, e => {
-    console.log(loaderName,e)
     setLoader(e);
   });
   return ()=>{
@@ -34,6 +29,7 @@ useEffect(()=>{
   let [types,setTypes] = useState(props.Types);
   let [selected,setSelected] = useState({});
   let [data,setData] = useState(props.data || []);
+  let [actions,setActions] = useState(props.actions || []);
 
   const onSelect = (value) => {
     setSelected(_.isEqual(selected, value) ? {} : value);
@@ -41,12 +37,14 @@ useEffect(()=>{
   useEffect(() => setThead(props.Thead),[props.Thead]);
   useEffect(() =>   getData(),[props.URL]);
   useEffect(() => props.onSelect(selected), [selected]);
-  useEffect(() => getData() , [props.update]);
+  useEffect(() => {  if(props.update){ getData()}  } , [props.update]);
 
   useEffect(()=>{
     setData(props.data)
   },[props.data])
-
+  useEffect(() => {
+    setActions(props.actions);
+  }, [props.actions]);
 
   useEffect(() => {
     if(props.URL !== undefined &&props.URL!== null && props.URL.toString().trim()!=='' )
@@ -61,23 +59,31 @@ useEffect(()=>{
 
   },[start]);
 
-  const getData=(name)=>{
+  const getData = (name) => {
     http2.loader(name).get(props.URL + "&page=1&start=" + start + "&limit=" + limit)
       .then(result => {
-        if(result.status){
+        if (result.status) {
           setTotal(result.data.totalCount);
           setData(result.data.data);
         }
-
-      })
-  }
+      });
+  };
 
   return (
       <div className="rs-table-container">
         <div className="rs-table">
+          {
+            _.map(actions,v=>{
+                return v
+            })
+          }
           { (loader)? <div className='gif_loader'/>:""  }
           <table>
-            {thead}
+            <thead>
+              {props.mainHeader}
+              {props.subHeader}
+              {thead}
+            </thead>
             {
 
               <tbody>
@@ -155,7 +161,11 @@ Table.propTypes = {
   selected:PropTypes.object,
   onSelect: PropTypes.func,
   data:PropTypes.array,
-  name:PropTypes.string
+  name:PropTypes.string,
+  actions:PropTypes.array,
+  mainHeader:PropTypes.element,
+  subHeader: PropTypes.element,
+  update:PropTypes.bool
 };
 
 Table.defaultProps = {
@@ -171,6 +181,10 @@ Table.defaultProps = {
   Types:{},
   selected:{},
   data:[],
+  actions:[],
+  mainHeader:null,
+  subHeader:null,
+  update:false,
   onSelect:(selected)=>console.log(selected)
 };
 

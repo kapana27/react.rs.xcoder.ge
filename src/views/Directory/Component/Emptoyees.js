@@ -18,13 +18,12 @@ export const Employeees = (props) => {
   return (
     <>
       <div className={"col-md-4"}>
-        <TreeTableGroup data={nodes}  column={[{field:'name', title:'დასახელება', expander:true}]} onSelectItemGroup={e=>setSelected(e.id)}/>
+        <TreeTableGroup data={nodes}  column={[{field:'name', title:'დასახელება', expander:true}]}  onSelectItemGroup={e=>setSelected((e)?e.id:-1)}/>
       </div>
       <div className={"col-md-8"}>
         <Table
           URL={"/api/secured/Staff/Department/Select?dep="+selected+""}
           Thead={
-            <thead>
             <tr>
               <th >ID</th>
               <th >საშტატო ერთეული</th>
@@ -35,7 +34,6 @@ export const Employeees = (props) => {
               <th >პირადობა</th>
               <th >ელფოსტა</th>
             </tr>
-            </thead>
           }
           Fields={[
             {

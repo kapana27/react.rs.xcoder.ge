@@ -45,7 +45,6 @@ class DefaultLayout extends Component {
       }
     };
     http.session().then(result => {
-      console.log('session',result);
       this.setState({
         user: result
       })

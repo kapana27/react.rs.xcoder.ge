@@ -117,7 +117,6 @@ class Messages extends Component{
               <Table
                 URL={"/api/secured/Item/Inbox/Detail/Select?id="+((this.state.selected.id)? this.state.selected.id:0)}
                 Thead={
-                  <thead>
                   <tr>
                     <th >დასახელება</th>
                     <th >მარკა</th>
@@ -127,7 +126,6 @@ class Messages extends Component{
                     <th >სულ ფასი</th>
                     <th >შტრიხკოდი</th>
                   </tr>
-                  </thead>
                 }
                 Fields={[
                   {
@@ -187,7 +185,7 @@ class Messages extends Component{
               selected={this.state.selected}
               update={this.state.update}
               Thead={
-                <thead>
+                <>
                 <tr>
                   <th rowSpan="2">№</th>
                   <th colSpan={2}>ელ.ზედდებულის ნომერი</th>
@@ -207,7 +205,7 @@ class Messages extends Component{
                   <th>გასავლის ზედდებული</th>
                   <th>შემოსავლის ზედდებული</th>
                 </tr>
-                </thead>
+                </>
               }
               Fields={[
                 {
@@ -235,7 +233,7 @@ class Messages extends Component{
           onSelect={this.onSelect}
           selected={this.state.selected}
           Thead={
-            <thead>
+            <>
             <tr>
               <th >ზედ. ნომერი</th>
               <th >ოპერაციის ტიპი</th>
@@ -250,7 +248,7 @@ class Messages extends Component{
                   <th rowSpan="2">თარიღი</th>
               }
             </tr>
-            </thead>
+            </>
           }
           Fields={[
             {

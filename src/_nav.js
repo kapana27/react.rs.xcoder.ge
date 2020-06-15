@@ -172,7 +172,7 @@ export default {
         },
         {
           name: 'Tables',
-          url: '/base/tables',
+          url: '/base/TableComponents',
           icon: 'icon-puzzle',
         },
         {
