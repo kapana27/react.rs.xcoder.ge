@@ -18,9 +18,6 @@ export const Position = (props) => {
   const [data,setData] = useState({id:-1,name:''});
   const [modal, setModal] = useState(null);
 
-
-
-
   useEffect(() => {
     MeasureUnit().then(result => {
       if(result.data.status===200){

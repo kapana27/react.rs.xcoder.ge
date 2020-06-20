@@ -1470,7 +1470,7 @@ const suppliers= [{label:"შპს",value:1},{label:"ინდმეწარ�
          case 'structura_4':
            if(this.state.activeItem['type']==='structura'){
              return  <div className="row">
-               <Employeees/>
+               <Employeees />
              </div>;
            }
            default:
@@ -1852,9 +1852,12 @@ const suppliers= [{label:"შპს",value:1},{label:"ინდმეწარ�
               />
             </div>
           </div>;
-        case 'group': return <div className="row"> <div className={"col-md-12"}>
-          <Group/>
-        </div></div>
+        case 'group':
+          return <div className="row">
+            <div className={"col-md-12"}>
+              <Group/>
+            </div>
+          </div>;
         default:
           break;
 

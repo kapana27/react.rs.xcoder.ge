@@ -13,7 +13,7 @@ return (show)?(<Dialog header="" footer={
       <Button label="შენახვა" icon="pi pi-check" onClick={props.onYesClick} />
       <Button label="გაუქმება" icon="pi pi-times" onClick={props.onNoClick} />
     </div>
-  } visible={show} style={{width: '500px'}} modal={show} >
+  } visible={show} style={{minWidth: '500px',height:'auto'}} modal={show} >
     {props.children}
        </Dialog>
   ):null;

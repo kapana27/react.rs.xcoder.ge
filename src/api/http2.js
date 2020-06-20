@@ -57,7 +57,6 @@ const Request = {
     return this;
   },
   post:function(url,data, header=null){
-    console.log(this)
     const postHeader = { headers: header? header:{     headers: { 'Content-Type': 'x-www-form-urlencoded' }   } };
     if(this.data.loader){
       this.dispatchLoader(this.data.loaderData.event,true);
@@ -119,7 +118,7 @@ const Request = {
         if(this.data.event){
           this.dispatch(this.data.requestEventData.type,this.data.requestEventData.event,{type: "error", message:reason.message});
         }
-        if(reason.response.status === 401){
+        if(reason.response &&reason.response.status === 401){
           this.dispatch('global','Unauthorized',{type: "error", message:reason.response.message});
         }
         resolve({ status:false })
