@@ -17,18 +17,24 @@ const get = (uri) => {
     try {
       axios.get(PREFIX+uri)
         .then(response => {
+          if (response.data.status !== 200){
+            window.onError(response.data.error.toString());
+          }
           resolve(response.data);
         })
         .catch(reason => {
           if(reason.response.status===401){
+
             setTimeout(()=>{
               window.location.href="/#/login";
             },100)
 
           }
+          window.onError(reason.toString());
           console.log(reason)
         });
     } catch (e) {
+      window.onError(e.toString());
       console.log(e)
     }
   });
@@ -39,16 +45,25 @@ const post = (uri, formData) => {
     try{
       axios.post(PREFIX+uri, formData)
         .then(response => {
+          if (response.data.status !== 200){
+            window.onError(response.data.error.toString());
+          }
           resolve(response.data);
         })
         .catch(reason => {
-          console.log(reason.response.status)
-          setTimeout(()=>{
-            window.location.href="/#/login";
-          },100)
+          console.log(reason.response.status);
+          window.onError(reason.toString());
+          if(reason.response.status===401){
+
+            setTimeout(()=>{
+              window.location.href="/#/login";
+            },100)
+
+          }
           reject(reason)
         });
     }catch (e) {
+      window.onError(e.toString());
       console.log(e)
     }
 
@@ -62,9 +77,13 @@ const session=()=>{
       })
       .catch(reason => {
         console.log(reason.response.status)
-        setTimeout(() => {
-          window.location.href = "/#/login";
-        }, 100)
+        if(reason.response.status===401){
+
+          setTimeout(()=>{
+            window.location.href="/#/login";
+          },100)
+
+        }
       });
   })
 };

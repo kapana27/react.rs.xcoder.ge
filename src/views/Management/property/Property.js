@@ -1733,7 +1733,7 @@ export default class Property extends Component {
       'კომენტარი': this.state.property.outcome.comment
     },this.state));
 
-    http.post("/api/secured/Item/Stock/Return",formData)
+    http.post("/a",formData)
       .then(result => {
         if (result.status === 200) {
           this.removeCartItem();

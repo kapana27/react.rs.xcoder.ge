@@ -23,6 +23,82 @@
     -->
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" rel="stylesheet" >
+    <style>
+      .event-wrap {
+        background: #00000047;
+        position: absolute;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        display: none;
+      }
+      .event-wrap.show {display: block}
+      .event-wrap .ev-pos {
+        position: absolute;
+        top: 10%;
+        right: 5%;
+        min-width: 200px;
+        max-width: 400px;
+      }
+      .event-wrap .ev-box {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        border-radius: 5px;
+        margin-bottom: 10px;
+      }
+      .event-wrap .ev-box .ev-text {
+        padding: 20px;
+        font-family: "BPGArial", sans-serif;
+      }
+
+      .event-wrap .ev-box[data-status="error"] {
+        background: #f35f5f;
+        color: #fff;
+      }
+      .event-wrap .ev-box[data-status="error"] .ev-close {
+        padding: 20px 30px;
+        border-left: 1px solid #f57676;
+        cursor: pointer;
+      }
+
+    </style>
+    <script>
+      let evID = 1;
+
+      function onError(error){
+        let el = document.createElement('div');
+        el.className = 'ev-box';
+        el.classList.add('error'+evID);
+        el.setAttribute("data-status", "error");
+
+        let text = document.createElement('div');
+        text.className = 'ev-text';
+        text.innerHTML = evID + ' add following classes to body to change optio';
+
+        let close = document.createElement('div');
+        close.innerHTML ='X';
+        close.className = 'ev-close';
+        el.setAttribute("onclick", "evClose('error"+evID+"')");
+
+        el.appendChild(text);
+        el.appendChild(close);
+
+        let box = document.querySelector('.ev-pos');
+        box.appendChild(el);
+
+        let wrap = document.querySelector('.event-wrap');
+        wrap.classList.add('show')
+
+        evID++;
+      }
+
+      function evClose(id){
+        const ev = document.querySelector('.'+id);
+        ev.remove()
+      }
+    </script>
   </head>
 
   <!-- BODY options, add following classes to body to change options
@@ -58,6 +134,15 @@
       You need to enable JavaScript to run this app.
     </noscript>
     <div id="root"></div>
+    <div class="event-wrap">
+      <div class="ev-pos">
+        <!--<div class="ev-box error1" data-status="error">
+          <div class="ev-text">error1 If you open it directly in the browser, you will see an empty page</div>
+          <div class="ev-close" onclick="evClose('error1')">X</div>
+        </div>-->
+      </div>
+
+    </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

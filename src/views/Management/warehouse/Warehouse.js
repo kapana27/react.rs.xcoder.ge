@@ -25,7 +25,7 @@ import {Checkbox} from 'primereact/checkbox';
 import _ from 'lodash';
 import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
-import './warehouse.css';
+import './warehouse.scss';
 import 'primeflex/primeflex.css';
 import {State, putInCart, clearCartItem, removeCartItem, getCartItems, PrintElem} from '../../../utils';
 import {Validator} from "../../../utils/validator";
@@ -2385,6 +2385,7 @@ export default class Warehouse extends Component {
           }
         </Modal>
         <Modal
+          className="supplier_dialog"
           header="მიმწოდებელის დამატება"
           visible={this.state.supplier.dialog}
           onHide={() => this.setState(State('supplier.dialog', false, this.state))}
