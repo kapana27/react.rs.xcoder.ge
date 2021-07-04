@@ -17,13 +17,14 @@ const get = (uri) => {
     try {
       axios.get(PREFIX+uri)
         .then(response => {
-          if (response.data.status !== 200){
-            window.onError(response.data.error.toString());
+          console.log('response',response);
+          if (response?.data?.status !== 200){
+            window.onError(response?.data?.error?.toString());
           }
           resolve(response.data);
         })
         .catch(reason => {
-          if(reason.response.status===401){
+          if(reason?.response?.status===401){
 
             setTimeout(()=>{
               window.location.href="/#/login";
@@ -45,15 +46,17 @@ const post = (uri, formData) => {
     try{
       axios.post(PREFIX+uri, formData)
         .then(response => {
-          if (response.data.status !== 200){
-            window.onError(response.data.error.toString());
+          console.log('response',response);
+          if (response?.data?.status !== 200){
+            window.onError(response?.data?.error?.toString());
           }
           resolve(response.data);
         })
         .catch(reason => {
-          console.log(reason.response.status);
+          console.log('reason',reason)
+          //console.log(reason.response.status);
           window.onError(reason.toString());
-          if(reason.response.status===401){
+          if(reason?.response?.status===401){
 
             setTimeout(()=>{
               window.location.href="/#/login";
@@ -76,8 +79,8 @@ const session=()=>{
         resolve(response.data);
       })
       .catch(reason => {
-        console.log(reason.response.status)
-        if(reason.response.status===401){
+        //console.log(reason.response.status)
+        if(reason?.response?.status===401){
 
           setTimeout(()=>{
             window.location.href="/#/login";

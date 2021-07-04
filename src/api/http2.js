@@ -4,12 +4,13 @@ const http =  axios.create({
   baseURL: '/',
   //timeout: 5000,
 });
+let loaderData = new Map();
 const Request = {
   data:{
     event:false,
     loader:false,
     requestEventData:null,
-    loaderData:null
+    //loaderData:null
   },
   events:{
     global:{},

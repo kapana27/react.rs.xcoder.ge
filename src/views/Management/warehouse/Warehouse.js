@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import http, {PREFIX} from '../../../api/http';
+
+import Http from "../../../api/http3";
+
 import {Config} from "../../../config/Config";
 import {
   CardCellRenderer,
@@ -515,8 +518,14 @@ export default class Warehouse extends Component {
           title:'',
           lastCode:''
         }
+      },
+      loaders: {
+        stockSelectLoader:false
       }
     };
+
+    Http.subscribeLoader('stock-select-loader',e => this.setState(State('loaders.stockSelectLoader', e, this.state)))
+
     this.loadConstructor();
   }
   getContextMenuItems=(params)=>{
@@ -592,6 +601,7 @@ export default class Warehouse extends Component {
   }
   componentWillUnmount() {
     document.removeEventListener('mousedown', this.handleClickOutside);
+    Http.unsubscribeLoader('stock-select-loader',e => console.log('remove listener stock-select-loader'))
   }
   handleClickOutside = () => {
     setTimeout(() => {
@@ -827,6 +837,7 @@ export default class Warehouse extends Component {
   render() {
     return (
       <React.Fragment>
+        <div>კაპ კაპ {this.state.loaders.stockSelectLoader? 'loading...':'loaded'}</div>
         {this.state.errorDialog.dialog? <ErrorModal text={this.state.errorDialog.text} onClick={()=>this.setState(State('errorDialog',{dialog: false, text: ''},this.state))}/> : ''}
         {this.state.print.modal? <PrintModal text={this.state.print.text} onClick={(action)=> this.clearPrintData(action)}/> : ''}
 
@@ -1449,7 +1460,8 @@ export default class Warehouse extends Component {
                   </div>
                   <div className="fullwidth p-col-12">
                     <FileUploader
-                      onSelectFile={(file) => this.setState(State('inventor.income.detail.file', file.files[0], this.state))}/>
+                      onSelectFile={(file) => this.setState(State('inventor.income.detail.file', file.files[0], this.state))}
+                    />
                   </div>
                 </div>
               </>
@@ -3049,7 +3061,7 @@ export default class Warehouse extends Component {
     );
   }
   getStockData = () => {
-    http.get("/api/secured/stock/Select")
+    (new Http()).setLoader('stock-select-loader').get("/api/secured/stock/Select")
       .then(result => {
         if(result.status === 200){
           this.setState(State('inventor.stock', result.data, this.state));

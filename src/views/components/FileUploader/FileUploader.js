@@ -61,4 +61,5 @@ FileUploader.propTypes = {
 };
 FileUploader.defaultProps = {
   url:'/api/secured/Document/Upload',
+  onUpload: e => console.log(e)
 };
