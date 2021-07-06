@@ -22,10 +22,10 @@ export const TreeTableGroup = (props) => {
 
   return (
     <div>
-      <TreeTable value={props.data.root} selectionMode="single" onSelect={(e) =>{ (JSON.stringify(e.node)===JSON.stringify(selectedData))? setSelectedData({data:{id:-1}})  :  setSelectedData(e.node)  ; }} selectionKeys={selectedNodeKey1}  >
+      <TreeTable value={props.data.root} selectionMode="single" onSelect={(e) =>{ (JSON.stringify(e.node)===JSON.stringify(selectedData))? setSelectedData({data:{id:-1,name:''}})  :  setSelectedData(e.node)  ; }} selectionKeys={selectedNodeKey1}  >
         {
           _.map(props.column,(value,index)=>{
-            return <Column key={value} field={value.field}  header={value.title} expander={value.expander}  body={value.body}> test</Column>
+            return <Column key={value} field={value.field}  header={value.title} expander={value.expander}  body={value.body}/>
           })
         }
       </TreeTable>

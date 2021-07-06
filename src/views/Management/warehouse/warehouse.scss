@@ -54,7 +54,7 @@
         font-family: lbet-mt,sans-serif!important;
       }
       .p-dropdown {
-        height: 31px;
+        height: 32px !important;
       }
       &.barcode {
         .p-dropdown {
@@ -62,6 +62,7 @@
         }
       }
     }
+
   }
   .p-dialog-footer {
     button {

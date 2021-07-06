@@ -1284,6 +1284,7 @@ export default class Warehouse extends Component {
                 </table>
               </div>) : (
               <>
+
                 <div className="incomeModal p-grid">
                   <div className="fullwidth p-col-2">
                     <label>დასახელება</label>
@@ -1383,7 +1384,7 @@ export default class Warehouse extends Component {
                             optionLabel="name"
                           />
                           <InputText type="number" placeholder="შტრ. კოდი"
-                                     style={{textIndent: '0px', width: '78px', fontSize: '12px'}}
+                                     style={{textIndent: '0px', width: '75px', fontSize: '12px'}}
                                      value={this.state.inventor.income.detail.barCode}
                                      onChange={(e) => this.setState(State("inventor.income.detail.barCode", e.target.value, this.state))}/>
                         </div>
@@ -1583,7 +1584,7 @@ export default class Warehouse extends Component {
                         optionLabel="name"
                       />
                       <InputText type="number" placeholder="შტრ. კოდი"
-                                 style={{textIndent: '0px', width: '78px', fontSize: '12px'}}
+                                 style={{textIndent: '0px', width: '75px', fontSize: '12px'}}
                                  value={this.state.inventor.selected.barCode}
                                  onChange={(e) => this.setState(State("inventor.selected.barCode", e.target.value, this.state))}/>
                     </div>
@@ -2380,6 +2381,7 @@ export default class Warehouse extends Component {
             }}
           />
         </Modal>
+
         <Modal
           className="itemGroup"
           header="საქონლის ჯგუფი"
@@ -2391,11 +2393,18 @@ export default class Warehouse extends Component {
               <TreeTableGroup
                 column={[{field: 'name', title: 'Name'}]}
                 data={this.state.inventor.itemGroup.data}
-                onSelectItemGroup={(e) => this.setState(State("inventor.income.detail.itemGroup", e, this.state),
-                  () => this.setState(State("inventor.itemGroup.dialog", false, this.state),
-                    () =>{ let group = this.state.inventor.income.detail.itemGroup; this.setState(State('inventor.income.detail.barCodeType', (group.isCar ===1 || group.isStrict ===1 || group.spend ===1 )? {id:'', name:""}: this.state.inventor.income.detail.barCodeType, this.state ),()=>console.log(this.state.inventor.income.detail.itemGroup)); } )) }  /> : ''
+                onSelectItemGroup={(e) =>
+                  e !== undefined?
+                    this.setState(State("inventor.income.detail.itemGroup", e, this.state),
+                    () => this.setState(State("inventor.itemGroup.dialog", false, this.state),
+                    () =>{let group = this.state.inventor.income.detail.itemGroup; this.setState(State('inventor.income.detail.barCodeType', (group.isCar ===1 || group.isStrict ===1 || group.spend ===1 )? {id:'', name:""}: this.state.inventor.income.detail.barCodeType, this.state ),()=>console.log(this.state.inventor.income.detail.itemGroup));} ))
+                  :''
+
+                }
+              /> : ''
           }
         </Modal>
+
         <Modal
           className="supplier_dialog"
           header="მიმწოდებელის დამატება"

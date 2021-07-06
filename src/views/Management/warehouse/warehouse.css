@@ -49,7 +49,7 @@
   font-family: lbet-mt, sans-serif !important;
 }
 .p-dialog[role=dialog] .incomeModal .fullwidth .p-dropdown {
-  height: 31px;
+  height: 32px !important;
 }
 .p-dialog[role=dialog] .incomeModal .fullwidth.barcode .p-dropdown {
   min-width: 104px;
@@ -79,6 +79,9 @@
   min-width: 200px;
   text-align: left;
   font-family: lbet-st, sans-serif !important;
+}
+.p-dialog[role=dialog] .p-dialog-content {
+  overflow: visible;
 }
 
 .incomeAddedTable table {

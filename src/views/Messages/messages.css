@@ -45,7 +45,7 @@
   font-family: lbet-mt, sans-serif !important;
 }
 .messages .p-dialog[role=dialog] .incomeModal .fullwidth .p-dropdown {
-  height: 31px;
+  height: 32px;
 }
 .messages .p-dialog[role=dialog] .incomeModal .fullwidth.barcode .p-dropdown {
   min-width: 104px;
