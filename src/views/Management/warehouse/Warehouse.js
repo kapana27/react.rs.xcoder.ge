@@ -1300,33 +1300,39 @@ export default class Warehouse extends Component {
                       value={this.state.inventor.income.detail.item}
                     />
                   </div>
-                  <div className="fullwidth p-col-2">
-                    <label>მარკა</label>
-                    <AutoComplete
-                      placeholder="მარკა"
-                      field="name"
-                      class={this.state.inventor.income.errors.maker ? 'bRed' : ''}
-                      suggestions={this.state.inventor.makerSuggestions}
-                      onComplete={this.suggestMaker}
-                      onSelect={(e) => this.setState(State('inventor.income.detail.maker', e, this.state))}
-                      onChange={(e) => this.setState(State('inventor.income.detail.maker.name', e, this.state))}
-                      value={this.state.inventor.income.detail.maker}
-                    />
-                  </div>
-                  <div className="fullwidth p-col-2">
-                    <label>მოდელი</label>
-                    <AutoComplete
-                      placeholder="მოდელი"
-                      field="name"
-                      class={this.state.inventor.income.errors.model ? 'bRed' : ''}
-                      disabled={_.isUndefined(this.state.inventor.income.detail.maker) || (_.isNull(this.state.inventor.income.detail.maker.id) && _.isEmpty(this.state.inventor.income.detail.maker.name))}
-                      suggestions={this.state.inventor.modelSuggestions}
-                      onComplete={this.suggestModel}
-                      onSelect={(e) => this.setState(State('inventor.income.detail.model', e, this.state))}
-                      onChange={(e) => this.setState(State('inventor.income.detail.model.name', e, this.state))}
-                      value={this.state.inventor.income.detail.model}
-                    />
-                  </div>
+                  {
+                    (this.state.inventor.income.detail.itemGroup.isStrict === 1)?'':
+                    <>
+                      <div className="fullwidth p-col-2">
+                        <label>მარკა</label>
+                        <AutoComplete
+                          placeholder="მარკა"
+                          field="name"
+                          class={this.state.inventor.income.errors.maker ? 'bRed' : ''}
+                          suggestions={this.state.inventor.makerSuggestions}
+                          onComplete={this.suggestMaker}
+                          onSelect={(e) => this.setState(State('inventor.income.detail.maker', e, this.state))}
+                          onChange={(e) => this.setState(State('inventor.income.detail.maker.name', e, this.state))}
+                          value={this.state.inventor.income.detail.maker}
+                        />
+                      </div>
+                      <div className="fullwidth p-col-2">
+                        <label>მოდელი</label>
+                        <AutoComplete
+                          placeholder="მოდელი"
+                          field="name"
+                          class={this.state.inventor.income.errors.model ? 'bRed' : ''}
+                          disabled={_.isUndefined(this.state.inventor.income.detail.maker) || (_.isNull(this.state.inventor.income.detail.maker.id) && _.isEmpty(this.state.inventor.income.detail.maker.name))}
+                          suggestions={this.state.inventor.modelSuggestions}
+                          onComplete={this.suggestModel}
+                          onSelect={(e) => this.setState(State('inventor.income.detail.model', e, this.state))}
+                          onChange={(e) => this.setState(State('inventor.income.detail.model.name', e, this.state))}
+                          value={this.state.inventor.income.detail.model}
+                        />
+                      </div>
+                    </>
+                  }
+
                   {
                     (this.state.inventor.income.detail.itemGroup.isStrict === 1) ?
                       '':
@@ -1338,16 +1344,24 @@ export default class Warehouse extends Component {
                                    onChange={(e) => this.setState(State("inventor.income.detail.count", e.target.value.replace(',','.'), this.state))}/>
                       </div>
                   }
-                  <div className="fullwidth p-col-2">
-                    <label>ერთეულის ფასი</label>
-                    <InputText type="text" placeholder="დასახელება" value={this.state.inventor.income.detail.price}
-                               onChange={(e) => this.setState(State("inventor.income.detail.price", e.target.value.replace(',','.'), this.state))}/>
-                  </div>
-                  <div className="fullwidth p-col-2">
-                    <label>სულ ფასი:</label>
-                    <div
-                      style={{lineHeight: '30px'}}>{(parseFloat(this.state.inventor.income.detail.price) * parseFloat(this.state.inventor.income.detail.count)).toFixed(2)}</div>
-                  </div>
+
+                  {
+                    (this.state.inventor.income.detail.itemGroup.isStrict === 1)?'':
+                      <>
+                        <div className="fullwidth p-col-2">
+                          <label>ერთეულის ფასი</label>
+                          <InputText type="text" placeholder="დასახელება" value={this.state.inventor.income.detail.price}
+                                     onChange={(e) => this.setState(State("inventor.income.detail.price", e.target.value.replace(',','.'), this.state))}/>
+                        </div>
+                        <div className="fullwidth p-col-2">
+                          <label>სულ ფასი:</label>
+                          <div
+                            style={{lineHeight: '30px'}}>{(parseFloat(this.state.inventor.income.detail.price) * parseFloat(this.state.inventor.income.detail.count)).toFixed(2)}</div>
+                        </div>
+                      </>
+                  }
+
+
                   {
                     (this.state.inventor.income.detail.itemGroup.spend === 1 || this.state.inventor.income.detail.itemGroup.isStrict === 1 || this.state.inventor.income.detail.itemGroup.isCar === 1) ? (
                         (this.state.inventor.income.detail.itemGroup.isStrict === 1) ?
@@ -1391,11 +1405,16 @@ export default class Warehouse extends Component {
                       )
                   }
 
-                  <div className="fullwidth p-col-2">
-                    <label>{(this.state.inventor.income.detail.itemGroup.isCar === 1) ? 'Vin კოდი' : 'ქარხნული ნომერი'}:</label>
-                    <InputText type="text" value={this.state.inventor.income.detail.factoryNumber}
-                               onChange={(e) => this.setState(State("inventor.income.detail.factoryNumber", e.target.value, this.state))}/>
-                  </div>
+                  {
+                    (this.state.inventor.income.detail.itemGroup.isStrict === 1)?'':
+                      <div className="fullwidth p-col-2">
+                        <label>{(this.state.inventor.income.detail.itemGroup.isCar === 1) ? 'Vin კოდი' : 'ქარხნული ნომერი'}:</label>
+                        <InputText type="text" value={this.state.inventor.income.detail.factoryNumber}
+                                   onChange={(e) => this.setState(State("inventor.income.detail.factoryNumber", e.target.value, this.state))}/>
+                      </div>
+                  }
+
+
                   {
                     (this.state.inventor.income.detail.itemGroup.isCar === 1) ?
                       (
@@ -1417,7 +1436,7 @@ export default class Warehouse extends Component {
                     <label>განზომილების ერთეული</label>
                     <Dropdown style={{width: '100%'}} value={this.state.inventor.income.detail.measureUnit}
                               options={this.state.inventor.measureUnitList}
-                              class={this.state.inventor.income.errors.measureUnit ? 'bRed' : ''}
+                              className={this.state.inventor.income.errors.measureUnit ? 'bRed' : ''}
                               onChange={(e) => this.setState(State("inventor.income.detail.measureUnit", {
                                 id: e.value.id,
                                 name: e.value.name
@@ -1433,7 +1452,7 @@ export default class Warehouse extends Component {
                               onClick={() => this.setState(State('inventor.itemGroup.dialog', true, this.state))}/>
                     </div>
                   </div>
-                  <div className="fullwidth p-col-2">
+                  <div className="fullwidth p-col-2" style={{display:'flex',flexDirection:'column'}}>
                     <label>ინვენტარის ტიპი</label>
                     <Dropdown value={this.state.inventor.income.detail.type}
                               className={this.state.inventor.income.errors.type ? 'bRed' : ''}
@@ -1443,7 +1462,7 @@ export default class Warehouse extends Component {
                                 name: e.value.name
                               }, this.state))} placeholder="ინვენტარის ტიპი" optionLabel="name"/>
                   </div>
-                  <div className="fullwidth p-col-2">
+                  <div className="fullwidth p-col-2" style={{display:"flex",flexDirection:'column'}}>
                     <label>ინვენტარის სტატუსი</label>
                     <Dropdown value={this.state.inventor.income.detail.status}
                               className={this.state.inventor.income.errors.status ? 'bRed' : ''}
@@ -1962,20 +1981,20 @@ export default class Warehouse extends Component {
           onHide={() => this.setState(State('inventor.income.dialog', false, this.state),()=>this.resetIncome())}
           style={{width: '1200px'}}
           footer={
-            <div>
+            <div style={{position:'relative'}}>
               {
                 this.state.inventor.income.showDetails ?
-                  <React.Fragment>
+                  <>
                     {
                       (!_.isEmpty(this.state.inventor.income.addon.Right)) ?
                         <span style={{ position: 'absolute', left: '10px',fontSize:'16px', fontFamily: 'lbet-st'}}>
-                              ბოლო კოდი : {this.state.inventor.income.addon.Right}
+                              ბოლო ნომერი : {this.state.inventor.income.addon.Right}
                         </span>
                         :
                         <span/>
                     }
                     <Button label="ზედდებულის გააქტიურება" icon="pi pi-check" onClick={() => this.onSaveInventor()}/>
-                  </React.Fragment>
+                  </>
                   :
                   <Button label="ზედდებულის გენერაცია" icon="pi pi-check" onClick={() => this.generateInventor()}/>
               }
@@ -3050,16 +3069,20 @@ export default class Warehouse extends Component {
       .catch(reason => this.error(reason.error) );
   };
   suggestModel = (event) => {
+
     this.setState(State('inventor.modelSuggestions', [], this.state));
-    http.get("/api/secured/List/Model/Filter?query="+event+"&parent=" + this.state.inventor.income.detail.maker.id )
-      .then(result => {
-        if (result.status === 200) {
-          this.setState(State('inventor.modelSuggestions', result.data, this.state));
-        }else{
-          this.error(result.error);
-        }
-      })
-      .catch(reason => this.error(reason.error) );
+    if(this.state.inventor.income.detail.maker.id){
+      http.get("/api/secured/List/Model/Filter?query="+event+"&parent=" + this.state.inventor.income.detail.maker.id )
+        .then(result => {
+          if (result.status === 200) {
+            this.setState(State('inventor.modelSuggestions', result.data, this.state));
+          }else{
+            this.error(result.error);
+          }
+        })
+        .catch(reason => this.error(reason.error) );
+    }
+
   };
   itemTemplate=(event)=>{
     const {generatedName}=event;

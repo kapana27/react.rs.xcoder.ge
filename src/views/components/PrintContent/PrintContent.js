@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import * as moment from "moment";
 export const PrintContent = (props) => {
 
-  console.log('props', props);
+  console.log('print props', props);
 
   let localData = {};
   if(props.newData.printType === "WI"){
@@ -85,7 +85,7 @@ export const PrintContent = (props) => {
             props.newData.printType === "WS"?
               <React.Fragment>
                 <tr>
-                  <th colSpan="8" style={{textAlign:'center'}}>საწყობი</th>
+                  <th colSpan="6" style={{textAlign:'center'}}>საწყობი</th>
                   <th colSpan="2" style={{textAlign:'center'}}>ბუღალტერია</th>
                 </tr>
                 <tr>

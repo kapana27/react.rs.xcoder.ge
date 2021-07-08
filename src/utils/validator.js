@@ -6,7 +6,7 @@ export const Validator = (fields, data, checkerKey=null) => {
         if(_.isObject(data[key]) && (_.isUndefined(data[key][checkerKey? checkerKey:'id']) || _.isNull(data[key][checkerKey? checkerKey:'id'])|| _.trim(data[key][checkerKey? checkerKey:'id']) === '' )){
           errors.push(key);
         }else{
-          if(_.isUndefined(data[key]) || _.isNull(data[key]) || data[key] ===''  ){
+          if(_.isUndefined(data[key]) || _.isNull(data[key]) || data[key] === ''){
             errors.push(key)
           }
         }
