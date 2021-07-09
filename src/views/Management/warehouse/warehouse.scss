@@ -97,6 +97,14 @@
   .p-dialog-content {
     overflow: visible;
   }
+  .tbv_invGac {
+    .p-tabview-nav {
+      margin-bottom: 0 !important;
+    }
+    .p-tabview-panels {
+      min-height: 235px;
+    }
+  }
 }
 
 .incomeAddedTable {

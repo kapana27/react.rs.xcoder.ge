@@ -1345,21 +1345,17 @@ export default class Warehouse extends Component {
                       </div>
                   }
 
-                  {
-                    (this.state.inventor.income.detail.itemGroup.isStrict === 1)?'':
-                      <>
-                        <div className="fullwidth p-col-2">
-                          <label>ერთეულის ფასი</label>
-                          <InputText type="text" placeholder="დასახელება" value={this.state.inventor.income.detail.price}
-                                     onChange={(e) => this.setState(State("inventor.income.detail.price", e.target.value.replace(',','.'), this.state))}/>
-                        </div>
-                        <div className="fullwidth p-col-2">
-                          <label>სულ ფასი:</label>
-                          <div
-                            style={{lineHeight: '30px'}}>{(parseFloat(this.state.inventor.income.detail.price) * parseFloat(this.state.inventor.income.detail.count)).toFixed(2)}</div>
-                        </div>
-                      </>
-                  }
+
+                  <div className="fullwidth p-col-2">
+                    <label>ერთეულის ფასი</label>
+                    <InputText type="text" placeholder="დასახელება" value={this.state.inventor.income.detail.price}
+                               onChange={(e) => this.setState(State("inventor.income.detail.price", e.target.value.replace(',','.'), this.state))}/>
+                  </div>
+                  <div className="fullwidth p-col-2">
+                    <label>სულ ფასი:</label>
+                    <div
+                      style={{lineHeight: '30px'}}>{(parseFloat(this.state.inventor.income.detail.price) * parseFloat(this.state.inventor.income.detail.count)).toFixed(2)}</div>
+                  </div>
 
 
                   {
@@ -2183,7 +2179,7 @@ export default class Warehouse extends Component {
               </div>
               :
               <>
-              <TabView renderActiveOnly={false} activeIndex={this.state.inventor.outcome.tab} onTabChange={(e)=>this.inventorOutcomeTabChange(e)}>
+              <TabView className="tbv_invGac" renderActiveOnly={false} activeIndex={this.state.inventor.outcome.tab} onTabChange={(e)=>this.inventorOutcomeTabChange(e)}>
                 <TabPanel header="შენობა">
                   <div className="incomeModal p-grid">
                     <div className="fullwidth p-col-8">
@@ -2312,7 +2308,7 @@ export default class Warehouse extends Component {
                   <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.transferGenerateOverheadAB()} />
                   :
                   <React.Fragment>
-                    <span className="last_code">ბოლო კოდი - {this.state.inventor.lastCode} </span>
+                    <span className="last_code">ბოლო ნომერი - {this.state.inventor.lastCode} </span>
                     <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.transferActiveOverhead()}/>
                   </React.Fragment>
               }
