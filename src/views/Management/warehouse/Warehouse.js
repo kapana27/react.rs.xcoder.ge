@@ -468,6 +468,12 @@ export default class Warehouse extends Component {
           {id:'11', name:'საწყობი A'},
           {id:'12', name:'საწყობი B'}
         ],
+        sectionList11:[
+          {id:'12', name:'საწყობი B'}
+        ],
+        sectionList12:[
+          {id:'11', name:'საწყობი A'}
+        ],
         stockManList: [],
         propertyManagementList: [],
         transPersonList: [],
@@ -475,6 +481,10 @@ export default class Warehouse extends Component {
         requestPersonList: [],
         lastCode: "",
         newCode: "",
+      },
+      documents: {
+        dialog: false,
+        text: ''
       },
       tab: 11,
       cart: {
@@ -837,7 +847,7 @@ export default class Warehouse extends Component {
   render() {
     return (
       <React.Fragment>
-        <div>კაპ კაპ {this.state.loaders.stockSelectLoader? 'loading...':'loaded'}</div>
+        <div onClick={()=>this.setState(State('documents.dialog',true,this.state))}>კაპ კაპ {this.state.loaders.stockSelectLoader? 'loading...':'loaded'}</div>
         {this.state.errorDialog.dialog? <ErrorModal text={this.state.errorDialog.text} onClick={()=>this.setState(State('errorDialog',{dialog: false, text: ''},this.state))}/> : ''}
         {this.state.print.modal? <PrintModal text={this.state.print.text} onClick={(action)=> this.clearPrintData(action)}/> : ''}
 
@@ -2130,6 +2140,8 @@ export default class Warehouse extends Component {
               </React.Fragment>
           }
         </Modal>
+
+
         <Modal
           header="ინვენტარის გაცემა" visible={this.state.inventor.outcome.dialog}
           onHide={() => this.resetModalParam('outcome')}
@@ -2137,25 +2149,25 @@ export default class Warehouse extends Component {
           footer = {
             (this.state.inventor.outcome.tab === 0)?
               // შენობა ტაბის  ღილაკები
-            <div className="dialog_footer">
-              <div className="left_side">
-                <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
-                <Button label="დოკუმენტები" className="ui-button-raised"/>
+              <div className="dialog_footer">
+                <div className="left_side">
+                  <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
+                  <Button label="დოკუმენტები" className="ui-button-raised"/>
+                </div>
+                {
+                  (!this.state.inventor.outcome.expand)?
+                    <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.outcameTab0GenerateOverhead()} />
+                    :
+                    <React.Fragment>
+                      <span className="last_code">ბოლო კოდი - {this.state.inventor.lastCode} </span>
+                      <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.outcameTab0ActiveOverhead()}/>
+                    </React.Fragment>
+                }
+                <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.resetModalParam('outcome')}/>
               </div>
-              {
-                (!this.state.inventor.outcome.expand)?
-                  <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.outcameTab0GenerateOverhead()} />
-                  :
-                  <React.Fragment>
-                    <span className="last_code">ბოლო კოდი - {this.state.inventor.lastCode} </span>
-                    <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.outcameTab0ActiveOverhead()}/>
-                  </React.Fragment>
-              }
-              <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.resetModalParam('outcome')}/>
-            </div>
               :
               // პიროვნება ტაბის  ღილაკები
-            <div className="dialog_footer">
+              <div className="dialog_footer">
                 <div className="left_side">
                   <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
                   <Button label="დოკუმენტები" className="ui-button-raised"/>
@@ -2179,122 +2191,141 @@ export default class Warehouse extends Component {
               </div>
               :
               <>
-              <TabView className="tbv_invGac" renderActiveOnly={false} activeIndex={this.state.inventor.outcome.tab} onTabChange={(e)=>this.inventorOutcomeTabChange(e)}>
-                <TabPanel header="შენობა">
-                  <div className="incomeModal p-grid">
-                    <div className="fullwidth p-col-8">
-                      <div className="p-grid">
-                        <div className="fullwidth p-col-6">
-                          <label>თარიღი</label>
-                          <Calendar date={this.state.inventor.outcome.date} onDateChange={props=>this.setState(State('inventor.outcome.date',props,this.state)) } />
-                        </div>
-                        <div className="fullwidth p-col-6">
-                          <label>ქონების მართვა</label>
-                          <Dropdown value={this.state.inventor.outcome.propertyManagement}  onMouseDown={(e)=>this.propertyManagement()} options={this.state.inventor.propertyManagementList} onChange={(e) => this.setState(State("inventor.outcome.propertyManagement",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="" style={{width:'100%'}} />
-                        </div>
-                        <div className="fullwidth p-col-6">
-                          <label>მომთხოვნი პიროვნება</label>
-                          <AutoComplete
-                            field="fullName"
-                            suggestions={this.state.inventor.requestPersonList}
-                            onComplete={(e) => this.requestPersonList(e)}
-                            onSelect = {(e)=>this.setState(State('inventor.outcome.requestPerson',e,this.state))}
-                            onChange = {(e)=>this.setState(State('inventor.outcome.requestPerson',e,this.state))}
-                            value={this.state.inventor.outcome.requestPerson}
-                          />
-                        </div>
-                        <div className="fullwidth p-col-6">
-                          <label>ტრანსპორტირების პასხ. პირი</label>
-                          <AutoComplete
-                            field="fullName"
-                            suggestions={this.state.inventor.transPersonList}
-                            onComplete={(e) => this.transPersonList(e)}
-                            onSelect={(e)=>this.setState(State('inventor.outcome.transPerson',e,this.state))}
-                            onChange={(e) => this.setState(State('inventor.outcome.transPerson',e,this.state))}
-                            value={this.state.inventor.outcome.transPerson}
-                          />
+                <TabView className="tbv_invGac" renderActiveOnly={false} activeIndex={this.state.inventor.outcome.tab} onTabChange={(e)=>this.inventorOutcomeTabChange(e)}>
+                  <TabPanel header="შენობა">
+                    <div className="incomeModal p-grid">
+                      <div className="fullwidth p-col-8">
+                        <div className="p-grid">
+                          <div className="fullwidth p-col-6">
+                            <label>თარიღი</label>
+                            <Calendar date={this.state.inventor.outcome.date} onDateChange={props=>this.setState(State('inventor.outcome.date',props,this.state)) } />
+                          </div>
+                          <div className="fullwidth p-col-6">
+                            <label>ქონების მართვა</label>
+                            <Dropdown value={this.state.inventor.outcome.propertyManagement}  onMouseDown={(e)=>this.propertyManagement()} options={this.state.inventor.propertyManagementList} onChange={(e) => this.setState(State("inventor.outcome.propertyManagement",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="" style={{width:'100%'}} />
+                          </div>
+                          <div className="fullwidth p-col-6">
+                            <label>მომთხოვნი პიროვნება</label>
+                            <AutoComplete
+                              field="fullName"
+                              suggestions={this.state.inventor.requestPersonList}
+                              onComplete={(e) => this.requestPersonList(e)}
+                              onSelect = {(e)=>this.setState(State('inventor.outcome.requestPerson',e,this.state))}
+                              onChange = {(e)=>this.setState(State('inventor.outcome.requestPerson',e,this.state))}
+                              value={this.state.inventor.outcome.requestPerson}
+                            />
+                          </div>
+                          <div className="fullwidth p-col-6">
+                            <label>ტრანსპორტირების პასხ. პირი</label>
+                            <AutoComplete
+                              field="fullName"
+                              suggestions={this.state.inventor.transPersonList}
+                              onComplete={(e) => this.transPersonList(e)}
+                              onSelect={(e)=>this.setState(State('inventor.outcome.transPerson',e,this.state))}
+                              onChange={(e) => this.setState(State('inventor.outcome.transPerson',e,this.state))}
+                              value={this.state.inventor.outcome.transPerson}
+                            />
+                          </div>
                         </div>
                       </div>
+                      <div className="fullwidth p-col-4">
+                        <label>კომენტარი</label>
+                        <InputTextarea value={this.state.inventor.outcome.comment} onChange = {(e)=>this.setState(State('inventor.outcome.comment',e.target.value,this.state))} rows={4} placeholder="შენიშვნა" style={{width: '100%', minHeight: '100px'}}/>
+                      </div>
                     </div>
-                    <div className="fullwidth p-col-4">
-                      <label>კომენტარი</label>
-                      <InputTextarea value={this.state.inventor.outcome.comment} onChange = {(e)=>this.setState(State('inventor.outcome.comment',e.target.value,this.state))} rows={4} placeholder="შენიშვნა" style={{width: '100%', minHeight: '100px'}}/>
+                  </TabPanel>
+                  <TabPanel header="პიროვნება">
+                    <div className="incomeModal p-grid">
+                      <div className="fullwidth p-col-4">
+                        <label>თარიღი</label>
+                        <Calendar date={this.state.inventor.outcome.date} onDateChange={props=>this.setState(State('inventor.outcome.date',props,this.state)) } />
+                      </div>
+                      <div className="fullwidth p-col-4">
+                        <label>პიროვნება</label>
+                        <AutoComplete
+                          field="fullname"
+                          suggestions={this.state.inventor.personality}
+                          onComplete={this.Person}
+                          onSelect={(e)=>this.setState(State('inventor.outcome.person',e,this.state),()=>this.personRoom(e.id))}
+                          onChange={(e) => this.setState(State('inventor.outcome.person',e,this.state))}
+                          value={this.state.inventor.outcome.person}
+                        />
+                      </div>
+                      <div className="fullwidth p-col-4">
+                        <label>ქონების მართვა</label>
+                        <Dropdown value={this.state.inventor.outcome.propertyManagement}  onMouseDown={(e)=>this.propertyManagement()} options={this.state.inventor.propertyManagementList} onChange={(e) => this.setState(State("inventor.outcome.propertyManagement",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="" style={{width:'100%'}} />
+                      </div>
+                      <div className="fullwidth p-col-4">
+                        <label>სექცია</label>
+                        <Dropdown value={this.state.inventor.outcome.room} options={this.state.inventor.roomList} onChange={(e) => this.setState(State( "inventor.outcome.room",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="სექცია" style={{width:'100%'}} />
+                      </div>
+                      <div className="fullwidth p-col-4">
+                        <label>ტრანსპორტირების პასხ. პირი</label>
+                        <AutoComplete
+                          field="fullName"
+                          suggestions={this.state.inventor.transPersonList}
+                          onComplete={(e) => this.transPersonList(e)}
+                          onSelect={(e)=>this.setState(State('inventor.outcome.transPerson',e,this.state))}
+                          onChange={(e) => this.setState(State('inventor.outcome.transPerson',e,this.state))}
+                          value={this.state.inventor.outcome.transPerson}
+                        />
+                      </div>
+                      <div className="fullwidth p-col-4">
+                        <label>მომთხოვნი პიროვნება</label>
+                        <AutoComplete
+                          field="fullName"
+                          suggestions={this.state.inventor.requestPersonList}
+                          onComplete={(e) => this.requestPersonList(e)}
+                          onSelect = {(e)=>this.setState(State('inventor.outcome.requestPerson',e,this.state))}
+                          onChange = {(e)=>this.setState(State('inventor.outcome.requestPerson',e,this.state))}
+                          value={this.state.inventor.outcome.requestPerson}
+                        />
+                      </div>
+                      <div className="fullwidth p-col-12">
+                        <label>კომენტარი</label>
+                        <InputTextarea value={this.state.inventor.outcome.comment} onChange = {(e)=>this.setState(State('inventor.outcome.comment',e.target.value,this.state))} rows={1} placeholder="შენიშვნა" style={{width: '100%'}}/>
+                      </div>
                     </div>
-                  </div>
-                </TabPanel>
-                <TabPanel header="პიროვნება">
-                  <div className="incomeModal p-grid">
-                    <div className="fullwidth p-col-4">
-                      <label>თარიღი</label>
-                      <Calendar date={this.state.inventor.outcome.date} onDateChange={props=>this.setState(State('inventor.outcome.date',props,this.state)) } />
-                    </div>
-                    <div className="fullwidth p-col-4">
-                      <label>პიროვნება</label>
-                      <AutoComplete
-                        field="fullname"
-                        suggestions={this.state.inventor.personality}
-                        onComplete={this.Person}
-                        onSelect={(e)=>this.setState(State('inventor.outcome.person',e,this.state),()=>this.personRoom(e.id))}
-                        onChange={(e) => this.setState(State('inventor.outcome.person',e,this.state))}
-                        value={this.state.inventor.outcome.person}
-                      />
-                    </div>
-                    <div className="fullwidth p-col-4">
-                      <label>ქონების მართვა</label>
-                      <Dropdown value={this.state.inventor.outcome.propertyManagement}  onMouseDown={(e)=>this.propertyManagement()} options={this.state.inventor.propertyManagementList} onChange={(e) => this.setState(State("inventor.outcome.propertyManagement",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="" style={{width:'100%'}} />
-                    </div>
-                    <div className="fullwidth p-col-4">
-                      <label>სექცია</label>
-                      <Dropdown value={this.state.inventor.outcome.room} options={this.state.inventor.roomList} onChange={(e) => this.setState(State( "inventor.outcome.room",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="სექცია" style={{width:'100%'}} />
-                    </div>
-                    <div className="fullwidth p-col-4">
-                      <label>ტრანსპორტირების პასხ. პირი</label>
-                      <AutoComplete
-                        field="fullName"
-                        suggestions={this.state.inventor.transPersonList}
-                        onComplete={(e) => this.transPersonList(e)}
-                        onSelect={(e)=>this.setState(State('inventor.outcome.transPerson',e,this.state))}
-                        onChange={(e) => this.setState(State('inventor.outcome.transPerson',e,this.state))}
-                        value={this.state.inventor.outcome.transPerson}
-                      />
-                    </div>
-                    <div className="fullwidth p-col-4">
-                      <label>მომთხოვნი პიროვნება</label>
-                      <AutoComplete
-                        field="fullName"
-                        suggestions={this.state.inventor.requestPersonList}
-                        onComplete={(e) => this.requestPersonList(e)}
-                        onSelect = {(e)=>this.setState(State('inventor.outcome.requestPerson',e,this.state))}
-                        onChange = {(e)=>this.setState(State('inventor.outcome.requestPerson',e,this.state))}
-                        value={this.state.inventor.outcome.requestPerson}
-                      />
-                    </div>
-                    <div className="fullwidth p-col-12">
-                      <label>კომენტარი</label>
-                      <InputTextarea value={this.state.inventor.outcome.comment} onChange = {(e)=>this.setState(State('inventor.outcome.comment',e.target.value,this.state))} rows={1} placeholder="შენიშვნა" style={{width: '100%'}}/>
-                    </div>
-                  </div>
-                </TabPanel>
-              </TabView>
-              <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
-                data={this.state.cart['tab' + this.state.tab]}
-                onChangeAmount={e=>{
-                  let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
-                  if(e.count>data.amount){
-                    e.count=data.amount;
-                  }
-                  else if(e.count < 1){
-                    e.count = 1;
-                  }
-                  data.count = e.count;
-                  this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
-                }
-              }/>
+                  </TabPanel>
+                </TabView>
+                <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
+                      data={this.state.cart['tab' + this.state.tab]}
+                      onChangeAmount={e=>{
+                        let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
+                        if(e.count>data.amount){
+                          e.count=data.amount;
+                        }
+                        else if(e.count < 1){
+                          e.count = 1;
+                        }
+                        data.count = e.count;
+                        this.setState(State('cart.tab' + this.state.tab+"."+e.index,JSON.stringify(data),this.state))
+                      }
+                      }/>
               </>
           }
         </Modal>
+
+
         <Modal
-          header="ინვენტარის მოძრაობა სექციებს შორის" visible={this.state.inventor.transfer.dialog}
+          header="დოკუმენტების მიბმა" visible={this.state.documents.dialog}
+          onHide={() => this.setState(State('documents.dialog',false,this.state))}
+          style={{width: '900px'}}
+          footer = {
+            <div className="dialog_footer">
+              <div className="left_side"/>
+              <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.setState(State('documents.dialog',false,this.state))}/>
+            </div>
+          }>
+
+          <div style={{minHeight:'300px'}}>
+            &nbsp;
+          </div>
+
+        </Modal>
+
+        <Modal
+          header= {"ინვენტარის მოძრაობა სექციებს შორის " + (this.state.tab === 11? '(A->B)':'B->A') } visible={this.state.inventor.transfer.dialog}
           onHide={() => this.resetModalParam('transfer')}
           style={{width: '900px'}}
           footer = {
@@ -2330,7 +2361,7 @@ export default class Warehouse extends Component {
                     </div>
                     <div className="fullwidth p-col-6">
                       <label>სექცია</label>
-                      <Dropdown value={this.state.inventor.transfer.section} options={this.state.inventor.sectionList} onChange={(e) => this.setState(State( "inventor.transfer.section",{ id: e.value.id, name: e.value.name},this.state), this.warehouseManagement(e.value.id))} optionLabel="name" placeholder="სექცია" style={{width:'100%'}} />
+                      <Dropdown value={this.state.inventor.transfer.section} options={this.state.inventor['sectionList'+this.state.tab]} onChange={(e) => this.setState(State( "inventor.transfer.section",{ id: e.value.id, name: e.value.name},this.state), this.warehouseManagement(e.value.id))} optionLabel="name" placeholder="სექცია" style={{width:'100%'}} />
                     </div>
                     <div className="fullwidth p-col-6">
                       <label>ქონების მართვა</label>
@@ -2794,6 +2825,11 @@ export default class Warehouse extends Component {
       .catch(reason => this.error(reason.error) );
   };
   resetModalParam(modal){
+    console.log('modal',modal)
+    if(modal !== 'documents') {
+      //this.setState(State(modal + '.dialog', false, this.state));
+      this.setState(State('documents.dialog',false,this.state));
+    }
     if(modal !== 'print') {
       this.setState(State('inventor.' + modal + '.dialog', false, this.state));
       this.setState(State('inventor.' + modal + '.expand', false, this.state));
