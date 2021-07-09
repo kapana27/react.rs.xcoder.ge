@@ -8,11 +8,15 @@ export const FileUploader = (props) => {
     const [files,setFiles]=useState([]);
 
   function onSelect(e) {
+
    if(e.xhr.status===200){
      const data = JSON.parse(e.xhr.response)['data'];
      setFiles([...files, {id:data[0]['id'], name: data[0]['filename'], size: Math.ceil(e.files[0]['size']/1024)+"KB"}]);
    }
   }
+  useEffect(()=>{
+    props.onSelectFile({files:files})
+  },[files])
 
   return <div>
   <FileUpload
@@ -20,9 +24,16 @@ export const FileUploader = (props) => {
     url={props.url}
     accept=".pdf,.png"
     maxFileSize={1000000}
-    onSelect={(e)=>props.onSelectFile(e)}
+    onSelect={(e)=> {
+      //props.onSelectFile(e)
+      console.log(e)
+
+    }}
     auto={false}
-    onUpload={e=>props.onUpload(JSON.parse(e.xhr.response))}
+    onUpload={e=>{
+      //props.onUpload(JSON.parse(e.xhr.response))
+      onSelect(e)
+    }}
     chooseLabel="აირჩიეთ ფაილი"
     cancelLabel="გაუქმება"
     uploadLabel="ატვირთვა"
