@@ -2,7 +2,9 @@ import  React,{useState,useEffect} from 'react';
 import {FileUpload} from 'primereact/fileupload';
 import {Button} from 'primereact/button';
 import PropTypes from "prop-types";
-
+import _ from 'lodash'
+import http from "../../../api/http";
+import http3 from "../../../api/http3";
 export const FileUploader = (props) => {
 
     const [files,setFiles]=useState([]);
@@ -11,7 +13,9 @@ export const FileUploader = (props) => {
 
    if(e.xhr.status===200){
      const data = JSON.parse(e.xhr.response)['data'];
-     setFiles([...files, {id:data[0]['id'], name: data[0]['filename'], size: Math.ceil(e.files[0]['size']/1024)+"KB"}]);
+     setFiles( _.map(data,v=>{
+       return {id:v['id'], name: v['filename'], size: v['size']}
+     }));
    }
   }
   useEffect(()=>{
@@ -23,13 +27,14 @@ export const FileUploader = (props) => {
     name="file"
     url={props.url}
     accept=".pdf,.png"
+    multiple={props.multiple}
     maxFileSize={1000000}
     onSelect={(e)=> {
       //props.onSelectFile(e)
       console.log(e)
 
     }}
-    auto={false}
+    auto={true}
     onUpload={e=>{
       //props.onUpload(JSON.parse(e.xhr.response))
       onSelect(e)
@@ -48,7 +53,14 @@ export const FileUploader = (props) => {
           <tr key={index} style={styles.tr}>
             <td>{value.name}</td>
             <td>{value.size}</td>
-            <td width={20} onClick={()=>setFiles(files.filter((value1, index1) => index1!==index))}>
+            <td width={20} onClick={()=>{
+              (new http3()).get("/api/secured/Document/Delete?id="+value.id).then(response=>{
+                if(response.status===200 ){
+                  setFiles(files.filter((value1, index1) => index1!==index))
+                }
+              })
+
+            }}>
               <Button icon="pi pi-times" />
             </td>
           </tr>
@@ -68,9 +80,11 @@ const styles = {
 FileUploader.propTypes = {
   url: PropTypes.string,
   onSelectFile:PropTypes.func,
-  onUpload:PropTypes.func
+  onUpload:PropTypes.func,
+  multiple:PropTypes.bool
 };
 FileUploader.defaultProps = {
   url:'/api/secured/Document/Upload',
-  onUpload: e => console.log(e)
+  onUpload: e => console.log(e),
+  multiple:true
 };
