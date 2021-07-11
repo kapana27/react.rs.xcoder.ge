@@ -2319,7 +2319,8 @@ export default class Warehouse extends Component {
           }>
 
           <div style={{minHeight:'300px'}}>
-            &nbsp;
+            <FileUploader
+              onSelectFile={(file) => console.log(file)}/>
           </div>
 
         </Modal>
