@@ -7,44 +7,62 @@ import http from "../../../api/http";
 import http3 from "../../../api/http3";
 export const FileUploader = (props) => {
 
-    const [files,setFiles]=useState([]);
+    const [files,setFiles]=useState(props.files);
+
+  useEffect(()=>{
+    console.log('kap',props)
+    if (props.autoLoadFilesUrl){
+
+      (new http3()).get(props.autoLoadFilesUrl).then(response =>{
+        setFiles(response.status === 200?_.map(response.data,v=>{
+          return {id:v['id'], name: v['filename'], size: v?.size}
+        }):[])
+      })
+    }
+  },[])
 
   function onSelect(e) {
 
    if(e.xhr.status===200){
      const data = JSON.parse(e.xhr.response)['data'];
-     setFiles( _.map(data,v=>{
+     setFiles([...files,... _.map(data,v=>{
        return {id:v['id'], name: v['filename'], size: v['size']}
-     }));
+     })]);
    }
   }
+
   useEffect(()=>{
-    props.onSelectFile({files:files})
+    props.onSelectFile({files:files}, props.itemId)
   },[files])
 
-  return <div>
-  <FileUpload
-    name="file"
-    url={props.url}
-    accept=".pdf,.png"
-    multiple={props.multiple}
-    maxFileSize={1000000}
-    onSelect={(e)=> {
-      //props.onSelectFile(e)
-      console.log(e)
 
-    }}
-    auto={true}
-    onUpload={e=>{
-      //props.onUpload(JSON.parse(e.xhr.response))
-      onSelect(e)
-    }}
-    chooseLabel="აირჩიეთ ფაილი"
-    cancelLabel="გაუქმება"
-    uploadLabel="ატვირთვა"
-    previewWidth={24}
-  >
-  </FileUpload>
+
+  return <div>
+    {
+      !props.readOnly && <FileUpload
+        name="file"
+        url={props.url}
+        accept=".pdf,.png"
+        multiple={props.multiple}
+        maxFileSize={10000000}
+        onSelect={(e)=> {
+          //props.onSelectFile(e)
+          console.log(e)
+
+        }}
+        auto={true}
+        onUpload={e=>{
+          //props.onUpload(JSON.parse(e.xhr.response))
+          onSelect(e)
+        }}
+        chooseLabel="აირჩიეთ ფაილი"
+        cancelLabel="გაუქმება"
+        uploadLabel="ატვირთვა"
+        previewWidth={24}
+      >
+      </FileUpload>
+    }
+
   <table style={{width: '100%'}} cellPadding={5}>
     <tbody>
     {
@@ -53,16 +71,20 @@ export const FileUploader = (props) => {
           <tr key={index} style={styles.tr}>
             <td>{value.name}</td>
             <td>{value.size}</td>
-            <td width={20} onClick={()=>{
-              (new http3()).get("/api/secured/Document/Delete?id="+value.id).then(response=>{
-                if(response.status===200 ){
-                  setFiles(files.filter((value1, index1) => index1!==index))
-                }
-              })
+            <td><a target="_blank" href={"/api/secured/Document/Download?id="+value.id}>გადმოწერა</a></td>
+            {
+              props.deletable && <td width={20} onClick={()=>{
+                (new http3()).get("/api/secured/Document/Delete?id="+value.id).then(response=>{
+                  if(response.status===200 ){
+                    setFiles(files.filter((value1, index1) => index1!==index))
+                  }
+                })
 
-            }}>
-              <Button icon="pi pi-times" />
-            </td>
+              }}>
+                <Button icon="pi pi-times" />
+              </td>
+            }
+
           </tr>
         )
       })
@@ -81,10 +103,20 @@ FileUploader.propTypes = {
   url: PropTypes.string,
   onSelectFile:PropTypes.func,
   onUpload:PropTypes.func,
-  multiple:PropTypes.bool
+  multiple:PropTypes.bool,
+  files: PropTypes.array,
+  deletable: PropTypes.bool,
+  autoLoadFilesUrl: PropTypes.string,
+  readOnly: PropTypes.bool,
+  itemId: PropTypes.string
 };
 FileUploader.defaultProps = {
   url:'/api/secured/Document/Upload',
   onUpload: e => console.log(e),
-  multiple:true
+  multiple:true,
+  files:[],
+  deletable: true,
+  autoLoadFilesUrl: null,
+  readOnly: false,
+  itemId:'fileUploader'
 };

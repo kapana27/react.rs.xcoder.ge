@@ -484,7 +484,10 @@ export default class Warehouse extends Component {
       },
       documents: {
         dialog: false,
-        text: ''
+        files:[],
+        itemFiles: {},
+        autoLoadFilesUrl: '',
+        readOnly: false
       },
       tab: 11,
       cart: {
@@ -724,6 +727,7 @@ export default class Warehouse extends Component {
     params.api.setServerSideDatasource(datasource);
   }
   onInventorIncome() {
+
     this.resetInventor();
     http.get(Config.management.warehouse.get.insertStart).then(()=>{
       this.loadInventorData();
@@ -1486,7 +1490,8 @@ export default class Warehouse extends Component {
                   </div>
                   <div className="fullwidth p-col-12">
                     <FileUploader
-                      onSelectFile={(file) => this.setState(State('inventor.income.detail.file', file.files[0], this.state))}
+                      files={this.state.inventor.income.detail.files ? this.state.inventor.income.detail.files : []}
+                      onSelectFile={(file) => this.setState(State('inventor.income.detail.files', file.files, this.state))}
                     />
                   </div>
                 </div>
@@ -1987,7 +1992,7 @@ export default class Warehouse extends Component {
           onHide={() => this.setState(State('inventor.income.dialog', false, this.state),()=>this.resetIncome())}
           style={{width: '1200px'}}
           footer={
-            <div style={{position:'relative'}}>
+            <div style={{position:'relative',display:'flex',justifyContent:'flex-end'}}>
               {
                 this.state.inventor.income.showDetails ?
                   <>
@@ -2002,7 +2007,11 @@ export default class Warehouse extends Component {
                     <Button label="ზედდებულის გააქტიურება" icon="pi pi-check" onClick={() => this.onSaveInventor()}/>
                   </>
                   :
-                  <Button label="ზედდებულის გენერაცია" icon="pi pi-check" onClick={() => this.generateInventor()}/>
+                  <div style={{flex: '1', justifyContent: 'space-between', display:'flex'}}>
+                    <Button label="დოკუმენტები" icon="pi pi-check" onClick={()=>this.setState(State('documents.dialog',true,this.state))}/>
+                    <Button label="ზედდებულის გენერაცია" icon="pi pi-check" onClick={() => this.generateInventor()}/>
+                  </div>
+
               }
               <Button label="დახურვა" icon="pi pi-times"
                       onClick={() => this.setState(State('inventor.income.dialog', false, this.state))}
@@ -2152,7 +2161,14 @@ export default class Warehouse extends Component {
               <div className="dialog_footer">
                 <div className="left_side">
                   <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
-                  <Button label="დოკუმენტები" className="ui-button-raised"/>
+                  <Button label="დოკუმენტები" className="ui-button-raised" onClick={()=> this.setState(State('documents',{
+                    dialog: true,
+                    files: [],
+                    itemFiles: this.state.documents.itemFiles,
+                    //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                    readOnly: false,
+                    itemId: 'fileUploader'
+                  },this.state))} />
                 </div>
                 {
                   (!this.state.inventor.outcome.expand)?
@@ -2288,7 +2304,23 @@ export default class Warehouse extends Component {
                     </div>
                   </TabPanel>
                 </TabView>
-                <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
+                <Cart
+                  documentBtnVisible={true}
+                  onGetDocuments={(item) => {
+                    console.log('onGetDocuments',this.state.documents.files,this.state.documents.files[item.id],item.id);
+                    console.log('onGetDocuments',this.state.documents.itemFiles,this.state.documents.itemFiles[item.id],item.id);
+                      this.setState(State('documents',{
+                        dialog: true,
+                        files: [],
+                        itemFiles:this.state.documents.itemFiles,
+                        //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                        readOnly: false,
+                        itemId: item.id.toString()
+                      },this.state));
+                    }
+                  }
+
+                  onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
                       data={this.state.cart['tab' + this.state.tab]}
                       onChangeAmount={e=>{
                         let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
@@ -2320,7 +2352,19 @@ export default class Warehouse extends Component {
 
           <div style={{minHeight:'300px'}}>
             <FileUploader
-              onSelectFile={(file) => console.log(file)}/>
+              files={this.state.documents.itemFiles[this.state.documents.itemId]? this.state.documents.itemFiles[this.state.documents.itemId] : []}
+              readOnly={this.state.documents.readOnly}
+              autoLoadFilesUrl={this.state.documents.autoLoadFilesUrl}
+              itemId={this.state.documents.itemId}
+              onSelectFile={(file,id) => {
+                console.log('onSelectFile',file,id); /*this.setState(State('documents.files',file.files,this.state)); this.setState(State('documents.itemFiles.'+id,file.files,this.state))*/
+                console.log('onSelectFile2',this.state.documents.itemFiles,this.state.documents.files)
+                let itemFiles = this.state.documents.itemFiles;
+                itemFiles[id] = file.files;
+                //this.setState(State('documents.files',file.files,this.state))
+                this.setState(State('documents.itemFiles',Object.assign({},itemFiles),this.state))
+              }}
+            />
           </div>
 
         </Modal>
@@ -2385,7 +2429,19 @@ export default class Warehouse extends Component {
                   <label>კომენტარი</label>
                   <InputTextarea rows={4} placeholder="შენიშვნა" style={{width: '100%', minHeight: '100px'}}/>
                 </div>
-                <Cart onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)} data={this.state.cart['tab' + this.state.tab]} onChangeAmount={e=>{
+                <Cart
+                  documentBtnVisible={true}
+                  onGetDocuments={(item) =>
+                    this.setState(State('documents',{
+                      dialog: true,
+                      files:[],
+                      itemFiles:{},
+                      //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                      readOnly: false,
+                      id: item.id
+                    },this.state))
+                  }
+                  onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)} data={this.state.cart['tab' + this.state.tab]} onChangeAmount={e=>{
                   let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
                   if(e.count>data.amount){
                     e.count=data.amount;
@@ -2414,6 +2470,15 @@ export default class Warehouse extends Component {
           style={{width: '800px'}}
         >
           <Cart
+            onGetDocuments={(item) =>
+              this.setState(State('documents',{
+                dialog: true,
+                files:[],
+                itemFiles:{},
+                autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                readOnly: true
+              },this.state))
+            }
             onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
             data={this.state.cart['tab' + this.state.tab]}
             onChangeAmount={e=>{
@@ -2592,7 +2657,15 @@ export default class Warehouse extends Component {
   };
 
   onInventorOutcome=()=> {
-    console.log(this.state);
+    this.setState(State('documents', {
+      dialog: false,
+      files: [],
+      itemFiles: {},
+      //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+      readOnly: false,
+     // itemId: 'fileUploader'
+    }, this.state));
+
     this.setState(State('inventor.outcome.dialog', true, this.state));
     this.setState(State('inventor.outcome.expand', false, this.state));
     this.getCode('last');
@@ -3328,7 +3401,8 @@ export default class Warehouse extends Component {
       measureUnit: this.state.inventor.income.detail.measureUnit.id,
       itemGroup: this.state.inventor.income.detail.itemGroup.id,
       selectedItemType: this.state.inventor.income.detail.type,
-      status: this.state.inventor.income.detail.status.id
+      status: this.state.inventor.income.detail.status.id,
+      files: this.state.inventor.income.detail.files
     }));
     http.post('/api/secured/Item/PreInsert/Add',formData)
       .then(result => {
@@ -3798,9 +3872,14 @@ export default class Warehouse extends Component {
         measureUnit: value.measureUnit.id,
         itemGroup: value.itemGroup.id,
         selectedItemType: value.type,
-        status: value.status.id
+        status: value.status.id,
+        files: value.files
       }
     })));
+
+    console.log('files',this.state.documents.files);
+
+    formData.append('files', _.map(this.state.documents.files, value => value.id).join(','));
 
     // prepear print data
     this.setState(State('print.cart.tab'+this.state.tab,this.state.cart['tab'+this.state.tab],this.state));
@@ -3821,6 +3900,7 @@ export default class Warehouse extends Component {
       .then(result => {
         if(result.status ===200) {
           this.setState(State('inventor.income.dialog', false, this.state));
+          this.setState(State('documents.files',[],this.state));
           this.onGridReady(this.eventData);
           this.setState(State('print.text','ოპერაცია წარმატებით შესრულდა! გნებავთ ზედდებულის ბეჭდვა?',this.state));
           this.setState(State('print.modal',true,this.state));
