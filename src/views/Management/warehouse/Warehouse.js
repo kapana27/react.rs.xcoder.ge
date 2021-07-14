@@ -728,6 +728,15 @@ export default class Warehouse extends Component {
   }
   onInventorIncome() {
 
+    this.setState(State('documents', {
+      dialog: false,
+      files: [],
+      itemFiles: {},
+      //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+      readOnly: false,
+      // itemId: 'fileUploader'
+    }, this.state));
+
     this.resetInventor();
     http.get(Config.management.warehouse.get.insertStart).then(()=>{
       this.loadInventorData();
@@ -847,6 +856,10 @@ export default class Warehouse extends Component {
     PrintElem(this.dispositionRef);
     this.clearPrintData('cancel');
   };
+
+  onDocumentsDialogClose=(ev)=>{
+    console.log(ev)
+  }
 
   render() {
     return (
@@ -2008,7 +2021,14 @@ export default class Warehouse extends Component {
                   </>
                   :
                   <div style={{flex: '1', justifyContent: 'space-between', display:'flex'}}>
-                    <Button label="დოკუმენტები" icon="pi pi-check" onClick={()=>this.setState(State('documents.dialog',true,this.state))}/>
+                    <Button label="დოკუმენტები" icon="pi pi-check" onClick={()=> this.setState(State('documents',{
+                      dialog: true,
+                      files: [],
+                      itemFiles: this.state.documents.itemFiles,
+                      //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                      readOnly: false,
+                      itemId: 'incomeFileUploader'
+                    },this.state))}/>
                     <Button label="ზედდებულის გენერაცია" icon="pi pi-check" onClick={() => this.generateInventor()}/>
                   </div>
 
@@ -2159,23 +2179,27 @@ export default class Warehouse extends Component {
             (this.state.inventor.outcome.tab === 0)?
               // შენობა ტაბის  ღილაკები
               <div className="dialog_footer">
-                <div className="left_side">
-                  <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
-                  <Button label="დოკუმენტები" className="ui-button-raised" onClick={()=> this.setState(State('documents',{
-                    dialog: true,
-                    files: [],
-                    itemFiles: this.state.documents.itemFiles,
-                    //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
-                    readOnly: false,
-                    itemId: 'fileUploader'
-                  },this.state))} />
-                </div>
+
                 {
                   (!this.state.inventor.outcome.expand)?
+                    <>
+                    <div className="left_side">
+                      <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
+                      <Button label="დოკუმენტები" className="ui-button-raised" onClick={()=> this.setState(State('documents',{
+                        dialog: true,
+                        files: [],
+                        itemFiles: this.state.documents.itemFiles,
+                        //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                        readOnly: false,
+                        itemId: 'outcomeFileUploader'
+                      },this.state))} />
+                    </div>
                     <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.outcameTab0GenerateOverhead()} />
+                    </>
                     :
                     <React.Fragment>
-                      <span className="last_code">ბოლო კოდი - {this.state.inventor.lastCode} </span>
+                      <div className="left_side"/>
+                      <span className="last_code">ბოლო ნომერი - {this.state.inventor.lastCode} </span>
                       <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.outcameTab0ActiveOverhead()}/>
                     </React.Fragment>
                 }
@@ -2184,16 +2208,20 @@ export default class Warehouse extends Component {
               :
               // პიროვნება ტაბის  ღილაკები
               <div className="dialog_footer">
-                <div className="left_side">
-                  <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
-                  <Button label="დოკუმენტები" className="ui-button-raised"/>
-                </div>
+
                 {
                   (!this.state.inventor.outcome.expand)?
+                    <>
+                    <div className="left_side">
+                      <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
+                      <Button label="დოკუმენტები" className="ui-button-raised"/>
+                    </div>
                     <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.outcameTab1GenerateOverhead()} />
+                    </>
                     :
                     <React.Fragment>
-                      <span className="last_code">ბოლო კოდი - {this.state.inventor.lastCode} </span>
+                      <div className="left_side"/>
+                      <span className="last_code">ბოლო ნომერი - {this.state.inventor.lastCode} </span>
                       <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.outcameTab1ActiveOverhead()}/>
                     </React.Fragment>
                 }
@@ -2307,8 +2335,6 @@ export default class Warehouse extends Component {
                 <Cart
                   documentBtnVisible={true}
                   onGetDocuments={(item) => {
-                    console.log('onGetDocuments',this.state.documents.files,this.state.documents.files[item.id],item.id);
-                    console.log('onGetDocuments',this.state.documents.itemFiles,this.state.documents.itemFiles[item.id],item.id);
                       this.setState(State('documents',{
                         dialog: true,
                         files: [],
@@ -2319,6 +2345,8 @@ export default class Warehouse extends Component {
                       },this.state));
                     }
                   }
+
+                  itemFiles={this.state.documents.itemFiles}
 
                   onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
                       data={this.state.cart['tab' + this.state.tab]}
@@ -2357,11 +2385,8 @@ export default class Warehouse extends Component {
               autoLoadFilesUrl={this.state.documents.autoLoadFilesUrl}
               itemId={this.state.documents.itemId}
               onSelectFile={(file,id) => {
-                console.log('onSelectFile',file,id); /*this.setState(State('documents.files',file.files,this.state)); this.setState(State('documents.itemFiles.'+id,file.files,this.state))*/
-                console.log('onSelectFile2',this.state.documents.itemFiles,this.state.documents.files)
                 let itemFiles = this.state.documents.itemFiles;
                 itemFiles[id] = file.files;
-                //this.setState(State('documents.files',file.files,this.state))
                 this.setState(State('documents.itemFiles',Object.assign({},itemFiles),this.state))
               }}
             />
@@ -2375,15 +2400,26 @@ export default class Warehouse extends Component {
           style={{width: '900px'}}
           footer = {
             <div className="dialog_footer">
-              <div className="left_side">
-                <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
-                <Button label="დოკუმენტები" className="ui-button-raised"/>
-              </div>
+
               {
                 (!this.state.inventor.transfer.expand)?
+                  <>
+                  <div className="left_side">
+                    <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
+                    <Button label="დოკუმენტები" className="ui-button-raised" onClick={()=> this.setState(State('documents',{
+                      dialog: true,
+                      files: [],
+                      itemFiles: this.state.documents.itemFiles,
+                      //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                      readOnly: false,
+                      itemId: 'transferFileUploader'
+                    },this.state))}/>
+                  </div>
                   <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.transferGenerateOverheadAB()} />
+                  </>
                   :
                   <React.Fragment>
+                    <div className="left_side"/>
                     <span className="last_code">ბოლო ნომერი - {this.state.inventor.lastCode} </span>
                     <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.transferActiveOverhead()}/>
                   </React.Fragment>
@@ -2435,12 +2471,14 @@ export default class Warehouse extends Component {
                     this.setState(State('documents',{
                       dialog: true,
                       files:[],
-                      itemFiles:{},
+                      itemFiles:this.state.documents.itemFiles,
                       //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
                       readOnly: false,
-                      id: item.id
+                      itemId: item.id.toString()
                     },this.state))
                   }
+                  itemFiles={this.state.documents.itemFiles}
+
                   onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)} data={this.state.cart['tab' + this.state.tab]} onChangeAmount={e=>{
                   let data=JSON.parse(this.state.cart['tab' + this.state.tab][e.index]);
                   if(e.count>data.amount){
@@ -2475,10 +2513,11 @@ export default class Warehouse extends Component {
                 dialog: true,
                 files:[],
                 itemFiles:{},
-                autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
                 readOnly: true
               },this.state))
             }
+            itemFiles={this.state.documents.itemFiles}
             onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
             data={this.state.cart['tab' + this.state.tab]}
             onChangeAmount={e=>{
@@ -2657,6 +2696,12 @@ export default class Warehouse extends Component {
   };
 
   onInventorOutcome=()=> {
+
+    if (_.size(this.state.cart['tab'+this.state.tab]) === 0){
+      window.onError('კალათაში ჩასამატებელია ნივთები')
+      return
+    }
+
     this.setState(State('documents', {
       dialog: false,
       files: [],
@@ -2704,13 +2749,17 @@ export default class Warehouse extends Component {
     formData.append('toWhomSection', this.state.inventor.outcome.propertyManagement.id); // ქონების მართვა
     formData.append('requestPerson', this.state.inventor.outcome.requestPerson.id); // მომთხოვნი პიროვნება
 
-    formData.append('files', this.state.inventor.outcome.files);
+    //formData.append('files', this.state.inventor.outcome.files);
+    formData.append('files', _.map(this.state.documents.itemFiles?.outcomeFileUploader, value => value.id).join(','));
+
+
     formData.append('list', JSON.stringify(_.map(this.state.cart["tab"+this.state.tab], value => {
       let val =  JSON.parse(value);
       return {
         itemId: val.id,
         amount: val.count,
-        list:""
+        list:"",
+        files: this.state.documents.itemFiles[val.id]?this.state.documents.itemFiles[val.id]:[]
       }
     })));
 
@@ -2898,6 +2947,7 @@ export default class Warehouse extends Component {
       })
       .catch(reason => this.error(reason.error) );
   };
+
   resetModalParam(modal){
     console.log('modal',modal)
     if(modal !== 'documents') {
@@ -2995,6 +3045,7 @@ export default class Warehouse extends Component {
       this.clearPrintData('cancel');
     }
   }
+
   removeCartItem(modal) {
     let formData = new FormData();
     formData.append('globalKey', this.state.tab);
@@ -3023,15 +3074,28 @@ export default class Warehouse extends Component {
     formData.append('toWhomStock', this.state.inventor.transfer.propertyManagement.id); // ქონების მართვა
     formData.append('fromStock', this.state.tab);
 
-    formData.append('files', this.state.inventor.transfer.files);
+    formData.append('files', _.map(this.state.documents.itemFiles?.transferFileUploader, value => value.id).join(','));
     formData.append('list', JSON.stringify(_.map(this.state.cart["tab"+this.state.tab], value => {
       let val =  JSON.parse(value);
       return {
         itemId: val.id,
         amount: val.count,
-        list:""
+        list:"",
+        files: this.state.documents.itemFiles[val.id]?this.state.documents.itemFiles[val.id]:[]
       }
     })));
+
+    //formData.append('files', this.state.inventor.transfer.files);
+    //formData.append('list', JSON.stringify(_.map(this.state.cart["tab"+this.state.tab], value => {
+    //  let val =  JSON.parse(value);
+    //  return {
+    //    itemId: val.id,
+    //    amount: val.count,
+    //    list:""
+    //  }
+    //})));
+
+    // transferFileUploader
 
     // prepear print data
     this.setState(State('print.cart.tab'+this.state.tab,this.state.cart['tab'+this.state.tab],this.state));
@@ -3137,6 +3201,20 @@ export default class Warehouse extends Component {
       .catch(reason => this.error(reason.error) );
   };
   onTransfer = (event) => {
+    if (_.size(this.state.cart['tab'+this.state.tab]) === 0){
+      window.onError('კალათაში ჩასამატებელია ნივთები')
+      return
+    }
+
+    this.setState(State('documents', {
+      dialog: false,
+      files: [],
+      itemFiles: {},
+      //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+      readOnly: false,
+      // itemId: 'fileUploader'
+    }, this.state));
+
     this.setState(State('inventor.transfer.dialog',true,this.state));
     this.setState(State('inventor.transfer.expend',false,this.state));
     this.getCode('last');

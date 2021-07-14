@@ -9,6 +9,7 @@ export const PrintContent = (props) => {
 
   console.log('print props', props);
 
+  let colSpan = 6;
   let localData = {};
   if(props.newData.printType === "WI"){
     localData = {
@@ -19,6 +20,7 @@ export const PrintContent = (props) => {
       'კომენტარი':props.newData.note?props.newData.note:''
     }
   }else if(props.newData.printType === "WP"){
+    colSpan = 7
     localData = {
       'თარიღი': props.newData.trDate,
       'ქონების მართვა': props.newData.printProperty,
@@ -26,22 +28,22 @@ export const PrintContent = (props) => {
       'ტრანსპ. პასუხისმგ. პირი':props.newData.printCarrier?props.newData.printCarrier:'',
       'კომენტარი':props.newData.note?props.newData.note:''
     }
-  }else if(props.newData.printType === "WS"){
+  }else if(props.newData.printType === "WW"){
+    colSpan = 7
     localData = {
       'თარიღი': props.newData.trDate,
-      'ქონების მართვა': props.newData.printProperty,
+      'საწყობის მართვა': props.newData.printProperty,
       'მომთხოვნი პიროვნება': props.newData.printRequest?props.newData.printRequest:'',
       'ტრანსპ. პასუხისმგ. პირი':props.newData.printCarrier?props.newData.printCarrier:'',
-      'თანამშრომელი:':props.newData.printReceiver?props.newData.printReceiver:'',
-      'შენობა:':props.newData.printLocation?props.newData.printLocation:'',
+      'საწყობი:':props.newData.printLocation?props.newData.printLocation:'',
       'კომენტარი':props.newData.note?props.newData.note:''
     }
   }else if(props.newData.printType === "PS"){
     localData = {
       'თარიღი': props.newData.trDate,
-      'საწყობის მართვა': props.newData.printProperty,
-      'ტრანსპ. პასუხისმგ. პირი':props.newData.printCarrier?props.newData.printCarrier:'',
-      'სექცია:':props.newData.printLocation?props.newData.printLocation:'',
+      'ქონების მართვა': props.newData.printProperty,
+      //'ტრანსპ. პასუხისმგ. პირი':props.newData.printCarrier?props.newData.printCarrier:'',
+      'ოთახი:':props.newData.printLocation?props.newData.printLocation:'',
       'კომენტარი':props.newData.note?props.newData.note:''
     }
   }else if(props.newData.printType === "PP"){
@@ -82,10 +84,11 @@ export const PrintContent = (props) => {
           {
             props.newData.printType === "WI" ||
             props.newData.printType === "WP" ||
+            props.newData.printType === "WW" ||
             props.newData.printType === "WS"?
               <React.Fragment>
                 <tr>
-                  <th colSpan="6" style={{textAlign:'center'}}>საწყობი</th>
+                  <th colSpan={colSpan} style={{textAlign:'center'}}>საწყობი</th>
                   <th colSpan="2" style={{textAlign:'center'}}>ბუღალტერია</th>
                 </tr>
                 <tr>
@@ -93,7 +96,7 @@ export const PrintContent = (props) => {
                   <th>მარკა</th>
                   <th>მოდელი</th>
                   {
-                    props.newData.printType === "WP" || props.newData.printType === "WS"?
+                    props.newData.printType === "WP" || props.newData.printType === "WW" || props.newData.printType === "WS"?
                       <th>შტრიხკოდი</th>:''
                   }
                   <th>რაოდენობა</th>
@@ -108,6 +111,10 @@ export const PrintContent = (props) => {
                 <th>დასახელება</th>
                 <th>მარკა</th>
                 <th>მოდელი</th>
+                {
+                  props.newData.printType === "PS"?
+                    <th>შტრიხკოდი</th>:''
+                }
                 <th>რაოდენობა</th>
                 <th>ერთ. ფასი</th>
                 <th>სულ ფასი</th>
@@ -118,14 +125,14 @@ export const PrintContent = (props) => {
         {
           _.map(props.newData.addons,(value,index)=>{
             const dat = value.item;
-            if(props.newData.printType === "WI" || props.newData.printType === "WP" || props.newData.printType === "WS"){
+            if(props.newData.printType === "WI" || props.newData.printType === "WW" || props.newData.printType === "WP" || props.newData.printType === "WS"){
               return (
                 <tr key={index}>
                   <td>{dat.name}</td>
                   <td>{dat.maker? dat.maker.name:''}</td>
                   <td>{dat.model? dat.model.name:''}</td>
                   {
-                    props.newData.printType === "WP" || props.newData.printType === "WS"?
+                    props.newData.printType === "WP" || props.newData.printType === "WW" || props.newData.printType === "WS"?
                       <th>{dat.fullBarcode}</th>:''
                   }
                   <td>{value.addonAmount}</td>
@@ -141,6 +148,10 @@ export const PrintContent = (props) => {
                   <td>{dat.name}</td>
                   <td>{dat.maker? dat.maker.name:''}</td>
                   <td>{dat.model? dat.model.name:''}</td>
+                  {
+                    props.newData.printType === "PS"?
+                      <th>{dat.fullBarcode}</th>:''
+                  }
                   <td>{value.addonAmount}</td>
                   <td>{dat.price}</td>
                   <td>{dat.price * value.addonAmount}</td>

@@ -70,6 +70,9 @@
   text-align: left;
   font-family: lbet-st, sans-serif !important;
 }
+.p-dialog[role=dialog] .p-dialog-content {
+  overflow: visible;
+}
 
 .incomeAddedTable table {
   width: 100%;

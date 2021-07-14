@@ -32,7 +32,7 @@ import _ from 'lodash';
 import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import 'primeflex/primeflex.css';
-import './property.css';
+import './property.scss';
 import {State, putInCart, clearCartItem, removeCartItem, getCartItems, PrintElem} from '../../../utils';
 import * as moment from "moment";
 import CustomDateComponent from "../../components/CustomDateComponent/CustomDateComponent";
@@ -532,6 +532,13 @@ export default class Property extends Component {
         lastCode: "",
         newCode: "",
       },
+      documents: {
+        dialog: false,
+        files:[],
+        itemFiles: {},
+        autoLoadFilesUrl: '',
+        readOnly: false
+      },
       tab: 21,
       cart:{
         tab21:[],
@@ -1028,22 +1035,62 @@ export default class Property extends Component {
           </div>
         </Modal>
 
+
+        <Modal
+          header="დოკუმენტების მიბმა" visible={this.state.documents.dialog}
+          onHide={() => this.setState(State('documents.dialog',false,this.state))}
+          style={{width: '900px'}}
+          footer = {
+            <div className="dialog_footer">
+              <div className="left_side"/>
+              <Button label="დახურვა" className="p-button-secondary" onClick={()=>this.setState(State('documents.dialog',false,this.state))}/>
+            </div>
+          }>
+
+          <div style={{minHeight:'300px'}}>
+            <FileUploader
+              files={this.state.documents.itemFiles[this.state.documents.itemId]? this.state.documents.itemFiles[this.state.documents.itemId] : []}
+              readOnly={this.state.documents.readOnly}
+              autoLoadFilesUrl={this.state.documents.autoLoadFilesUrl}
+              itemId={this.state.documents.itemId}
+              onSelectFile={(file,id) => {
+                let itemFiles = this.state.documents.itemFiles;
+                itemFiles[id] = file.files;
+                this.setState(State('documents.itemFiles',Object.assign({},itemFiles),this.state))
+              }}
+            />
+          </div>
+
+        </Modal>
+
+
         <Modal
           header="განპიროვნება"
           visible={this.state.property.disposition.dialog}
           onHide={()=>this.resetModalParam('disposition')} style={{width:'900px'}}
           footer = {
            <div className="dialog_footer">
-             <div className="left_side">
-               <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
-               <Button label="დოკუმენტები" className="ui-button-raised"/>
-             </div>
+
              {
                (!this.state.property.disposition.expand)?
+                 <>
+                 <div className="left_side">
+                   <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
+                   <Button label="დოკუმენტები" className="ui-button-raised" onClick={()=> this.setState(State('documents',{
+                     dialog: true,
+                     files: [],
+                     itemFiles: this.state.documents.itemFiles,
+                     //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                     readOnly: false,
+                     itemId: 'dispositionFileUploader'
+                   },this.state))}/>
+                 </div>
                  <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.dispositionGenerateOverhead()} />
+                 </>
                  :
                  <React.Fragment>
-                   <span className="last_code">ბოლო კოდი - {this.state.property.lastCode} </span>
+                   <div className="left_side"/>
+                   <span className="last_code">ბოლო ნომერი - {this.state.property.lastCode} </span>
                    <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.dispositionActiveOverhead()}/>
                  </React.Fragment>
              }
@@ -1076,16 +1123,29 @@ export default class Property extends Component {
                     </div>
                     <div className="fullwidth p-col-12">
                       <label>აირჩიეთ ოთახი</label>
-                      <Dropdown value={this.state.property.disposition.room} options={this.state.property.roomList} onChange={(e) => this.setState(State( "property.disposition.room",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="აირჩიეთ ოთახი" style={{width:'100%'}} />
+                      <Dropdown value={this.state.property.disposition.room} options={this.state.property.roomList} onChange={(e) => this.setState(State( "property.disposition.room",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="აირჩიეთ ოთახი" style={{width:'100%',    height: '33px'}} />
                     </div>
                   </div>
                 </div>
                 <div className="fullwidth p-col-4">
                   <label>კომენტარი</label>
-                  <InputTextarea value={this.state.property.disposition.comment} onChange = {(e)=>this.setState(State('property.disposition.comment',e.target.value,this.state))} rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
+                  <InputTextarea value={this.state.property.disposition.comment} onChange = {(e)=>this.setState(State('property.disposition.comment',e.target.value,this.state))} rows={5} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
                 </div>
 
                 <Cart
+                  documentBtnVisible={true}
+                  onGetDocuments={(item) =>
+                    this.setState(State('documents',{
+                      dialog: true,
+                      files:[],
+                      itemFiles:this.state.documents.itemFiles,
+                      //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                      readOnly: false,
+                      itemId: item.id.toString()
+                    },this.state))
+                  }
+                  itemFiles={this.state.documents.itemFiles}
+
                   onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
                   data={this.state.cart['tab'+this.state.tab]}
                   onChangeAmount={e=>{
@@ -1108,16 +1168,27 @@ export default class Property extends Component {
           header="ინვენტარის საწყობში შებრუნება" visible={this.state.property.outcome.dialog} onHide={()=>this.resetModalParam('outcome')} style={{width:'900px'}}
           footer = {
             <div className="dialog_footer">
-              <div className="left_side">
-                <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
-                <Button label="დოკუმენტები" className="ui-button-raised"/>
-              </div>
+
               {
                 (!this.state.property.outcome.expand)?
+                  <>
+                  <div className="left_side">
+                    <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
+                    <Button label="დოკუმენტები" className="ui-button-raised" onClick={()=> this.setState(State('documents',{
+                      dialog: true,
+                      files: [],
+                      itemFiles: this.state.documents.itemFiles,
+                      //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                      readOnly: false,
+                      itemId: 'outcomeFileUploader'
+                    },this.state))}/>
+                  </div>
                   <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.outcomeGenerateOverhead()} />
+                  </>
                   :
                   <React.Fragment>
-                    <span className="last_code">ბოლო კოდი - {this.state.property.lastCode} </span>
+                    <div className="left_side"/>
+                    <span className="last_code">ბოლო ნომერი - {this.state.property.lastCode} </span>
                     <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.outcomeActiveOverhead()}/>
                   </React.Fragment>
               }
@@ -1139,11 +1210,11 @@ export default class Property extends Component {
                     </div>
                     <div className="fullwidth p-col-6">
                       <label>სექცია</label>
-                      <Dropdown value={this.state.property.outcome.section} options={this.state.property.sectionList} onChange={(e) => this.setState(State( "property.outcome.section",{ id: e.value.id, name: e.value.name},this.state), this.warehouseManagement(e.value.id))} optionLabel="name" placeholder="სექცია" style={{width:'100%'}} />
+                      <Dropdown value={this.state.property.outcome.section} options={this.state.property.sectionList} onChange={(e) => this.setState(State( "property.outcome.section",{ id: e.value.id, name: e.value.name},this.state), this.warehouseManagement(e.value.id))} optionLabel="name" placeholder="სექცია" style={{width:'100%',height:'33px'}} />
                     </div>
                     <div className="fullwidth p-col-6">
                       <label>საწყობის მართვა</label>
-                      <Dropdown value={this.state.property.outcome.stockMan} options={this.state.property.stockManList} onChange={(e) => this.setState(State( "property.outcome.stockMan",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="საწყობის მართვა" style={{width:'100%'}} />
+                      <Dropdown value={this.state.property.outcome.stockMan} options={this.state.property.stockManList} onChange={(e) => this.setState(State( "property.outcome.stockMan",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="საწყობის მართვა" style={{width:'100%',height:'33px'}} />
                     </div>
                     <div className="fullwidth p-col-6">
                       <label>ტრანსპორტ. პასხ. პირი:</label>
@@ -1163,6 +1234,19 @@ export default class Property extends Component {
                   <InputTextarea value={this.state.property.outcome.comment} onChange = {(e)=>this.setState(State('property.outcome.comment',e.target.value,this.state))} rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
                 </div>
                 <Cart
+                  documentBtnVisible={true}
+                  onGetDocuments={(item) =>
+                    this.setState(State('documents',{
+                      dialog: true,
+                      files:[],
+                      itemFiles:this.state.documents.itemFiles,
+                      //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                      readOnly: false,
+                      itemId: item.id.toString()
+                    },this.state))
+                  }
+                  itemFiles={this.state.documents.itemFiles}
+
                   onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
                   data={this.state.cart['tab'+this.state.tab]}
                   onChangeAmount={e=>{
@@ -1186,16 +1270,27 @@ export default class Property extends Component {
           header="ინვენტარის შებრუნება" visible={this.state.property.invReturn.dialog} onHide={()=>this.resetModalParam('invReturn')} style={{width:'900px'}}
           footer = {
             <div className="dialog_footer">
-              <div className="left_side">
-                <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
-                <Button label="დოკუმენტები" className="ui-button-raised"/>
-              </div>
+
               {
                 (!this.state.property.invReturn.expand)?
+                  <>
+                  <div className="left_side">
+                    <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
+                    <Button label="დოკუმენტები" className="ui-button-raised" onClick={()=> this.setState(State('documents',{
+                      dialog: true,
+                      files: [],
+                      itemFiles: this.state.documents.itemFiles,
+                      //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                      readOnly: false,
+                      itemId: 'invReturnFileUploader'
+                    },this.state))}/>
+                  </div>
                   <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.onInventorReturnOverhead()} />
+                  </>
                   :
                   <React.Fragment>
-                    <span className="last_code">ბოლო კოდი - {this.state.property.lastCode} </span>
+                    <div className="left_side"/>
+                    <span className="last_code">ბოლო ნომერი - {this.state.property.lastCode} </span>
                     <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.onInventorReturnActiveOverhead()}/>
                   </React.Fragment>
               }
@@ -1237,6 +1332,19 @@ export default class Property extends Component {
                   <InputTextarea value={this.state.property.invReturn.comment} onChange = {(e)=>this.setState(State('property.invReturn.comment',e.target.value,this.state))} rows={1} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
                 </div>
                 <Cart
+                  documentBtnVisible={true}
+                  onGetDocuments={(item) =>
+                    this.setState(State('documents',{
+                      dialog: true,
+                      files:[],
+                      itemFiles:this.state.documents.itemFiles,
+                      //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                      readOnly: false,
+                      itemId: item.id.toString()
+                    },this.state))
+                  }
+                  itemFiles={this.state.documents.itemFiles}
+
                   onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
                   data={this.state.cart['tab'+this.state.tab]}
                   onChangeAmount={e=>{
@@ -1259,16 +1367,27 @@ export default class Property extends Component {
           header="ინვენტარის მოძრაობა შენობებს შორის" visible={this.state.property.movAB.dialog} onHide={()=>this.resetModalParam('movAB')} style={{width:'900px'}}
           footer = {
             <div className="dialog_footer">
-              <div className="left_side">
-                <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
-                <Button label="დოკუმენტები" className="ui-button-raised"/>
-              </div>
+
               {
                 (!this.state.property.movAB.expand)?
+                  <>
+                  <div className="left_side">
+                    <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
+                    <Button label="დოკუმენტები" className="ui-button-raised" onClick={()=> this.setState(State('documents',{
+                      dialog: true,
+                      files: [],
+                      itemFiles: this.state.documents.itemFiles,
+                      //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                      readOnly: false,
+                      itemId: 'movABFileUploader'
+                    },this.state))}/>
+                  </div>
                   <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.movABGenerateOverhead()} />
+                  </>
                   :
                   <React.Fragment>
-                    <span className="last_code">ბოლო კოდი - {this.state.property.lastCode} </span>
+                    <div className="left_side"/>
+                    <span className="last_code">ბოლო ნომერი - {this.state.property.lastCode} </span>
                     <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.movABActiveOverhead()}/>
                   </React.Fragment>
               }
@@ -1321,6 +1440,19 @@ export default class Property extends Component {
                   <InputTextarea value={this.state.property.movAB.comment} onChange = {(e)=>this.setState(State('property.movAB.comment',e.target.value,this.state))} rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
                 </div>
                 <Cart
+                  documentBtnVisible={true}
+                  onGetDocuments={(item) =>
+                    this.setState(State('documents',{
+                      dialog: true,
+                      files:[],
+                      itemFiles:this.state.documents.itemFiles,
+                      //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                      readOnly: false,
+                      itemId: item.id.toString()
+                    },this.state))
+                  }
+                  itemFiles={this.state.documents.itemFiles}
+
                   onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
                   data={this.state.cart['tab'+this.state.tab]}
                   onChangeAmount={e=>{
@@ -1342,16 +1474,27 @@ export default class Property extends Component {
           header="ინვენტარის საწყობში დაბრუნება" visible={this.state.property.inverse.dialog} onHide={()=>this.resetModalParam('inverse')} style={{width:'900px'}}
           footer = {
             <div className="dialog_footer">
-              <div className="left_side">
-                <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
-                <Button label="დოკუმენტები" className="ui-button-raised"/>
-              </div>
+
               {
                 (!this.state.property.inverse.expand)?
+                  <>
+                  <div className="left_side">
+                    <Button label="კალათის გასუფთავება" className="p-button-danger" onClick={()=>this.removeCartItem()}/>
+                    <Button label="დოკუმენტები" className="ui-button-raised" onClick={()=> this.setState(State('documents',{
+                      dialog: true,
+                      files: [],
+                      itemFiles: this.state.documents.itemFiles,
+                      //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                      readOnly: false,
+                      itemId: 'inverseFileUploader'
+                    },this.state))}/>
+                  </div>
                   <Button label="ზედდებულის გენერაცია" className="ui-button-raised" onClick={()=>this.inverseGenerateOverhead()} />
+                  </>
                   :
                   <React.Fragment>
-                    <span className="last_code">ბოლო კოდი - {this.state.property.lastCode} </span>
+                    <div className="left_side"/>
+                    <span className="last_code">ბოლო ნომერი - {this.state.property.lastCode} </span>
                     <Button label="ზედდებულის გააქტიურება" className="ui-button-raised"  onClick={()=>this.inverseActiveOverhead()}/>
                   </React.Fragment>
               }
@@ -1373,11 +1516,11 @@ export default class Property extends Component {
                     </div>
                     <div className="fullwidth p-col-6">
                       <label>სექცია</label>
-                      <Dropdown value={this.state.property.inverse.section} options={this.state.property.sectionList} onChange={(e) => this.setState(State( "property.inverse.section",{ id: e.value.id, name: e.value.name},this.state), this.inverseWarehouseManagement(e.value.id))} optionLabel="name" placeholder="სექცია" style={{width:'100%'}} />
+                      <Dropdown value={this.state.property.inverse.section} options={this.state.property.sectionList} onChange={(e) => this.setState(State( "property.inverse.section",{ id: e.value.id, name: e.value.name},this.state), this.inverseWarehouseManagement(e.value.id))} optionLabel="name" placeholder="სექცია" style={{width:'100%',height:'33px'}} />
                     </div>
                     <div className="fullwidth p-col-6">
                       <label>საწყობის მართვა</label>
-                      <Dropdown value={this.state.property.inverse.stockMan} options={this.state.property.stockManList} onChange={(e) => this.setState(State( "property.inverse.stockMan",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="საწყობის მართვა" style={{width:'100%'}} />
+                      <Dropdown value={this.state.property.inverse.stockMan} options={this.state.property.stockManList} onChange={(e) => this.setState(State( "property.inverse.stockMan",{ id: e.value.id, name: e.value.name},this.state))} optionLabel="name" placeholder="საწყობის მართვა" style={{width:'100%',height:'33px'}} />
                     </div>
                     <div className="fullwidth p-col-6">
                       <label>ტრანსპორტ. პასხ. პირი:</label>
@@ -1397,6 +1540,19 @@ export default class Property extends Component {
                   <InputTextarea value={this.state.property.inverse.comment} onChange={(e)=>this.setState(State('property.inverse.comment',e.target.value,this.state))} rows={4} placeholder="შენიშვნა" style={{width:'100%', minHeight:'100px'}} />
                 </div>
                 <Cart
+                  documentBtnVisible={true}
+                  onGetDocuments={(item) =>
+                    this.setState(State('documents',{
+                      dialog: true,
+                      files:[],
+                      itemFiles:this.state.documents.itemFiles,
+                      //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                      readOnly: false,
+                      itemId: item.id.toString()
+                    },this.state))
+                  }
+                  itemFiles={this.state.documents.itemFiles}
+
                   onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
                   data={this.state.cart['tab'+this.state.tab]}
                   onChangeAmount={e=>{
@@ -1429,6 +1585,18 @@ export default class Property extends Component {
                style={{width: '800px'}}
         >
           <Cart
+            onGetDocuments={(item) =>
+              this.setState(State('documents',{
+                dialog: true,
+                files:[],
+                itemFiles:this.state.documents.itemFiles,
+                //autoLoadFilesUrl: '/api/secured/Document/Attachments?id='+item.id,
+                readOnly: false,
+                itemId: item.id.toString()
+              },this.state))
+            }
+            itemFiles={this.state.documents.itemFiles}
+
             onRemoveItem={(index)=>this.removeItemFromCart(this.state.tab,index)}
             data={this.state.cart['tab' + this.state.tab]}
             onChangeAmount={e=>{
@@ -1614,14 +1782,15 @@ export default class Property extends Component {
     formData.append('trDate',moment(this.state.property.disposition.date).format('DD-MM-YYYY'));
     formData.append('roomId', _.isUndefined(this.state.property.disposition.room.id)? '':this.state.property.disposition.room.id);
     formData.append('receiverPerson', this.state.property.disposition.person.id);
-    formData.append('files', this.state.property.disposition.files);
 
+    formData.append('files', _.map(this.state.documents.itemFiles?.dispositionFileUploader, value => value.id).join(','));
     formData.append('list', JSON.stringify(_.map(this.state.cart["tab"+this.state.tab], value => {
       let val =  JSON.parse(value);
       return {
         itemId: val.id,
         amount: val.count,
-        list:""
+        list:"",
+        files: this.state.documents.itemFiles[val.id]?this.state.documents.itemFiles[val.id]:[]
       }
     })));
 
@@ -1662,6 +1831,11 @@ export default class Property extends Component {
   };
 
   onDisposition() {
+    if (_.size(this.state.cart['tab'+this.state.tab]) === 0){
+      window.onError('კალათაში ჩასამატებელია ნივთები')
+      return
+    }
+
     this.setState(State('property.disposition.dialog',true,this.state));
     this.setState(State('property.disposition.expand',false,this.state));
 
@@ -1708,15 +1882,17 @@ export default class Property extends Component {
     formData.append('toWhomStock', this.state.property.outcome.stockMan.id);
     formData.append('toStock', this.state.property.outcome.section.id);
 
-    formData.append('files', this.state.property.outcome.files);
+    formData.append('files', _.map(this.state.documents.itemFiles?.outcomeFileUploader, value => value.id).join(','));
     formData.append('list', JSON.stringify(_.map(this.state.cart["tab"+this.state.tab], value => {
       let val =  JSON.parse(value);
       return {
         itemId: val.id,
         amount: val.count,
-        list:""
+        list:"",
+        files: this.state.documents.itemFiles[val.id]?this.state.documents.itemFiles[val.id]:[]
       }
     })));
+
 
     // prepear print data
     this.setState(State('print.cart.tab'+this.state.tab,this.state.cart['tab'+this.state.tab],this.state));
@@ -1733,7 +1909,7 @@ export default class Property extends Component {
       'კომენტარი': this.state.property.outcome.comment
     },this.state));
 
-    http.post("/a",formData)
+    http.post("/api/secured/Item/Staff/Stock/Return",formData)
       .then(result => {
         if (result.status === 200) {
           this.removeCartItem();
@@ -1754,6 +1930,11 @@ export default class Property extends Component {
   };
 
   onOutcome = (event) => {
+    if (_.size(this.state.cart['tab'+this.state.tab]) === 0){
+      window.onError('კალათაში ჩასამატებელია ნივთები')
+      return
+    }
+
     this.setState(State('property.outcome.dialog',true,this.state));
     this.setState(State('property.outcome.expand',false,this.state));
 
@@ -1787,19 +1968,20 @@ export default class Property extends Component {
     formData.append('toWhomSection', this.state.property.movAB.propertyManagement.id); // ქონების მართვა
     formData.append('requestPerson', this.state.property.movAB.requestPerson.id); // მომთხოვნი პიროვნება
 
-    formData.append('files', this.state.property.movAB.files);
+    formData.append('files', _.map(this.state.documents.itemFiles?.movABFileUploader, value => value.id).join(','));
     formData.append('list', JSON.stringify(_.map(this.state.cart["tab"+this.state.tab], value => {
       let val =  JSON.parse(value);
       return {
         itemId: val.id,
         amount: val.count,
-        list:""
+        list:"",
+        files: this.state.documents.itemFiles[val.id]?this.state.documents.itemFiles[val.id]:[]
       }
     })));
 
     // prepear print data
     this.setState(State('print.cart.tab'+this.state.tab,this.state.cart['tab'+this.state.tab],this.state));
-    this.setState(State('print.title','განპიროვნება',this.state));
+    this.setState(State('print.title','ინვენტარის მოძრაობა შენობებს შორის',this.state));
     this.setState(State('print.overhead',{
       title:'ქონების მართვის გასავლის ელ. ზედდებული ქ.გ - ',
       lastCode: this.state.property.newCode
@@ -1833,6 +2015,11 @@ export default class Property extends Component {
   };
 
   onMoveAB = (event) => {
+    if (_.size(this.state.cart['tab'+this.state.tab]) === 0){
+      window.onError('კალათაში ჩასამატებელია ნივთები')
+      return
+    }
+
     this.resetModalParam('movAB');
     this.getCode('last');
     this.setState(State('property.movAB.dialog',true,this.state));
@@ -1865,13 +2052,14 @@ export default class Property extends Component {
     formData.append('carrierPerson', this.state.property.inverse.transPerson.id);
     formData.append('toWhomStock', this.state.property.inverse.stockMan.id);
 
-    formData.append('files', this.state.property.inverse.files);
+    formData.append('files', _.map(this.state.documents.itemFiles?.inverseFileUploader, value => value.id).join(','));
     formData.append('list', JSON.stringify(_.map(this.state.cart["tab"+this.state.tab], value => {
       let val =  JSON.parse(value);
       return {
         itemId: val.id,
-        amount: val.amount,
-        list:""
+        amount: val.count,
+        list:"",
+        files: this.state.documents.itemFiles[val.id]?this.state.documents.itemFiles[val.id]:[]
       }
     })));
 
@@ -1911,6 +2099,10 @@ export default class Property extends Component {
   };
 
   onInverse = (event) => {
+    if (_.size(this.state.cart['tab'+this.state.tab]) === 0){
+      window.onError('კალათაში ჩასამატებელია ნივთები')
+      return
+    }
     this.getCode('last');
     this.setState(State('property.inverse.dialog',true,this.state))
   };
@@ -1947,15 +2139,18 @@ export default class Property extends Component {
     formData.append('toWhomSection', this.state.property.invReturn.propertyManagement.id); // ქონების მართვა
     formData.append('requestPerson', this.state.property.invReturn.requestPerson.id); // მომთხოვნი პიროვნება
 
-    formData.append('files', this.state.property.invReturn.files);
+    formData.append('files', _.map(this.state.documents.itemFiles?.invReturnFileUploader, value => value.id).join(','));
     formData.append('list', JSON.stringify(_.map(this.state.cart["tab"+this.state.tab], value => {
       let val =  JSON.parse(value);
       return {
         itemId: val.id,
         amount: val.count,
-        list:""
+        list:"",
+        files: this.state.documents.itemFiles[val.id]?this.state.documents.itemFiles[val.id]:[]
       }
     })));
+
+
 
     // prepear print data
     this.setState(State('print.cart.tab'+this.state.tab,this.state.cart['tab'+this.state.tab],this.state));
@@ -1993,6 +2188,10 @@ export default class Property extends Component {
   };
 
   onInventorReturn = (event) => {
+    if (_.size(this.state.cart['tab'+this.state.tab]) === 0){
+      window.onError('კალათაში ჩასამატებელია ნივთები')
+      return
+    }
     this.resetModalParam('invReturn');
     this.getCode('last');
     this.setState(State('property.invReturn.dialog',true,this.state));

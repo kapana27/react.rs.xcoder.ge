@@ -13,12 +13,9 @@ export const Cart = (props) => {
   },[props.data])
 
   useEffect(()=>{
-    console.log('useEffect',props.itemFiles)
-  },[itemFiles])
-
-  const onFileSize =()=> {
-    console.log(12312312)
-  }
+    setItemFiles(props.itemFiles)
+    console.log('props.itemFiles',props.itemFiles)
+  },[props.itemFiles])
 
   return <React.Fragment>
     <table style={style.table}>
@@ -43,7 +40,7 @@ export const Cart = (props) => {
               <td style={style.td}>{d.amount} </td>
               <td style={style.td}><input type="number" value={d.count} onChange={(e)=>props.onChangeAmount({index:index,count:e.target.value})}/> </td>
 
-              {props.documentBtnVisible && <td style={style.td}><Button label="დოკუმენტები (0)" icon="pi pi-file" onClick={()=>props.onGetDocuments(d)} /></td>}
+              {props.documentBtnVisible && <td style={style.td}><Button label={`დოკუმენტები (${_.size(itemFiles[d.id])})`} icon="pi pi-file" onClick={()=>props.onGetDocuments(d)} /></td>}
               <td style={style.td}><i className="fa fa-close" onClick={()=>props.onRemoveItem(index)}/> </td>
             </tr>
           )

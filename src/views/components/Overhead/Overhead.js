@@ -31,7 +31,7 @@ export const Overhead = (props) => {
               <td>{data.model ? data.model.name:""}</td>
               <td>{data.price}</td>
               <td>{data.count}</td>
-              <td>{data.barcode}</td>
+              <td>{data.barcode !== 0? data.barcode:''}</td>
             </tr>
           )
         })
